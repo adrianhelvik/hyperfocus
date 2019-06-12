@@ -1,5 +1,6 @@
 import sleep from 'sleep-promise'
-import clear from 'clear'
+import clear from './clear'
+import uuid from 'uuid/v4'
 import chalk from 'chalk'
 import path from 'path'
 import fs from 'fs'
@@ -13,8 +14,9 @@ const src = path.resolve(
 
 process.env.NODE_ENV = 'test'
 
+let erroredFiles = []
 let successes = []
-let cache = {}
+let completed = {}
 let specs = []
 
 global.it = function(name, fn) {
@@ -22,12 +24,7 @@ global.it = function(name, fn) {
 }
 
 void async function main() {
-  await import('./testSetup')
-    .then(module => {
-      if (typeof module.default === 'function')
-        return module.default()
-    })
-  cache = {}
+  completed = {}
   await loop()
 }()
 
@@ -41,12 +38,23 @@ async function loop() {
   }
   if (changed.length) {
     clear()
+    await import('./testSetup?' + uuid())
+      .then(module => {
+        if (typeof module.default === 'function')
+          return module.default()
+      })
     changed.map(dirstr).forEach(x => console.log(x))
-  }
-  for (const file of changed) {
-    await testFile(file)
+    for (const file of erroredFiles)
+      await testFile(file)
+    for (const file of changed)
+      await testFile(file)
   }
   await sleep(100)
+  await import(`./testTeardown?${uuid()}`)
+    .then(module => {
+      if (typeof module.default === 'function')
+        return module.default()
+    })
   loop()
 }
 
@@ -69,7 +77,7 @@ async function testFile(file) {
   let errored = false
   try {
     specs = []
-    await import(file)
+    await import(file + '?' + uuid())
     for (const {name, fn} of specs) {
       try {
         await fn()
@@ -85,8 +93,12 @@ async function testFile(file) {
       console.log(chalk.red(`Failure in: "${dirstr(file)}"`))
   } catch (e) {
     console.log(chalk.red(`Failure!\n${estr(e)}`))
-    return false
+    errored = true
   }
+  if (errored && ! erroredFiles.includes(file))
+    erroredFiles.push(file)
+  else
+    erroredFiles = erroredFiles.filter(x => x !== file)
   return ! errored
 }
 
@@ -101,11 +113,11 @@ function estr(error) {
 }
 
 async function isChanged(file) {
-  let prev = cache[file]
+  let prev = completed[file]
 
-  cache[file] = await fs.promises.readFile(file, 'utf8')
+  completed[file] = await fs.promises.readFile(file, 'utf8')
 
-  return prev !== cache[file]
+  return prev !== completed[file]
 }
 
 function dirstr(str) {
