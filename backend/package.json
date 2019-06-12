@@ -1,0 +1,30 @@
+{
+  "name": "subtask-backend",
+  "version": "1.0.0",
+  "main": "index.js",
+  "repository": "https://github.com/adrianhelvik/subtask-backend.git",
+  "author": "Adrian Helvik <adrian.helvik@specifique.no>",
+  "license": "MIT",
+  "private": true,
+  "dependencies": {
+    "@hapi/boom": "^7.4.2",
+    "@hapi/hapi": "^18.3.1",
+    "bcrypt": "^3.0.5",
+    "chalk": "^2.4.2",
+    "clear": "^0.1.0",
+    "dotenv": "^7.0.0",
+    "esm": "^3.2.25",
+    "is-integer": "^1.0.7",
+    "knex": "^0.16.3",
+    "pg": "^7.11.0",
+    "rollup": "^1.14.3",
+    "sleep-promise": "^8.0.1",
+    "sqlite3": "^4.0.6"
+  },
+  "scripts": {
+    "start": "clear; nodemon --harmony --experimental-modules --quiet src/index.mjs"
+  },
+  "devDependencies": {
+    "nodemon": "^1.18.10"
+  }
+}

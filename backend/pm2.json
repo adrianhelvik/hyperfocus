@@ -1,0 +1,9 @@
+{
+  "apps": [
+    {
+      "name": "subtask-backend",
+      "script": "start",
+      "exec_interpreter": "bash"
+    }
+  ]
+}
