@@ -6,7 +6,6 @@ import uuid from 'uuid/v4'
 import knex from 'db'
 
 it('does not throw for an owner', async () => {
-  const sessionId = uuid()
   const boardId = uuid()
   const userId = uuid()
 
@@ -17,10 +16,7 @@ it('does not throw for an owner', async () => {
     userId,
   })
 
-  await createSession({
-    sessionId,
-    userId,
-  })
+  const sessionId = await createSession(userId)
 
   await createBoard({
     createdBy: userId,

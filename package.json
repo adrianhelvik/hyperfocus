@@ -1,0 +1,15 @@
+{
+  "name": "subtask",
+  "version": "1.0.0",
+  "main": "index.js",
+  "repository": "git@github.com:adrianhelvik/subtask.git",
+  "author": "Adrian Helvik <adrian.helvik@specifique.no>",
+  "license": "MIT",
+  "private": true,
+  "scripts": {
+    "preinstall": "exit 1",
+    "frontend": "cd frontend && yarn && yarn start",
+    "backend": "cd backend && yarn && yarn knex migrate:latest && yarn start",
+    "test:backend": "cd backend && yarn test"
+  }
+}
