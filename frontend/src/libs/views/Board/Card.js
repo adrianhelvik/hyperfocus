@@ -1,4 +1,4 @@
-import { observable, computed, runInAction } from 'mobx'
+import { action, observable, computed, runInAction } from 'mobx'
 import styled, { css } from 'styled-components'
 import someParent from 'util/someParent'
 import withEvents from 'util/withEvents'
@@ -34,7 +34,7 @@ class Card extends React.Component {
     elementToCard.delete(this.element)
   }
 
-  onMouseDown = (event) => {
+  @action.bound onMouseDown(event) {
     event.stopPropagation()
     const { target, clientX, clientY } = event
 
