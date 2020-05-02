@@ -1,6 +1,6 @@
-import getDeck from 'getDeck'
+import getDeck from './getDeck.mjs'
 import assert from 'assert'
-import knex from 'db'
+import knex from './db.mjs'
 
 export default async function getDenormalizedBoard(boardId) {
   assert(typeof boardId === 'string')

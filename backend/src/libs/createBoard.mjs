@@ -1,4 +1,4 @@
-import knex from 'db'
+import knex from './db.mjs'
 
 export default async function createBoard({
   createdBy,

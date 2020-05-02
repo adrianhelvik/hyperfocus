@@ -20,10 +20,11 @@
     "pg": "^7.11.0",
     "rollup": "^1.14.3",
     "sleep-promise": "^8.0.1",
-    "sqlite3": "^4.0.6"
+    "sqlite3": "^4.0.6",
+    "uuid": "^8.0.0"
   },
   "scripts": {
-    "start": "clear; nodemon --harmony --experimental-modules --quiet src/index.mjs",
+    "start": "clear; nodemon --quiet src/index.mjs",
     "test": "node --experimental-modules ./scripts/testRunner"
   },
   "devDependencies": {

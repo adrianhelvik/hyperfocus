@@ -1,7 +1,7 @@
-import runCodeHeuristics from 'runCodeHeuristics'
+import runCodeHeuristics from './libs/runCodeHeuristics.mjs'
 import sleep from 'sleep-promise'
 import Hapi from '@hapi/hapi'
-import uuid from './uuid'
+import uuid from './uuid.mjs'
 import clear from 'clear'
 import chalk from 'chalk'
 
@@ -16,15 +16,15 @@ async function main() {
     console.warn(chalk.yellow.bold('The env variable NODE_ENV was not set! Using "development"'))
   }
 
-  const knex = await import('db')
+  const knex = await import('./libs/db.mjs')
     .then(module => module.default)
 
-  const { default: createTestUserUnlessExists } = await import('createTestUserUnlessExists')
+  const { default: createTestUserUnlessExists } = await import('./libs/createTestUserUnlessExists.mjs')
 
   if (process.env.NODE_ENV === 'development')
     await createTestUserUnlessExists()
 
-  await runCodeHeuristics()
+  // await runCodeHeuristics()
 
   const server = Hapi.server({
     port: '1234',
@@ -36,7 +36,7 @@ async function main() {
     },
   })
 
-  const routes = await import('./routes')
+  const routes = await import('./routes.mjs')
 
   for (const name of Object.keys(routes)) {
     if (process.env.NODE_ENV === 'development') {

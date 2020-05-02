@@ -1,5 +1,5 @@
-import useUppercaseInCustomModules from 'heuristics/useUppercaseInCustomModules'
-import checkRouteLengths from 'heuristics/checkRouteLengths'
+import useUppercaseInCustomModules from './heuristics/useUppercaseInCustomModules.mjs'
+import checkRouteLengths from 'heuristics/checkRouteLengths.mjs'
 import chalk from 'chalk'
 import path from 'path'
 import fs from 'fs'

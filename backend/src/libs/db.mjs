@@ -1,4 +1,4 @@
-import knexfile from '../../knexfile'
+import knexfile from '../../knexfile.js'
 import Knex from 'knex'
 
 if (! knexfile[process.env.NODE_ENV])

@@ -1,6 +1,6 @@
-import authenticate from 'authenticate'
+import authenticate from './authenticate.mjs'
 import Boom from '@hapi/boom'
-import knex from 'db'
+import knex from './db.mjs'
 
 export default async function assertIsVerified(request) {
   const session = await authenticate(request)

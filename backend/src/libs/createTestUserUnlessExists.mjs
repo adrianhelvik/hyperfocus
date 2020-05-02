@@ -1,6 +1,6 @@
-import createUser from 'createUser'
-import uuid from 'uuid/v4'
-import knex from 'db'
+import createUser from './createUser.mjs'
+import uuid from '../uuid.mjs'
+import knex from './db.mjs'
 
 export default async function createTestUserUnlessExists() {
   const testUser = await knex('users')

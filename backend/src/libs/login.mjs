@@ -1,7 +1,7 @@
-import isPasswordCorrect from 'isPasswordCorrect'
-import createSession from 'createSession'
+import isPasswordCorrect from './isPasswordCorrect.mjs'
+import createSession from './createSession.mjs'
+import getUser from './getUser.mjs'
 import Boom from '@hapi/boom'
-import getUser from 'getUser'
 
 export default async function login(username, password) {
   if (typeof username !== 'string')

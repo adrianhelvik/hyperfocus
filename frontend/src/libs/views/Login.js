@@ -7,12 +7,15 @@ import { observer } from 'mobx-react'
 import * as theme from 'theme'
 import Input from 'ui/Input'
 import React from 'react'
+import sleep from 'sleep'
 
 @withAuth
 @observer
 class Login extends React.Component {
   @observable username = ''
   @observable password = ''
+  @observable message = ''
+  @observable error = ''
 
   @action.bound setPassword(event) {
     this.password = event.target.value
@@ -24,11 +27,20 @@ class Login extends React.Component {
 
   @autobind async onSubmit(event) {
     event.preventDefault()
+    this.error = ''
+    this.message = 'Logging in...'
 
-    await this.props.auth.login({
-      username: this.username,
-      password: this.password,
-    })
+    await sleep(500)
+
+    await this.props.auth
+      .login({
+        username: this.username,
+        password: this.password,
+      })
+      .catch(e => {
+        this.error = e.message
+        this.message = ''
+      })
   }
 
   async componentDidMount() {
@@ -36,10 +48,7 @@ class Login extends React.Component {
   }
 
   render() {
-    if (this.props.auth.status === 'success')
-      return (
-        <Redirect to="/app" />
-      )
+    if (this.props.auth.status === 'success') return <Redirect to="/app" />
 
     return (
       <Container>
@@ -60,6 +69,15 @@ class Login extends React.Component {
             />
           </InputWrapper>
           <Button>Log in</Button>
+          <Message>
+            {this.message}
+            {this.error && (
+              <React.Fragment>
+                <strong>An error occurred</strong>
+                {this.error}
+              </React.Fragment>
+            )}
+          </Message>
         </Form>
       </Container>
     )
@@ -99,4 +117,15 @@ const Button = styled.button`
   font-size: inherit;
   margin-left: auto;
   margin-right: auto;
+`
+
+const Message = styled.div`
+  color: ${theme.ui1};
+  text-align: center;
+  margin-top: 30px;
+  height: 80px;
+
+  & strong {
+    display: block;
+  }
 `

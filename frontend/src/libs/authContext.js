@@ -9,22 +9,13 @@ const authContext = React.createContext()
 export default authContext
 
 export function withAuth(WrappedComponent) {
-
-  const name = (
-    WrappedComponent.displayName
-    || WrappedComponent.name
-    || '<component>'
-  )
+  const name =
+    WrappedComponent.displayName || WrappedComponent.name || '<component>'
 
   const WithAuth = props => {
     const auth = React.useContext(authContext)
 
-    return (
-      <WrappedComponent
-        {...props}
-        auth={auth}
-      />
-    )
+    return <WrappedComponent {...props} auth={auth} />
   }
 
   WithAuth.displayName = `withContext(${name})`
@@ -40,19 +31,18 @@ class ProvideAuth extends React.Component {
 
   async login(payload) {
     this.status = 'pending'
-    try {
-      const { sessionId } = await api.login(payload)
-      setPersistentHeader('Authorization', `Bearer ${sessionId}`)
-      await this.authenticate()
-    } catch (e) {
-      alert(`Login failed: ${e.message}`)
-    }
+    const { sessionId } = await api.login(payload)
+    setPersistentHeader('Authorization', `Bearer ${sessionId}`)
+    await this.authenticate()
   }
 
   async authenticate() {
     try {
       await api.authenticate()
-      console.log('%cauthentication successful', 'background:lightgreen;padding:4px')
+      console.log(
+        '%cauthentication successful',
+        'background:lightgreen;padding:4px',
+      )
       this.status = 'success'
       return true
     } catch (e) {
@@ -77,8 +67,7 @@ class ProvideAuth extends React.Component {
   }
 
   render() {
-    if (! this.value.login)
-      throw Error('Failure')
+    if (!this.value.login) throw Error('Failure')
 
     return (
       <authContext.Provider value={this.value}>

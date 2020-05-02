@@ -1,8 +1,8 @@
-import requireString from 'requireString'
-import createHash from 'createHash'
+import requireString from './requireString.mjs'
+import createHash from './createHash.mjs'
 import Boom from '@hapi/boom'
-import uuid from 'uuid/v4'
-import knex from 'db'
+import uuid from '../uuid.mjs'
+import knex from './db.mjs'
 
 export default async function createUser({
   username,

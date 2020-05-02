@@ -1,5 +1,5 @@
 import Boom from '@hapi/boom'
-import knex from 'db'
+import knex from './db.mjs'
 
 export default async function getUser(arg) {
   if (typeof arg !== 'string')

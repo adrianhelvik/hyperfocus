@@ -1,6 +1,6 @@
-import getDenormalizedBoard from 'getDenormalizedBoard'
-import arrayMove from 'arrayMove'
-import knex from 'db'
+import getDenormalizedBoard from './getDenormalizedBoard.mjs'
+import arrayMove from './arrayMove.mjs'
+import knex from './db.mjs'
 
 export default async function moveBoardChildToIndex({
   boardId,

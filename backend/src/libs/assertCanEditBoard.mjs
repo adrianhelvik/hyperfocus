@@ -1,10 +1,10 @@
-import assertIsVerified from 'assertIsVerified'
-import requireString from 'requireString'
-import authenticate from 'authenticate'
+import assertIsVerified from './assertIsVerified.mjs'
+import requireString from './requireString.mjs'
+import authenticate from './authenticate.mjs'
+import getUser from './getUser.mjs'
 import Boom from '@hapi/boom'
-import getUser from 'getUser'
 import assert from 'assert'
-import knex from 'db'
+import knex from './db.mjs'
 
 export default async function assertCanEditBoard(request, boardId) {
   requireString({boardId})
