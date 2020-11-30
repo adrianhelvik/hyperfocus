@@ -445,11 +445,32 @@ export const deleteBoardRoute = {
   async handler(request) {
     const {boardId} = request.payload
     const user = await authenticate(request)
+    let deleted
 
-    const deleted = await knex('boards')
-      .where({boardId})
-      .andWhere({createdBy: user.userId})
-      .del()
+    await knex.transaction(async trx => {
+      console.log('Retrieving cards')
+      const decks = await trx('decks')
+        .where({boardId})
+
+      console.log('Deleting cards...')
+      await trx('cards')
+        .whereIn('deckId', decks.map(d => d.deckId))
+
+      console.log('Deleting decks...')
+      await trx('decks')
+        .where({boardId})
+        .del()
+
+      console.log('Deleting board...')
+      deleted = await trx('boards')
+        .where({boardId})
+        .andWhere({createdBy: user.userId})
+        .del()
+    })
+      .catch(e => {
+        console.log(e.stack)
+        throw Boom.badImplementation('Failed to delete board')
+      })
 
     if (deleted)
       return {success: true}
