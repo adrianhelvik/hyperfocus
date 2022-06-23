@@ -34,11 +34,13 @@ const Container = styled.div`
   padding: 20px;
   border-radius: 4px;
 
-  ${p => p.placement && css`
-    position: fixed;
-    left: ${p.placement.x}px;
-    top: ${p.placement.y + 20}px;
-    transform: translateX(-50%);
-    box-shadow: ${theme.shadows[1]};
-  `}
+  ${p =>
+    p.placement &&
+    css`
+      position: fixed;
+      left: ${p.placement.x}px;
+      top: ${p.placement.y + 20}px;
+      transform: translateX(-50%);
+      box-shadow: ${theme.shadows[1]};
+    `}
 `

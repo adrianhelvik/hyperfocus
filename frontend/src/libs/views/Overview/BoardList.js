@@ -13,34 +13,24 @@ import api from 'api'
 @observer
 class BoardList extends React.Component {
   async componentDidMount() {
-    if (! await this.props.auth.authenticate())
-      return
+    if (!(await this.props.auth.authenticate())) return
 
-    const {boards} = await api
-      .ownBoards()
+    const { boards } = await api.ownBoards()
 
-    this.props.store.setBoards(
-      boards.map(b => new Board(b))
-    )
+    this.props.store.setBoards(boards.map(b => new Board(b)))
   }
 
   render() {
-    if (this.props.auth.status === 'failed')
-      return (<Redirect to="/login" />)
+    if (this.props.auth.status === 'failed') return <Redirect to="/login" />
     return (
       <Container>
         <Title>My boards</Title>
         <Area>
-          {this.props.store.boards.map(board =>
-            <BoardTile
-              key={board.boardId}
-              board={board}
-            />
-          )}
+          {this.props.store.boards.map(board => (
+            <BoardTile key={board.boardId} board={board} />
+          ))}
         </Area>
-        <Button onClick={this.props.store.startAddingBoard}>
-          New board
-        </Button>
+        <Button onClick={this.props.store.startAddingBoard}>New board</Button>
       </Container>
     )
   }
@@ -81,8 +71,7 @@ const Button = styled.button`
   margin: 20px;
 `
 
-const Text = styled.div// eslint-disable-line
-`
+const Text = styled.div` // eslint-disable-line
   font-size: 18px;
   color: #333;
 `

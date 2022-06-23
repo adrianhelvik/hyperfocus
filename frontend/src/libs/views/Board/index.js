@@ -37,7 +37,7 @@ class Board extends React.Component {
   async componentDidMount() {
     try {
       var { boardId, title, children } = await api.getBoard({
-        boardId: this.props.match.params.boardId
+        boardId: this.props.match.params.boardId,
       })
     } catch (e) {
       alert(e.message)
@@ -48,8 +48,7 @@ class Board extends React.Component {
     runInAction(() => {
       const board = new BoardModel({
         children: children.map(child => {
-          if (child.type === 'deck')
-            return new DeckModel(child)
+          if (child.type === 'deck') return new DeckModel(child)
           if (child.type === 'portal')
             return new PortalModel({
               ...child,
@@ -61,9 +60,7 @@ class Board extends React.Component {
         title,
       })
 
-      this.props.store.setActiveBoard(
-        new BoardModel(board)
-      )
+      this.props.store.setActiveBoard(new BoardModel(board))
 
       this.loading = false
     })
@@ -77,12 +74,9 @@ class Board extends React.Component {
   }
 
   addDeck = async () => {
-    await this.props.showModal(props => 
-      <AddDeck
-        {...props}
-        board={this.board}
-      />
-    )
+    await this.props.showModal(props => (
+      <AddDeck {...props} board={this.board} />
+    ))
   }
 
   addDeckFromContextMenu = async event => {
@@ -92,13 +86,9 @@ class Board extends React.Component {
 
     console.log(index)
 
-    await this.props.showModal(props =>
-      <AddDeck
-        {...props}
-        board={this.board}
-        index={index}
-      />
-    )
+    await this.props.showModal(props => (
+      <AddDeck {...props} board={this.board} index={index} />
+    ))
   }
 
   addPortalFromContextMenu = async event => {
@@ -108,41 +98,31 @@ class Board extends React.Component {
 
     console.log(index)
 
-    await this.props.showModal(props =>
-      <AddPortal
-        {...props}
-        board={this.board}
-        index={index}
-      />
-    )
+    await this.props.showModal(props => (
+      <AddPortal {...props} board={this.board} index={index} />
+    ))
   }
 
   insertionPointForChild(x) {
     const deckElements = document.querySelectorAll('[data-board-child]')
 
-    if (! deckElements.length)
-      return 0
+    if (!deckElements.length) return 0
 
     let i = -1
     while (
-      deckElements[++i]
-      &&
-      (
-        deckElements[i].getBoundingClientRect().left
-        + deckElements[i].getBoundingClientRect().width/2
-      ) < x
+      deckElements[++i] &&
+      deckElements[i].getBoundingClientRect().left +
+        deckElements[i].getBoundingClientRect().width / 2 <
+        x
     );
 
     return i
   }
 
   addPortal = async ({ resolve, reject }) => {
-    await this.props.showModal(props =>
-      <AddPortal
-        {...props}
-        board={this.board}
-      />
-    )
+    await this.props.showModal(props => (
+      <AddPortal {...props} board={this.board} />
+    ))
   }
 
   @action.bound simulateMove(fromIndex, toIndex) {
@@ -152,48 +132,38 @@ class Board extends React.Component {
       return
     }
 
-    if (this.fromIndex !== fromIndex)
-      this.fromIndex = fromIndex
-    if (this.toIndex !== toIndex)
-      this.toIndex = toIndex
+    if (this.fromIndex !== fromIndex) this.fromIndex = fromIndex
+    if (this.toIndex !== toIndex) this.toIndex = toIndex
   }
 
   @computed get moveRight() {
     const moveRight = []
     for (let i = 0; i < this.board.children.length; i++)
-      if (this.shouldIndexMoveRight(i))
-        moveRight.push(i)
+      if (this.shouldIndexMoveRight(i)) moveRight.push(i)
     return moveRight
   }
 
   @computed get moveLeft() {
     const moveLeft = []
     for (let i = 0; i < this.board.children.length; i++)
-      if (this.shouldIndexMoveLeft(i))
-        moveLeft.push(i)
+      if (this.shouldIndexMoveLeft(i)) moveLeft.push(i)
     return moveLeft
   }
 
   shouldIndexMoveRight(index) {
-    if (this.fromIndex == null || this.toIndex == null)
-      return false
+    if (this.fromIndex == null || this.toIndex == null) return false
     return (
-      this.toIndex < this.fromIndex
-      &&
-      index >= this.toIndex
-      &&
+      this.toIndex < this.fromIndex &&
+      index >= this.toIndex &&
       index < this.fromIndex
     )
   }
 
   shouldIndexMoveLeft(index) {
-    if (this.fromIndex == null || this.toIndex == null)
-      return false
+    if (this.fromIndex == null || this.toIndex == null) return false
     return (
-      this.toIndex > this.fromIndex
-      &&
-      index > this.fromIndex
-      &&
+      this.toIndex > this.fromIndex &&
+      index > this.fromIndex &&
       index <= this.toIndex
     )
   }
@@ -208,7 +178,7 @@ class Board extends React.Component {
     if (item instanceof PortalModel)
       item = { type: 'portal', portalId: item.portalId }
     else if (item instanceof DeckModel)
-        item = { type: 'deck', deckId: item.deckId }
+      item = { type: 'deck', deckId: item.deckId }
     else {
       console.error('Invalid type:', item)
       throw Error('Invalid type. Check log')
@@ -228,12 +198,12 @@ class Board extends React.Component {
       return
     event.preventDefault()
     this.props.showMenu(event, {
-      'Add deck': (event) => {
+      'Add deck': event => {
         this.addDeckFromContextMenu(event)
       },
-      'Add portal': (event) => {
+      'Add portal': event => {
         this.addPortalFromContextMenu(event)
-      }
+      },
     })
   }
 
@@ -242,24 +212,19 @@ class Board extends React.Component {
       return <Loading />
     }
 
-    if (! this.board) {
+    if (!this.board) {
       return <Redirect to="/" />
     }
 
-    if (this.error)
-      return null
+    if (this.error) return null
 
     return (
-      <Container
-        onContextMenu={this.onContextMenu}
-      >
+      <Container onContextMenu={this.onContextMenu}>
         <Header>
           <GoBack onClick={() => this.props.history.goBack()}>◀</GoBack>
           <Title>{this.board.title}</Title>
         </Header>
-        <Decks
-          className="board-decks"
-        >
+        <Decks className="board-decks">
           {this.board.children.map((child, index) => {
             const props = {
               childContainer: this.childContainer,
@@ -275,17 +240,19 @@ class Board extends React.Component {
               return (
                 <ChildPortal
                   delete={async () => {
-                    const confirmed = await this.props.confirm(({yes, no}) =>
-                      <div>
-                        <div>Delete portal</div>
-                        <button onClick={yes}>Delete</button>
-                        <button onClick={no}>Keep</button>
-                      </div>
+                    const confirmed = await this.props.confirm(
+                      ({ yes, no }) => (
+                        <div>
+                          <div>Delete portal</div>
+                          <button onClick={yes}>Delete</button>
+                          <button onClick={no}>Keep</button>
+                        </div>
+                      ),
                     )
-                    if (! confirmed) return
+                    if (!confirmed) return
                     api.deletePortal({ portalId: child.portalId })
                     this.board.children.splice(index, 1)
-                }}
+                  }}
                   key={child.portalId}
                   portal={child}
                   deck={child.target}
@@ -297,17 +264,15 @@ class Board extends React.Component {
             return (
               <ChildDeck
                 delete={async () => {
-                  const confirmed = await this.props.confirm(({yes, no}) =>
+                  const confirmed = await this.props.confirm(({ yes, no }) => (
                     <div>
                       <div>Delete deck</div>
-                      <div>
-                        All cards in the deck will be deleted as well.
-                      </div>
+                      <div>All cards in the deck will be deleted as well.</div>
                       <button onClick={yes}>Delete</button>
                       <button onClick={no}>Keep</button>
                     </div>
-                  )
-                  if (! confirmed) return
+                  ))
+                  if (!confirmed) return
                   api.deleteDeck({ deckId: child.deckId })
                   this.board.children.splice(index, 1)
                 }}
@@ -353,7 +318,7 @@ const Title = styled.div`
 const AddItem = styled.div`
   background: ${theme.ui1};
   cursor: pointer;
-  transition: .3s;
+  transition: 0.3s;
   &:hover {
     background: ${theme.ui2};
   }

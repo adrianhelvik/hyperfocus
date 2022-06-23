@@ -18,19 +18,19 @@ class AddPortal extends React.Component {
   @observable title = ''
 
   async componentDidMount() {
-    const {boards} = await api.ownBoards()
-    this.props.store.setBoards(boards.map(({ children, ...board }) => {
-      return new BoardModel({
-        children: children.map(child => {
-          if (child.type === 'deck')
-            return new DeckModel(child)
-          if (child.type === 'portal')
-            return new PortalModel(child)
-          throw Error(`Invalid child type: ${child.type}`)
-        }),
-        ...board
-      })
-    }))
+    const { boards } = await api.ownBoards()
+    this.props.store.setBoards(
+      boards.map(({ children, ...board }) => {
+        return new BoardModel({
+          children: children.map(child => {
+            if (child.type === 'deck') return new DeckModel(child)
+            if (child.type === 'portal') return new PortalModel(child)
+            throw Error(`Invalid child type: ${child.type}`)
+          }),
+          ...board,
+        })
+      }),
+    )
   }
 
   @action setBoard(board) {
@@ -48,9 +48,8 @@ class AddPortal extends React.Component {
 
   onSubmit = async event => {
     event.preventDefault()
-    if (! this.board || ! this.deck || ! this.title)
-      return
-    const {portalId} = await api.addPortal({
+    if (!this.board || !this.deck || !this.title) return
+    const { portalId } = await api.addPortal({
       boardId: this.props.board.boardId,
       deckId: this.deck.deckId,
       index: this.props.index,
@@ -83,7 +82,7 @@ class AddPortal extends React.Component {
         <Sections>
           <Section>
             <Title>Select board</Title>
-            {store.boards.map(board =>
+            {store.boards.map(board => (
               <Tile
                 key={board.boardId}
                 selected={this.board === board}
@@ -91,19 +90,20 @@ class AddPortal extends React.Component {
               >
                 {board.title}
               </Tile>
-            )}
+            ))}
           </Section>
           <Section>
             <Title>Select Deck</Title>
-            {this.board && this.board.decks.map(deck =>
-              <Tile
-                key={deck.deckId}
-                selected={this.deck === deck}
-                {...onSelect(() => this.setDeck(deck))}
-              >
-                {deck.title}
-              </Tile>
-            )}
+            {this.board &&
+              this.board.decks.map(deck => (
+                <Tile
+                  key={deck.deckId}
+                  selected={this.deck === deck}
+                  {...onSelect(() => this.setDeck(deck))}
+                >
+                  {deck.title}
+                </Tile>
+              ))}
           </Section>
         </Sections>
         <hr />
@@ -140,10 +140,12 @@ const Tile = styled.div`
     color: white;
   }
 
-  ${p => p.selected && css`
-  background: ${theme.ui1};
-  color: white;
-  `};
+  ${p =>
+    p.selected &&
+    css`
+      background: ${theme.ui1};
+      color: white;
+    `};
 `
 
 const AddButton = styled.button`
@@ -152,17 +154,25 @@ const AddButton = styled.button`
   font-size: 0.8rem;
   padding: 10px;
   border-radius: 4px;
-  background: ${p => p.active ? theme.ui1 : '#ddd'};
+  background: ${p => (p.active ? theme.ui1 : '#ddd')};
   width: fit-content;
   display: block;
   margin-left: auto;
-  cursor: ${p => p.active ? 'pointer' : 'not-allowed'};
+  cursor: ${p => (p.active ? 'pointer' : 'not-allowed')};
   :focus {
     outline: none;
-    ${p => p.active && css`background: ${theme.ui2};`}
+    ${p =>
+      p.active &&
+      css`
+        background: ${theme.ui2};
+      `}
   }
   :active:hover {
-    ${p => p.active && css`background: #707070;`}
+    ${p =>
+      p.active &&
+      css`
+        background: #707070;
+      `}
   }
 `
 

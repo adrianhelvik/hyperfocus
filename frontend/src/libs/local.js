@@ -16,9 +16,9 @@ try {
 
 const local = {
   get(key, defaultValue) {
-    if (storage[PREFIX+key]) {
+    if (storage[PREFIX + key]) {
       try {
-        return JSON.parse(storage[PREFIX+key])
+        return JSON.parse(storage[PREFIX + key])
       } catch (e) {
         return defaultValue
       }
@@ -26,9 +26,8 @@ const local = {
     return defaultValue
   },
   has(key) {
-    const value = storage[PREFIX+key]
-    if (! value)
-      return false
+    const value = storage[PREFIX + key]
+    if (!value) return false
     try {
       JSON.parse(value)
       return true
@@ -37,11 +36,11 @@ const local = {
     }
   },
   delete(key) {
-    delete storage[PREFIX+key]
+    delete storage[PREFIX + key]
   },
   set(key, value) {
     try {
-      storage[PREFIX+key] = JSON.stringify(value)
+      storage[PREFIX + key] = JSON.stringify(value)
       return true
     } catch (e) {
       console.error('[local]: Could not persist value\n', value)
@@ -49,12 +48,10 @@ const local = {
     return false
   },
   toggle(key) {
-    this.set(key, ! this.get(key))
-  }
+    this.set(key, !this.get(key))
+  },
 }
 
-if (process.env.NODE_ENV === 'development')
-  global.local = local
+if (process.env.NODE_ENV === 'development') global.local = local
 
 export default local
-

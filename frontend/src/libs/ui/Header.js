@@ -15,13 +15,13 @@ class Header extends React.Component {
           <Logo />
         </UndecoratedLink>
         {this.props.auth.status === 'success' ? (
-            this.props.location.pathname === '/'
-            ? <Login to="/login">Go to dashboard</Login>
-            : <Logout onClick={this.props.auth.logout}>Log out</Logout>
+          this.props.location.pathname === '/' ? (
+            <Login to="/login">Go to dashboard</Login>
+          ) : (
+            <Logout onClick={this.props.auth.logout}>Log out</Logout>
+          )
         ) : (
-          <Login to="/login">
-            Log in
-          </Login>
+          <Login to="/login">Log in</Login>
         )}
       </Container>
     )
@@ -41,7 +41,8 @@ const Container = styled.div`
   display: flex;
   justify-content: space-between;
   align-items: center;
-  a, button {
+  a,
+  button {
     color: white;
     font-size: 16px;
   }
@@ -49,7 +50,11 @@ const Container = styled.div`
 
 const Logo = () => (
   <Logo.Container>
-    <Logo.Text1>sub<UnderLine /></Logo.Text1><Logo.Text2>task</Logo.Text2>
+    <Logo.Text1>
+      sub
+      <UnderLine />
+    </Logo.Text1>
+    <Logo.Text2>task</Logo.Text2>
   </Logo.Container>
 )
 

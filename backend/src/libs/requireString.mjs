@@ -1,6 +1,6 @@
 import Boom from '@hapi/boom'
 
-export default (values) => {
+export default values => {
   for (const name of Object.keys(values)) {
     const value = values[name]
 

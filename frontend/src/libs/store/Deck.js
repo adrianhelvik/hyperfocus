@@ -1,8 +1,4 @@
-import {
-  observable,
-  computed,
-  action,
-} from 'mobx'
+import { observable, computed, action } from 'mobx'
 
 class Deck {
   @observable title = ''
@@ -15,7 +11,7 @@ class Deck {
   }
 
   @action addCard(card, index) {
-    if (typeof index === 'number' && ! isNaN(index)) {
+    if (typeof index === 'number' && !isNaN(index)) {
       this.cards.splice(index, 0, card)
     } else {
       this.cards.push(card)
@@ -27,10 +23,8 @@ class Deck {
   }
 
   @action.bound removeCard(card) {
-    if (! this.cards.remove(card))
-      console.error('Failed to remove card:', card)
-    else
-      console.info('Removed card:', card)
+    if (!this.cards.remove(card)) console.error('Failed to remove card:', card)
+    else console.info('Removed card:', card)
   }
 }
 

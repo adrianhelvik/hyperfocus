@@ -69,9 +69,7 @@ class Register extends React.Component {
             value={this.repeatedPassword}
           />
           <br />
-          <Button type="submit">
-            Create user
-          </Button>
+          <Button type="submit">Create user</Button>
         </InnerContainer>
       </Container>
     )

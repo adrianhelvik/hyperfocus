@@ -22,9 +22,7 @@ class AddBoardModal extends React.Component {
 
   @action.bound onSubmit(event) {
     event.preventDefault()
-    this.props.store.addBoard(
-      new Board(this.title)
-    )
+    this.props.store.addBoard(new Board(this.title))
     this.title = ''
     this.props.store.stopAddingBoard()
   }
@@ -34,7 +32,7 @@ class AddBoardModal extends React.Component {
       <form onSubmit={this.onSubmit}>
         <Modal hide={this.props.store.stopAddingBoard}>
           <Input
-            innerRef={e => this.input = e}
+            innerRef={e => (this.input = e)}
             placeholder="Name of board"
             onChange={this.setTitle}
             value={this.title}

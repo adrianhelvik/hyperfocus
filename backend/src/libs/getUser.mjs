@@ -8,11 +8,6 @@ export default async function getUser(arg) {
   arg = arg.toLowerCase()
 
   if (arg.includes('@'))
-    return await knex('users')
-      .where({ email: arg })
-      .first()
-  else
-    return await knex('users')
-      .where({ username: arg })
-      .first()
+    return await knex('users').where({ email: arg }).first()
+  else return await knex('users').where({ username: arg }).first()
 }

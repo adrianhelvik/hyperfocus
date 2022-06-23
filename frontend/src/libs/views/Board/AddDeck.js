@@ -21,7 +21,7 @@ class AddDeck extends React.Component {
     if (this.loading) return
     this.loading = true
     event.preventDefault()
-    const {deckId} = await api.addDeck({
+    const { deckId } = await api.addDeck({
       boardId: this.props.board.boardId,
       title: this.title,
       index: this.props.index,
@@ -54,8 +54,7 @@ class AddDeck extends React.Component {
 
 export default AddDeck
 
-const Container = styled.form`
-`
+const Container = styled.form``
 
 const Button = styled.button`
   display: block;

@@ -6,7 +6,6 @@ import { observer } from 'mobx-react'
 import React from 'react'
 
 export default Component => {
-
   @observer
   class WithConfirm extends React.Component {
     @observable Template = null
@@ -40,19 +39,16 @@ export default Component => {
     render() {
       return (
         <React.Fragment>
-          <Component
-            {...this.props}
-            showStatus={this.showStatus}
-          />
-          {this.Template &&
-              <Portal>
-                <Backdrop onClick={this.no}>
-                  <Wrapper onClick={this.stopPropagation}>
-                    <this.Template yes={this.yes} no={this.no} />
-                  </Wrapper>
-                </Backdrop>
-              </Portal>
-          }
+          <Component {...this.props} showStatus={this.showStatus} />
+          {this.Template && (
+            <Portal>
+              <Backdrop onClick={this.no}>
+                <Wrapper onClick={this.stopPropagation}>
+                  <this.Template yes={this.yes} no={this.no} />
+                </Wrapper>
+              </Backdrop>
+            </Portal>
+          )}
         </React.Fragment>
       )
     }
@@ -64,7 +60,7 @@ export default Component => {
 }
 
 const Backdrop = styled.div`
-  background-color: rgba(0, 0, 0, .3);
+  background-color: rgba(0, 0, 0, 0.3);
   position: fixed;
   z-index: 10;
   bottom: 0;

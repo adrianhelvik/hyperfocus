@@ -27,7 +27,7 @@ export const homeRoute = {
   path: '/',
   handler(request, reply) {
     return 'Welcome!'
-  }
+  },
 }
 
 export const loginRoute = {
@@ -38,9 +38,9 @@ export const loginRoute = {
     const sessionId = await login(username, password)
 
     return {
-      sessionId
+      sessionId,
     }
-  }
+  },
 }
 
 export const authenticateRoute = {
@@ -65,7 +65,7 @@ export const createBoardRoute = {
     })
 
     return { success: true }
-  }
+  },
 }
 
 export const ownBoardsRoute = {
@@ -75,8 +75,8 @@ export const ownBoardsRoute = {
     const session = await authenticate(request)
     const boards = await getBoardsForUser(session.userId)
 
-    return {boards}
-  }
+    return { boards }
+  },
 }
 
 export const getBoardRoute = {
@@ -84,7 +84,7 @@ export const getBoardRoute = {
   path: '/getBoard',
   async handler(request, reply) {
     const session = await authenticate(request)
-    const {boardId} = request.payload
+    const { boardId } = request.payload
 
     if (typeof boardId !== 'string')
       throw Boom.badRequest('boardId must be a string')
@@ -92,7 +92,7 @@ export const getBoardRoute = {
     await assertCanEditBoard(request, boardId)
 
     return await getDenormalizedBoard(boardId)
-  }
+  },
 }
 
 export const logoutRoute = {
@@ -101,9 +101,7 @@ export const logoutRoute = {
   async handler(request, reply) {
     const session = await authenticate(request)
 
-    await knex('sessions')
-      .where('sessionId', session.sessionId)
-      .del()
+    await knex('sessions').where('sessionId', session.sessionId).del()
 
     return { success: true }
   },
@@ -139,41 +137,48 @@ export const addDeckRoute = {
         }
       }
 
-      await Promise.all(updates.map(async ([{type, ...child}, i]) => {
-        switch (type) {
-          case 'insert': {
-            const { type, ...deck } = child
-            await knex('decks')
-            .insert({
-              index: i,
-              ...child,
-            })
-            .catch(e => {
-              throw Error(e.message)
-            })
+      await Promise.all(
+        updates.map(async ([{ type, ...child }, i]) => {
+          switch (type) {
+            case 'insert':
+              {
+                const { type, ...deck } = child
+                await knex('decks')
+                  .insert({
+                    index: i,
+                    ...child,
+                  })
+                  .catch(e => {
+                    throw Error(e.message)
+                  })
+              }
+              break
+            case 'deck':
+              {
+                await knex('decks')
+                  .where('deckId', child.deckId)
+                  .update('index', i)
+              }
+              break
+            case 'portal':
+              {
+                await knex('portals')
+                  .where('portalId', child.portalId)
+                  .update('index', i)
+              }
+              break
+            default: {
+              throw Error(
+                `Could not update index for child of type: ${child.type}`,
+              )
+            }
           }
-            break
-          case 'deck': {
-            await knex('decks')
-            .where('deckId', child.deckId)
-            .update('index', i)
-          }
-            break
-          case 'portal': {
-            await knex('portals')
-            .where('portalId', child.portalId)
-            .update('index', i)
-          }
-            break
-          default: {
-            throw Error(`Could not update index for child of type: ${child.type}`)
-          }
-        }
-      }))
+        }),
+      )
     })
 
-    return {deckId}
-  }
+    return { deckId }
+  },
 }
 
 export const addPortalRoute = {
@@ -207,41 +212,48 @@ export const addPortalRoute = {
         }
       }
 
-      await Promise.all(updates.map(async ([{type, ...child}, i]) => {
-        switch (type) {
-          case 'insert': {
-            const { type, ...deck } = child
-            await knex('portals')
-            .insert({
-              index: i,
-              ...child,
-            })
-            .catch(e => {
-              throw Error(e.message)
-            })
+      await Promise.all(
+        updates.map(async ([{ type, ...child }, i]) => {
+          switch (type) {
+            case 'insert':
+              {
+                const { type, ...deck } = child
+                await knex('portals')
+                  .insert({
+                    index: i,
+                    ...child,
+                  })
+                  .catch(e => {
+                    throw Error(e.message)
+                  })
+              }
+              break
+            case 'deck':
+              {
+                await knex('decks')
+                  .where('deckId', child.deckId)
+                  .update('index', i)
+              }
+              break
+            case 'portal':
+              {
+                await knex('portals')
+                  .where('portalId', child.portalId)
+                  .update('index', i)
+              }
+              break
+            default: {
+              throw Error(
+                `Could not update index for child of type: ${child.type}`,
+              )
+            }
           }
-            break
-          case 'deck': {
-            await knex('decks')
-            .where('deckId', child.deckId)
-            .update('index', i)
-          }
-            break
-          case 'portal': {
-            await knex('portals')
-            .where('portalId', child.portalId)
-            .update('index', i)
-          }
-            break
-          default: {
-            throw Error(`Could not update index for child of type: ${child.type}`)
-          }
-        }
-      }))
+        }),
+      )
     })
 
-    return {portalId}
-  }
+    return { portalId }
+  },
 }
 
 export const addCardRoute = {
@@ -249,7 +261,7 @@ export const addCardRoute = {
   path: '/addCard',
   async handler(request, reply) {
     const session = await authenticate(request)
-    const {title, deckId} = request.payload
+    const { title, deckId } = request.payload
 
     if (typeof deckId !== 'string')
       throw Boom.badRequest('deckId must be a string')
@@ -257,17 +269,13 @@ export const addCardRoute = {
     if (typeof title !== 'string')
       throw Boom.badRequest('title must be a string')
 
-    const {boardId} = await knex('decks')
-      .where({deckId})
-      .first()
+    const { boardId } = await knex('decks').where({ deckId }).first()
 
     await assertCanEditBoard(request, boardId)
 
-    const cards = await knex('cards')
-      .where({deckId})
-      .orderBy('index', 'asc')
+    const cards = await knex('cards').where({ deckId }).orderBy('index', 'asc')
 
-    const index = ! isInteger(request.payload.index)
+    const index = !isInteger(request.payload.index)
       ? cards.length
       : request.payload.index
 
@@ -288,8 +296,7 @@ export const addCardRoute = {
         const { insert, ...card } = cards[i]
 
         if (insert) {
-          await knex('cards')
-            .insert(card)
+          await knex('cards').insert(card)
         } else if (card.index !== i) {
           updates.push(async () => {
             await knex('cards')
@@ -302,26 +309,24 @@ export const addCardRoute = {
       await Promise.all(updates.map(fn => fn()))
     })
 
-    return {cardId}
-  }
+    return { cardId }
+  },
 }
 
 export const deleteCardRoute = {
   method: 'POST',
   path: '/deleteCard',
   async handler(request, reply) {
-    const {cardId} = request.payload
+    const { cardId } = request.payload
 
-    if (! cardId)
-      throw Boom.badRequest('cardId is required')
+    if (!cardId) throw Boom.badRequest('cardId is required')
 
     const card = await knex('cards')
-      .where({cardId})
+      .where({ cardId })
       .leftJoin('decks', 'cards.deckId', 'decks.deckId')
       .first()
 
-    if (! card)
-      throw Boom.notFound('The card does not exist')
+    if (!card) throw Boom.notFound('The card does not exist')
 
     await assertCanEditBoard(request, card.boardId)
 
@@ -333,9 +338,7 @@ export const deleteCardRoute = {
         .andWhere(
           'index',
           '>',
-          knex('cards')
-          .where('cardId', cardId)
-          .select('index')
+          knex('cards').where('cardId', cardId).select('index'),
         )
         .andWhere('cardId', '!=', cardId)
         .decrement('index')
@@ -343,179 +346,160 @@ export const deleteCardRoute = {
           throw Error(e.message)
         })
 
-      await knex('cards')
-        .where({cardId})
-        .del()
+      await knex('cards').where({ cardId }).del()
     })
 
-    return {success: true}
-  }
+    return { success: true }
+  },
 }
 
 export const moveCardRoute = {
   method: 'POST',
   path: '/moveCard',
   async handler(request) {
-    const {cardId, source, target, index} = request.payload
+    const { cardId, source, target, index } = request.payload
 
-    requireString({cardId, source, target})
-    requireInteger({index})
+    requireString({ cardId, source, target })
+    requireInteger({ index })
 
     const card = await getCard(cardId)
 
-    if (! card)
-      throw Boom.notFound('The card does not exist')
+    if (!card) throw Boom.notFound('The card does not exist')
 
     if (card.deckId !== source)
       throw Boom.badRequest('Card did not belong to the source deck')
 
     await assertCanEditBoard(request, card.boardId)
 
-    await moveCard({cardId, source, target, index})
+    await moveCard({ cardId, source, target, index })
 
     return { success: true }
-  }
+  },
 }
 
 export const moveBoardChildToIndexRoute = {
   method: 'POST',
   path: '/moveBoardChildToIndex',
   async handler(request) {
-    const {item, index, boardId} = request.payload
+    const { item, index, boardId } = request.payload
 
     if (typeof boardId !== 'string')
       throw Boom.badRequest('boardId must be a string')
 
     await assertCanEditBoard(request, boardId)
 
-    await moveBoardChildToIndex({item, index, boardId})
+    await moveBoardChildToIndex({ item, index, boardId })
 
-    return {success: true}
-  }
+    return { success: true }
+  },
 }
 
 export const deleteDeckRoute = {
   method: 'POST',
   path: '/deleteDeck',
   async handler(request) {
-    const {deckId} = request.payload
-    const deck = await knex('decks')
-      .where({deckId})
-      .first()
+    const { deckId } = request.payload
+    const deck = await knex('decks').where({ deckId }).first()
 
     await assertCanEditBoard(request, deck.boardId)
 
-    await knex('decks')
-      .where({deckId})
-      .del()
+    await knex('decks').where({ deckId }).del()
 
-    return {success: true}
-  }
+    return { success: true }
+  },
 }
 
 export const deletePortalRoute = {
   method: 'POST',
   path: '/deletePortal',
   async handler(request) {
-    const {portalId} = request.payload
+    const { portalId } = request.payload
 
     if (typeof portalId !== 'string')
       throw Boom.badRequest('Please provide a portalId')
 
-    const portal = await knex('portals')
-      .where({portalId})
-      .first()
+    const portal = await knex('portals').where({ portalId }).first()
 
-    if (! portal)
+    if (!portal)
       throw Boom.badRequest('No portal with the given portalId exists')
 
     await assertCanEditBoard(request, portal.boardId)
 
-    await knex('portals')
-      .where({portalId})
-      .del()
+    await knex('portals').where({ portalId }).del()
 
-    return {success: true}
-  }
+    return { success: true }
+  },
 }
 
 export const deleteBoardRoute = {
   method: 'POST',
   path: '/deleteBoard',
   async handler(request) {
-    const {boardId} = request.payload
+    const { boardId } = request.payload
     const user = await authenticate(request)
 
     const deleted = await knex('boards')
-      .where({boardId})
-      .andWhere({createdBy: user.userId})
+      .where({ boardId })
+      .andWhere({ createdBy: user.userId })
       .del()
 
-    if (deleted)
-      return {success: true}
-    else
-      throw Boom.notFound('No accessible board with the given id')
-  }
+    if (deleted) return { success: true }
+    else throw Boom.notFound('No accessible board with the given id')
+  },
 }
 
 export const setDeckColorRoute = {
   method: 'POST',
   path: '/setDeckColor',
   async handler(request) {
-    const {deckId, color} = request.payload
+    const { deckId, color } = request.payload
     const session = await authenticate(request)
 
-    await knex('decks')
-      .where({deckId})
-      .update({color})
+    await knex('decks').where({ deckId }).update({ color })
 
-    return {success: true}
-  }
+    return { success: true }
+  },
 }
 
 export const setDeckTitleRoute = {
   method: 'POST',
   path: '/setDeckTitle',
   async handler(request) {
-    const {deckId, title} = request.payload
+    const { deckId, title } = request.payload
     await assertCanEditDeck(request, deckId)
 
-    await knex('decks')
-      .where({deckId})
-      .update({title})
+    await knex('decks').where({ deckId }).update({ title })
 
-    return {success: true}
-  }
+    return { success: true }
+  },
 }
 
 export const setPortalTitleRoute = {
   method: 'POST',
   path: '/setPortalTitle',
   async handler(request) {
-    const {portalId, title} = request.payload
+    const { portalId, title } = request.payload
     await assertCanEditPortal(request, portalId)
 
-    await knex('portals')
-      .where({portalId})
-      .update({title})
+    await knex('portals').where({ portalId }).update({ title })
 
-    return {success: true}
-  }
+    return { success: true }
+  },
 }
 
 export const registerUserRoute = {
   method: 'POST',
   path: '/registerUser',
   async handler(request) {
-    const {email, password} = request.payload
+    const { email, password } = request.payload
 
-    requireString({email, password})
+    requireString({ email, password })
 
     await createUser({
       password,
       email,
     })
 
-    return {success: true}
-  }
+    return { success: true }
+  },
 }

@@ -7,9 +7,9 @@
   "license": "MIT",
   "private": true,
   "dependencies": {
-    "@hapi/boom": "^7.4.2",
-    "@hapi/hapi": "^18.3.1",
-    "bcrypt": "^3.0.5",
+    "@hapi/boom": "^10.0.0",
+    "@hapi/hapi": "^20.2.2",
+    "bcrypt": "^5.0.1",
     "chalk": "^2.4.2",
     "clear": "^0.1.0",
     "dotenv": "^7.0.0",
@@ -17,17 +17,19 @@
     "is-integer": "^1.0.7",
     "jest": "^24.8.0",
     "knex": "^0.16.3",
-    "pg": "^7.11.0",
+    "pg": "^8.7.3",
     "rollup": "^1.14.3",
     "sleep-promise": "^8.0.1",
-    "sqlite3": "^4.0.6",
+    "sqlite3": "^5.0.8",
     "uuid": "^8.0.0"
   },
   "scripts": {
     "start": "clear; nodemon --quiet src/index.mjs",
-    "test": "node --experimental-modules ./scripts/testRunner"
+    "test": "node --experimental-modules ./scripts/testRunner",
+    "format": "prettier --write 'src/**/*.mjs'"
   },
   "devDependencies": {
-    "nodemon": "^1.18.10"
+    "nodemon": "^1.18.10",
+    "prettier": "^2.7.1"
   }
 }

@@ -5,10 +5,7 @@ import assert from 'assert'
 import React from 'react'
 
 export default options => Component => {
-  const {
-    close,
-    time = 300,
-  } = options
+  const { close, time = 300 } = options
 
   assert(close, 'close is a required option')
   assert(time, 'time must be a number')
@@ -23,14 +20,14 @@ export default options => Component => {
     componentDidMount() {
       requestAnimationFrame(() => {
         this.setState({
-          visible: true
+          visible: true,
         })
       })
     }
 
     close = async (...args) => {
       this.setState({
-        visible: false
+        visible: false,
       })
 
       await sleep(time)
@@ -57,9 +54,7 @@ export default options => Component => {
 
       return (
         <div style={this.style()}>
-          <Component
-            {...props}
-          />
+          <Component {...props} />
         </div>
       )
     }

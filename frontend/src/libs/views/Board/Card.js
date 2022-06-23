@@ -38,8 +38,7 @@ class Card extends React.Component {
     event.stopPropagation()
     const { target, clientX, clientY } = event
 
-    if (target === this.removeElement)
-      return this.remove(event)
+    if (target === this.removeElement) return this.remove(event)
 
     // extract values
     const rect = this.element.getBoundingClientRect()
@@ -55,12 +54,12 @@ class Card extends React.Component {
     this.props.setMoving(true)
     this.props.setHoverIndex(this.props.index)
 
-    this.props.on(document, 'mousemove', (event) => {
+    this.props.on(document, 'mousemove', event => {
       this.clientX = event.clientX
       this.clientY = event.clientY
     })
 
-    this.props.on(document, 'mouseup', (event) => {
+    this.props.on(document, 'mouseup', event => {
       this.moving = false
       this.props.setMoving(false)
       const { clientX, clientY } = event
@@ -93,22 +92,23 @@ class Card extends React.Component {
 
       this.props.off(document, 'mousemove')
       this.props.off(document, 'mouseup')
-      this.clientX
-        = this.clientY
-        = this.initialClientX
-        = this.initialClientY
-        = 0
+      this.clientX =
+        this.clientY =
+        this.initialClientX =
+        this.initialClientY =
+          0
     })
   }
 
   @computed get style() {
-    if (this.moving) return {
-      top: this.clientY,
-      left: this.clientX,
-      width: this.width,
-      height: this.height,
-      transform: `translateX(${this.insetX}px) translateY(${this.insetY}px)`,
-    }
+    if (this.moving)
+      return {
+        top: this.clientY,
+        left: this.clientX,
+        width: this.width,
+        height: this.height,
+        transform: `translateX(${this.insetX}px) translateY(${this.insetY}px)`,
+      }
     return {}
   }
 
@@ -121,18 +121,19 @@ class Card extends React.Component {
   }
 
   remove = async event => {
-    if (! await this.props.confirmInPlace(event, p =>
-      <div>
+    if (
+      !(await this.props.confirmInPlace(event, p => (
         <div>
-          Delete card?
+          <div>Delete card?</div>
+          <button onClick={p.yes}>Yes</button>
+          <button onClick={p.no}>No</button>
         </div>
-        <button onClick={p.yes}>Yes</button>
-        <button onClick={p.no}>No</button>
-      </div>
-    )) return
+      )))
+    )
+      return
     this.props.deck.removeCard(this.props.card)
     await api.deleteCard({
-      cardId: this.props.card.cardId
+      cardId: this.props.card.cardId,
     })
   }
 
@@ -140,7 +141,7 @@ class Card extends React.Component {
     return (
       <Container
         data-card={this.props.index}
-        innerRef={e => this.element = e}
+        innerRef={e => (this.element = e)}
         className={this.props.className}
         onMouseDown={this.onMouseDown}
         noPointer={this.noPointer}
@@ -148,20 +149,15 @@ class Card extends React.Component {
         moving={this.moving}
         style={this.style}
       >
-        {Boolean(this.moving) &&
-            <style>{`body { user-select: none }`}</style>
-        }
-        <Title>
-          {this.props.card.title}
-        </Title>
-        <Remove innerRef={e => this.removeElement = e}>-</Remove>
+        {Boolean(this.moving) && <style>{`body { user-select: none }`}</style>}
+        <Title>{this.props.card.title}</Title>
+        <Remove innerRef={e => (this.removeElement = e)}>-</Remove>
       </Container>
     )
   }
 
   placeholder() {
-    if (! this.props.moving)
-      return null
+    if (!this.props.moving) return null
 
     return (
       <div
@@ -175,15 +171,11 @@ class Card extends React.Component {
   }
 
   render() {
-    const Wrapper = this.moving
-      ? Portal
-      : React.Fragment
+    const Wrapper = this.moving ? Portal : React.Fragment
 
     return (
       <React.Fragment>
-        {this.props.hoverIndex === this.props.index &&
-            this.placeholder()
-        }
+        {this.props.hoverIndex === this.props.index && this.placeholder()}
         <Wrapper>{this.template()}</Wrapper>
       </React.Fragment>
     )
@@ -195,11 +187,19 @@ export default Card
 const Container = styled.div`
   display: flex;
   background: white;
-  position: ${p => p.moving ? 'fixed' : 'relative'};
-  transition: box-shadow .3s;
-  z-index: ${p => p.moving ? zIndexes.moving : zIndexes.movable};
-  ${p => p.moving && css`pointer-events: none`};
-  ${p => p.moving && css`box-shadow: ${theme.shadows[1]}`};
+  position: ${p => (p.moving ? 'fixed' : 'relative')};
+  transition: box-shadow 0.3s;
+  z-index: ${p => (p.moving ? zIndexes.moving : zIndexes.movable)};
+  ${p =>
+    p.moving &&
+    css`
+      pointer-events: none;
+    `};
+  ${p =>
+    p.moving &&
+    css`
+      box-shadow: ${theme.shadows[1]};
+    `};
   cursor: move;
   ::after {
     content: ${p => String(p.index)};

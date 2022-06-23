@@ -2,11 +2,7 @@ import React from 'react'
 
 class NotFound extends React.Component {
   render() {
-    return (
-      <div>
-        Not found
-      </div>
-    )
+    return <div>Not found</div>
   }
 }
 

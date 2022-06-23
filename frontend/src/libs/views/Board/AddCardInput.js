@@ -24,12 +24,12 @@ class AddCardInput extends React.Component {
   }
 
   @autobind async save() {
-    if (! this.title) {
+    if (!this.title) {
       this.warn('The input field can not be empty')
       return
     }
 
-    const {cardId} = await api.addCard({
+    const { cardId } = await api.addCard({
       title: this.title,
       deckId: this.props.deck.deckId,
     })
@@ -41,14 +41,13 @@ class AddCardInput extends React.Component {
 
   inputRef = input => {
     this.input = input
-    typeof this.props.innerRef === 'function'
-      && this.props.innerRef(input)
+    typeof this.props.innerRef === 'function' && this.props.innerRef(input)
   }
 
   warn(warning) {
     if (this.warningOpen) return
     this.warningOpen = true
-    const {left, top, height} = this.input.getBoundingClientRect()
+    const { left, top, height } = this.input.getBoundingClientRect()
     const duration = 3000
     let style = {
       position: 'fixed',
@@ -58,34 +57,24 @@ class AddCardInput extends React.Component {
       backgroundColor: '#eee',
       zIndex: 1000,
       fontSize: '0.8rem',
-      padding:  '5px',
+      padding: '5px',
       boxShadow: theme.shadows[0],
       transform: 'scale(0)',
       transformOrigin: '50% 0',
       transition: 'transform .3s',
     }
 
-    const {remove, rerender} = renderToBody(
-      <div style={style}>
-        {warning}
-      </div>
+    const { remove, rerender } = renderToBody(
+      <div style={style}>{warning}</div>,
     )
 
     setTimeout(() => {
       style = { ...style, transform: 'scale(1)' }
-      rerender(
-        <div style={style}>
-          {warning}
-        </div>
-      )
+      rerender(<div style={style}>{warning}</div>)
     }, 100)
     setTimeout(() => {
       style = { ...style, transform: 'scale(0)' }
-      rerender(
-        <div style={style}>
-          {warning}
-        </div>
-      )
+      rerender(<div style={style}>{warning}</div>)
     }, duration - 300)
     setTimeout(() => {
       this.warningOpen = false
@@ -94,8 +83,7 @@ class AddCardInput extends React.Component {
   }
 
   @autobind async submitIfEnter(event) {
-    if (event.which !== 13)
-      return
+    if (event.which !== 13) return
 
     event.preventDefault()
 
@@ -115,7 +103,9 @@ class AddCardInput extends React.Component {
         <Button
           isPortal={this.props.isPortal}
           referencedByPortal={this.props.referencedByPortal}
-        >Add</Button>
+        >
+          Add
+        </Button>
       </Container>
     )
   }
@@ -140,7 +130,12 @@ const Input = styled(TextArea)`
 `
 
 const Button = styled.button`
-  background: ${p => p.isPortal ? theme.secondary1 : p.referencedByPortal ? theme.tertiary1 : theme.ui1};
+  background: ${p =>
+    p.isPortal
+      ? theme.secondary1
+      : p.referencedByPortal
+      ? theme.tertiary1
+      : theme.ui1};
   border: none;
-  color: ${p => p.isPortal ? '#707070' : 'white'};
+  color: ${p => (p.isPortal ? '#707070' : 'white')};
 `

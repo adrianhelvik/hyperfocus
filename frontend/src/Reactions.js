@@ -9,29 +9,27 @@ class Reactions extends React.Component {
   componentDidMount() {
     this.dispose = reaction(
       () => this.props.store.uncomittedBoards.length,
-      (pendingBoards) => {
-        if (! pendingBoards)
-          return
+      pendingBoards => {
+        if (!pendingBoards) return
 
         const uncomittedBoards = this.props.store.uncomittedBoards.slice()
         this.props.store.uncomittedBoards.replace([])
 
         for (const board of uncomittedBoards) {
-          api.createBoard(board)
-            .catch(e => {
-              console.error('Failed to create board:', board)
-              for (let i = 0; i < this.props.store.boards.length; i++) {
-                if (this.props.store.boards[i].boardId === board.boardId) {
-                  this.props.store.boards.splice(i, 1)
-                  break
-                }
+          api.createBoard(board).catch(e => {
+            console.error('Failed to create board:', board)
+            for (let i = 0; i < this.props.store.boards.length; i++) {
+              if (this.props.store.boards[i].boardId === board.boardId) {
+                this.props.store.boards.splice(i, 1)
+                break
               }
-              setTimeout(() => {
-                alert(e.message)
-              }, 100)
-            })
+            }
+            setTimeout(() => {
+              alert(e.message)
+            }, 100)
+          })
         }
-      }
+      },
     )
   }
 

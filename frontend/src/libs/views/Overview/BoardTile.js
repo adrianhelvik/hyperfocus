@@ -26,22 +26,25 @@ class BoardTile extends React.Component {
     event.stopPropagation()
     event = event.nativeEvent
     this.props.showMenu(event, {
-      'Delete': async () => {
-        if (! await this.props.confirmInPlace(event, p =>
-          <div>
-            <div>Delete board permanently</div>
-            <button onClick={p.yes}>Yes</button>
-            <button onClick={p.no}>No</button>
-          </div>
-        )) return
-        const {boardId} = this.props.board
+      Delete: async () => {
+        if (
+          !(await this.props.confirmInPlace(event, p => (
+            <div>
+              <div>Delete board permanently</div>
+              <button onClick={p.yes}>Yes</button>
+              <button onClick={p.no}>No</button>
+            </div>
+          )))
+        )
+          return
+        const { boardId } = this.props.board
         try {
           await api.deleteBoard({
-            boardId
+            boardId,
           })
           this.props.store.deleteBoard(boardId)
         } catch (e) {
-          this.props.showStatus(() =>
+          this.props.showStatus(() => (
             <div>
               Whoopsie! That caused an error!
               <br />
@@ -51,22 +54,17 @@ class BoardTile extends React.Component {
                 <pre>{e.stack}</pre>
               </details>
             </div>
-          )
+          ))
         }
-      }
+      },
     })
   }
 
   render() {
     return (
-      <Container
-        {...onSelect(this.onSelect)}
-        onContextMenu={this.openMenu}
-      >
+      <Container {...onSelect(this.onSelect)} onContextMenu={this.openMenu}>
         <Title>{this.props.board.title}</Title>
-        <MenuIcon
-          onClick={this.openMenu}
-        />
+        <MenuIcon onClick={this.openMenu} />
       </Container>
     )
   }

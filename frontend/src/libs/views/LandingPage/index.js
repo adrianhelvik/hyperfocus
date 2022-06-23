@@ -18,7 +18,7 @@ class LandingPage extends React.Component {
 
   componentDidMount() {
     if (window.particlesJS) {
-      window.particlesJS.load('particles-js', 'particles.json', function() {
+      window.particlesJS.load('particles-js', 'particles.json', function () {
         console.log('callback - particles.js config loaded')
       })
     }
@@ -34,7 +34,8 @@ class LandingPage extends React.Component {
         <Section>
           <Content>
             <Title>
-              <strong>Open source</strong> task management done <strong>right</strong>
+              <strong>Open source</strong> task management done{' '}
+              <strong>right</strong>
             </Title>
             <Register to="/register">Register</Register>
             <LoginWrapper>

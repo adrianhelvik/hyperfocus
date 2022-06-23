@@ -13,13 +13,8 @@ class Portal extends React.Component {
   }
 
   render() {
-    if (this.error)
-      return (<div>An error occurred</div>)
-    return (
-      <Deck
-        {...this.props}
-      />
-    )
+    if (this.error) return <div>An error occurred</div>
+    return <Deck {...this.props} />
   }
 }
 

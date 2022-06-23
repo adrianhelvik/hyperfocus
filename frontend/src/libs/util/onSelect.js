@@ -7,6 +7,6 @@ export default function onSelect(fn) {
         event.preventDefault() // Prevent buttons from triggering submit
         fn(event)
       }
-    }
+    },
   }
 }

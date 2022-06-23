@@ -26,7 +26,7 @@ it('does not throw for an owner', async () => {
   const request = {
     headers: {
       authorization: `Bearer ${sessionId}`,
-    }
+    },
   }
 
   await assertCanEditBoard(request, boardId)

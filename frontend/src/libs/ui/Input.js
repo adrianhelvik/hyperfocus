@@ -11,23 +11,19 @@ class Input extends React.Component {
   @observable showPassword = false
 
   @computed get overrideType() {
-    if (this.showPassword)
-      return 'text'
+    if (this.showPassword) return 'text'
     return null
   }
 
   componentDidMount() {
-    if (this.props.autofocus)
-      this.element.focus()
+    if (this.props.autofocus) this.element.focus()
     this.props.on(document, 'mouseup', e => {
-      if (this.showPassword)
-        this.showPassword = false
+      if (this.showPassword) this.showPassword = false
     })
   }
 
   innerRef = element => {
-    if (typeof this.props.innerRef === 'function')
-      this.props.innerRef(element)
+    if (typeof this.props.innerRef === 'function') this.props.innerRef(element)
     this.element = element
   }
 
@@ -47,21 +43,19 @@ class Input extends React.Component {
             forPassword={this.props.type === 'password'}
             colored={this.showPassword}
           />
-          <LabelText
-            hasContent={Boolean(this.props.value)}
-          >
+          <LabelText hasContent={Boolean(this.props.value)}>
             {this.props.placeholder}
           </LabelText>
         </Label>
-        {this.props.type === 'password' &&
-            <Icon
-              colored={this.showPassword}
-              className="material-icons"
-              onMouseDown={this.show}
-            >
-              remove_red_eye
-            </Icon>
-        }
+        {this.props.type === 'password' && (
+          <Icon
+            colored={this.showPassword}
+            className="material-icons"
+            onMouseDown={this.show}
+          >
+            remove_red_eye
+          </Icon>
+        )}
       </Container>
     )
   }
@@ -92,12 +86,16 @@ const Field = styled.input`
     transform: translateY(calc(-100% - 7px)) scale(0.7) translateX(-5px);
     color: ${theme.ui1};
   }
-  ${p => p.forPassword && css`
-    padding-right: 30px;
-  `}
-  ${p => p.colored && css`
-    border-color: ${theme.ui1};
-  `}
+  ${p =>
+    p.forPassword &&
+    css`
+      padding-right: 30px;
+    `}
+  ${p =>
+    p.colored &&
+    css`
+      border-color: ${theme.ui1};
+    `}
 `
 
 const LabelText = styled.div`
@@ -110,17 +108,18 @@ const LabelText = styled.div`
   left: 3px;
   transform: translateY(-50%);
   transform-origin: 0 0;
-  transition: .3s;
-  ${props => props.hasContent && css`
-    transform: translateY(calc(-100% - 7px)) scale(0.7) translateX(-5px);
-  `}
+  transition: 0.3s;
+  ${props =>
+    props.hasContent &&
+    css`
+      transform: translateY(calc(-100% - 7px)) scale(0.7) translateX(-5px);
+    `}
   :-webkit-autofill + & {
     transform: translateY(calc(-100% - 7px)) scale(0.7) translateX(-5px);
   }
 `
 
-const Label = styled.label`
-`
+const Label = styled.label``
 
 const Icon = styled.i`
   position: absolute;
@@ -128,7 +127,9 @@ const Icon = styled.i`
   top: 50%;
   transform: translateY(-50%);
   cursor: pointer;
-  ${p => p.colored && css`
-    color: ${theme.ui1};
-  `}
+  ${p =>
+    p.colored &&
+    css`
+      color: ${theme.ui1};
+    `}
 `

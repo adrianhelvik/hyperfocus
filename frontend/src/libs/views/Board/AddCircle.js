@@ -18,8 +18,7 @@ class AddCircle extends React.Component {
   }
 
   onMouseOver = () => {
-    if (! this.open)
-      this.open = true
+    if (!this.open) this.open = true
   }
 
   onMouseLeave = () => {
@@ -31,24 +30,15 @@ class AddCircle extends React.Component {
       <Container
         onMouseEnter={this.onMouseOver}
         onMouseLeave={this.onMouseLeave}
-        innerRef={e => this.container = e}
+        innerRef={e => (this.container = e)}
         mounted={this.mounted}
         open={this.open}
       >
-        <Content
-          open={this.open}
-          mounted={this.mounted}
-        >
+        <Content open={this.open} mounted={this.mounted}>
           {this.props.children}
         </Content>
-        <VerticalLine
-          mounted={this.mounted}
-          open={this.open}
-        />
-        <HorizontalLine
-          mounted={this.mounted}
-          open={this.open}
-        />
+        <VerticalLine mounted={this.mounted} open={this.open} />
+        <HorizontalLine mounted={this.mounted} open={this.open} />
       </Container>
     )
   }
@@ -69,7 +59,8 @@ const Container = styled.div`
   height: ${diameter}px;
   text-align: center;
   border-radius: ${diameter}px;
-  animation: ${p => p.open ? openAnimation : closeAnimation} ${p => p.mounted ? '.3s' : '0s'};
+  animation: ${p => (p.open ? openAnimation : closeAnimation)}
+    ${p => (p.mounted ? '.3s' : '0s')};
   animation-fill-mode: forwards;
   cursor: pointer;
 `
@@ -132,7 +123,8 @@ const Line = styled.div`
   left: 50%;
   transform: translateX(-50%) translateY(-50%);
   pointer-events: none;
-  animation: ${p => p.open ? lineOpen : lineClosed} ${p => p.mounted ? '.3s' : '0s'};
+  animation: ${p => (p.open ? lineOpen : lineClosed)}
+    ${p => (p.mounted ? '.3s' : '0s')};
   animation-fill-mode: forwards;
 `
 
@@ -165,7 +157,7 @@ const HorizontalLine = styled(Line)`
 `
 
 const Content = styled.div`
-  transition: .3s;
-  opacity: ${p => 0|p.open};
-  pointer-events: ${p => ! p.open && 'none'};
+  transition: 0.3s;
+  opacity: ${p => 0 | p.open};
+  pointer-events: ${p => !p.open && 'none'};
 `

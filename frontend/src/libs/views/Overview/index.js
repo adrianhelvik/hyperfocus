@@ -23,24 +23,17 @@ class Overview extends React.Component {
     this.props.showMenu(event, {
       'New board': () => {
         this.props.store.isAddingBoard = true
-      }
+      },
     })
   }
 
   render() {
-    if (this.props.auth.status === 'failure')
-      return (
-        <Redirect to="/" />
-      )
+    if (this.props.auth.status === 'failure') return <Redirect to="/" />
 
     return (
-      <Container
-        onContextMenu={this.onContextMenu}
-      >
+      <Container onContextMenu={this.onContextMenu}>
         <Header />
-        {this.props.store.isAddingBoard &&
-            <AddBoardModal />
-        }
+        {this.props.store.isAddingBoard && <AddBoardModal />}
         <BoardList />
       </Container>
     )

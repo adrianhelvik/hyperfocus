@@ -1,0 +1,48 @@
+version: '3'
+
+services:
+  frontend:
+    restart: always
+    depends_on:
+      - backend
+    build:
+      context: .
+      dockerfile: ./frontend/Dockerfile
+    volumes:
+      - ./frontend/src:/frontend/src
+    ports:
+      - 3000:3000
+    environment:
+      NODE_ENV: 'development'
+      REACT_APP_API_URL: http://localhost:1234
+
+  backend:
+    restart: always
+    ports:
+      - 1234:1234
+    build:
+      context: .
+      dockerfile: ./backend/Dockerfile
+    environment:
+      NODE_ENV: 'development'
+      PGPASSWORD: 'SomeRandomDevelopmentPasswordAAGDDNDGEA'
+      PGDATABASE: 'subtask'
+      PGUSER: 'subtask'
+      PGHOST: 'postgres'
+      PGPORT: '5432'
+      TERM: 'xterm'
+    command: sh -c 'yarn knex migrate:latest && yarn start --colors'
+    volumes:
+      - ./backend/src:/backend/src
+
+  postgres:
+    image: postgres:14
+    environment:
+      POSTGRES_DB: subtask
+      POSTGRES_USER: subtask
+      POSTGRES_PASSWORD: SomeRandomDevelopmentPasswordAAGDDNDGEA
+    restart: always
+    expose:
+      - 5432
+    volumes:
+      - ./pgdata:/var/lib/postgresql/data

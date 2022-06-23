@@ -56,7 +56,6 @@ class Loading extends React.Component {
       }, 10000)
     }, 800)
 
-
     document.addEventListener('click', () => {
       this.componentWillUnmount()
     })

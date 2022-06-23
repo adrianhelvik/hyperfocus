@@ -1,11 +1,6 @@
 import knex from './db.mjs'
 
-export default async function moveCard({
-  cardId,
-  source,
-  target,
-  index,
-}) {
+export default async function moveCard({ cardId, source, target, index }) {
   if (source === target) {
     const cards = await knex('cards')
       .where('deckId', source)
@@ -49,12 +44,10 @@ export default async function moveCard({
       const updates = []
 
       updates.push(async () => {
-        await knex('cards')
-          .where({cardId})
-          .update({
-            deckId: target,
-            index
-          })
+        await knex('cards').where({ cardId }).update({
+          deckId: target,
+          index,
+        })
       })
 
       for (let i = 0; i < sourceCards.length; i++) {
@@ -62,9 +55,7 @@ export default async function moveCard({
 
         if (card.index !== i)
           updates.push(async () => {
-            await knex('cards')
-              .where('cardId', card.cardId)
-              .update('index', i)
+            await knex('cards').where('cardId', card.cardId).update('index', i)
           })
       }
 
@@ -73,9 +64,7 @@ export default async function moveCard({
 
         if (card.index !== i)
           updates.push(async () => {
-            await knex('cards')
-              .where('cardId', card.cardId)
-              .update('index', i)
+            await knex('cards').where('cardId', card.cardId).update('index', i)
           })
       }
 

@@ -23,9 +23,11 @@ class App extends React.Component {
   store = new Store()
 
   componentDidMount() {
-    window.store = this.store
-    window.mobx = mobx
-    console.info('Use window.store for debugging the application state')
+    if (process.env.NODE_ENV === 'development') {
+      window.store = this.store
+      window.mobx = mobx
+      console.info('Use window.store for debugging the application state')
+    }
 
     window.addEventListener('unhandledRejection', e => {
       this.unhandledRejection = e
@@ -34,11 +36,7 @@ class App extends React.Component {
 
   render() {
     if (this.unhandledRejection)
-      return (
-        <div>
-          {this.unhandledRejection.stack}
-        </div>
-      )
+      return <div>{this.unhandledRejection.stack}</div>
     return (
       <Provider store={this.store}>
         <components.Routes />

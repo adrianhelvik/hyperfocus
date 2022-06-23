@@ -1,8 +1,4 @@
-import {
-  observable,
-  computed,
-  action,
-} from 'mobx'
+import { observable, computed, action } from 'mobx'
 
 class Store {
   @observable uncomittedBoards = []
@@ -13,8 +9,7 @@ class Store {
   @computed get boardsById() {
     const boardsById = observable.map()
 
-    for (const board of this.boards)
-      boardsById.set(board.boardId, board)
+    for (const board of this.boards) boardsById.set(board.boardId, board)
 
     return boardsById
   }
@@ -52,8 +47,7 @@ class Store {
         break
       }
     }
-    if (index !== -1)
-      this.boards.splice(index, 1)
+    if (index !== -1) this.boards.splice(index, 1)
   }
 }
 

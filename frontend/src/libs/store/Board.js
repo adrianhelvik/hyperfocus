@@ -3,11 +3,7 @@ import { v4 as uuid } from 'uuid'
 import Portal from './Portal'
 import Deck from './Deck'
 
-import {
-  observable,
-  computed,
-  action,
-} from 'mobx'
+import { observable, computed, action } from 'mobx'
 
 class Board {
   @observable title = ''
@@ -15,10 +11,8 @@ class Board {
   @observable boardId = null
 
   constructor(arg) {
-    if (typeof arg === 'string')
-      return this.fromTitle(arg)
-    else
-      return this.fromBoard(arg)
+    if (typeof arg === 'string') return this.fromTitle(arg)
+    else return this.fromBoard(arg)
   }
 
   fromBoard(board) {
@@ -33,29 +27,24 @@ class Board {
   }
 
   @computed get decks() {
-    return this.children
-      .filter(x => x instanceof Deck)
+    return this.children.filter(x => x instanceof Deck)
   }
 
   @computed get portals() {
-    return this.children
-      .filter(x => x instanceof Portal)
+    return this.children.filter(x => x instanceof Portal)
   }
 
   @computed get decksById() {
     const decksById = observable.map()
 
-    for (const deck of this.decks)
-      decksById.set(deck.deckId, deck)
+    for (const deck of this.decks) decksById.set(deck.deckId, deck)
 
     return decksById
   }
 
   @action addDeck(deck, index) {
-    if (typeof index === 'number')
-      this.children.splice(index, 0, deck)
-    else
-      this.children.push(deck)
+    if (typeof index === 'number') this.children.splice(index, 0, deck)
+    else this.children.push(deck)
   }
 
   @action addPortal(title, deck) {

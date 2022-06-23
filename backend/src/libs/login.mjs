@@ -11,15 +11,13 @@ export default async function login(username, password) {
 
   const user = await getUser(username)
 
-  if (! user)
-    throw Boom.unauthorized('Invalid credentials')
+  if (!user) throw Boom.unauthorized('Invalid credentials')
 
-  if (! await isPasswordCorrect(password, user.hash)) {
+  if (!(await isPasswordCorrect(password, user.hash))) {
     throw Boom.unauthorized('Invalid credentials')
   }
 
-  if (! user)
-    throw Boom.unauthorized('The username/email did not exist')
+  if (!user) throw Boom.unauthorized('The username/email did not exist')
 
   const sessionId = await createSession(user.userId)
 

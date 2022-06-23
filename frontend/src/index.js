@@ -6,10 +6,7 @@ import './debug'
 
 const render = () => {
   const App = require('./App').default
-  ReactDOM.render(
-    <App rerender={render} />,
-    document.getElementById('root')
-  )
+  ReactDOM.render(<App rerender={render} />, document.getElementById('root'))
 }
 
 render()

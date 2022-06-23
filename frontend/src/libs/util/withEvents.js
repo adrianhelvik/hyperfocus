@@ -4,13 +4,16 @@ import React from 'react'
 export default WrappedComponent => {
   class NewComponent extends React.Component {
     static displayName = WrappedComponent.displayName || WrappedComponent.name
-    static WrappedComponent = WrappedComponent.WrappedComponent || WrappedComponent
+    static WrappedComponent =
+      WrappedComponent.WrappedComponent || WrappedComponent
     listeners = []
 
     on = (target, eventName, realHandler) => {
       const handler = event => realHandler(event) // Prevents Babel bug
       if (this.unmounted) {
-        console.error('Attempted to add event listener after unmounting. This is a noop')
+        console.error(
+          'Attempted to add event listener after unmounting. This is a noop',
+        )
         return
       }
       this.listeners.push({ target, eventName, handler })
@@ -24,8 +27,7 @@ export default WrappedComponent => {
       for (const listener of this.listeners) {
         if (listener.target === target && listener.eventName === eventName)
           toRemove.push(listener)
-        else
-          listeners.push(listener)
+        else listeners.push(listener)
       }
 
       for (const { target, eventName, handler } of toRemove)
@@ -41,13 +43,7 @@ export default WrappedComponent => {
     }
 
     render() {
-      return (
-        <WrappedComponent
-          {...this.props}
-          on={this.on}
-          off={this.off}
-        />
-      )
+      return <WrappedComponent {...this.props} on={this.on} off={this.off} />
     }
   }
 

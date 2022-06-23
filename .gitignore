@@ -1,5 +1,8 @@
 # See https://help.github.com/ignore-files/ for more about ignoring files.
 
+# docker volumes
+/pgdata
+
 # dependencies
 /node_modules
 

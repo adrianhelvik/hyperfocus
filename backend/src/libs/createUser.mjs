@@ -12,21 +12,17 @@ export default async function createUser({
 }) {
   const hash = await createHash(password)
 
-  requireString({email, password})
+  requireString({ email, password })
 
-  if (! username)
-    username = null
-  else
-    username = username.toLowerCase()
+  if (!username) username = null
+  else username = username.toLowerCase()
 
-  if (! email.includes('@'))
-    throw Boom.badRequest('Invalid email')
+  if (!email.includes('@')) throw Boom.badRequest('Invalid email')
 
   if (username && username.includes('@'))
     throw Boom.badRequest('Invalid username')
 
-  if (! userId)
-    userId = uuid()
+  if (!userId) userId = uuid()
 
   email = email.toLowerCase()
 

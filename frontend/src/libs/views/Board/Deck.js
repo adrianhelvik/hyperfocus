@@ -21,10 +21,10 @@ import api from 'api'
 export const elementToDeck = observable.map()
 const decks = observable.map()
 
-const sharedState = new class {
+const sharedState = new (class {
   @observable moving = []
   @observable lastHoverIndex = null
-}()
+})()
 
 @withModal
 @withMenu
@@ -61,27 +61,23 @@ class Deck extends React.Component {
   }
 
   @computed get deltaX() {
-    if (! this.moving)
-      return null
+    if (!this.moving) return null
     return this.x - this.initialX - this.insetX
   }
 
   @computed get deltaY() {
-    if (! this.moving)
-      return 0
+    if (!this.moving) return 0
     return this.y - this.initialY - this.insetY
   }
 
   onMouseDown = event => {
     if (
-      event.target.tagName === 'INPUT'
-      ||
-      event.target.tagName === 'BUTTON'
-      ||
-      event.target.dataset.disableDrag
-      ||
+      event.target.tagName === 'INPUT' ||
+      event.target.tagName === 'BUTTON' ||
+      event.target.dataset.disableDrag ||
       event.button === 2
-    ) return
+    )
+      return
 
     document.body.classList.add('moving-deck')
 
@@ -121,8 +117,7 @@ class Deck extends React.Component {
 
       await sleep(0)
 
-      for (const [deck] of decks)
-        deck.justPlaced = true
+      for (const [deck] of decks) deck.justPlaced = true
 
       await requestAnimationFrameAsync()
       this.props.simulateMove(null, null)
@@ -130,8 +125,7 @@ class Deck extends React.Component {
       this.hide = true
       this.moving = false
       await requestAnimationFrameAsync()
-      for (const [deck] of decks)
-        deck.justPlaced = false
+      for (const [deck] of decks) deck.justPlaced = false
       await requestAnimationFrameAsync()
       this.hide = false
     })
@@ -151,7 +145,7 @@ class Deck extends React.Component {
     for (let i = 0; i < this.initialRects.length; i++) {
       const rect = this.initialRects[i]
 
-      if ((rect.left+rect.width) >= this.x) {
+      if (rect.left + rect.width >= this.x) {
         return i
       }
     }
@@ -160,12 +154,10 @@ class Deck extends React.Component {
   }
 
   @computed get style() {
-    if (! this.moving) {
+    if (!this.moving) {
       let x = 0
-      if (this.props.moveLeft)
-        x = `calc(-100% - 20px)`
-      if (this.props.moveRight)
-        x = `calc(100% + 20px)`
+      if (this.props.moveLeft) x = `calc(-100% - 20px)`
+      if (this.props.moveRight) x = `calc(100% + 20px)`
       return {
         opacity: this.hide ? '0' : '1',
         transition: this.justPlaced ? '0s' : 'transform .3s',
@@ -180,13 +172,11 @@ class Deck extends React.Component {
 
   setMoving = movingChild => {
     this.movingChild = movingChild
-    if (movingChild)
-      sharedState.moving.push(this)
-    else
-      sharedState.moving.remove(this)
+    if (movingChild) sharedState.moving.push(this)
+    else sharedState.moving.remove(this)
   }
 
-  setHoverIndex = (index) => {
+  setHoverIndex = index => {
     this.hoverIndex = index
     if (typeof index === 'number') {
       this.lastHoverIndex = index
@@ -203,27 +193,20 @@ class Deck extends React.Component {
   }
 
   onMouseOver = event => {
-    if (! sharedState.moving.length)
-      return
+    if (!sharedState.moving.length) return
 
     for (const attribute of ['data-card', 'data-card-placeholder']) {
-      const element = someParent(event.target, e =>
-        e.hasAttribute(attribute)
-      )
+      const element = someParent(event.target, e => e.hasAttribute(attribute))
       if (element) {
-        this.setHoverIndex(
-          Number(element.getAttribute(attribute))
-        )
-        this.setPlaceholderHeight(
-          element.offsetHeight
-        )
-        this.setPlaceholderWidth(
-          element.offsetWidth
-        )
+        this.setHoverIndex(Number(element.getAttribute(attribute)))
+        this.setPlaceholderHeight(element.offsetHeight)
+        this.setPlaceholderWidth(element.offsetWidth)
         return
       }
     }
-    const element = someParent(event.target, e => e.hasAttribute('data-add-card-input'))
+    const element = someParent(event.target, e =>
+      e.hasAttribute('data-add-card-input'),
+    )
     if (element) {
       const max = this.props.deck.cards.length
       this.setHoverIndex(max)
@@ -250,22 +233,20 @@ class Deck extends React.Component {
     this.props.deck.color = hex
     api.setDeckColor({
       deckId: this.props.deck.deckId,
-      color: hex
+      color: hex,
     })
   }
 
-  openMenu = (event) => {
+  openMenu = event => {
     console.log('Opening menu...')
     this.props.showMenu(event, {
-      'Delete': () => {
+      Delete: () => {
         this.props.delete()
       },
-      'Change color': (event) => {
-        this.props.showModalInPlace(event, () =>
-          <ColorPicker
-            onChange={this.setColor}
-          />
-        )
+      'Change color': event => {
+        this.props.showModalInPlace(event, () => (
+          <ColorPicker onChange={this.setColor} />
+        ))
       },
     })
   }
@@ -274,7 +255,7 @@ class Deck extends React.Component {
     return (
       <Container
         data-board-child={this.props.index}
-        innerRef={e => this.element = e}
+        innerRef={e => (this.element = e)}
         className={this.props.className}
         onMouseOver={this.onMouseOver}
         onMouseLeave={this.onMouseLeave}
@@ -283,40 +264,51 @@ class Deck extends React.Component {
         moving={this.moving || this.movingChild}
         style={this.style}
       >
-        <style>{'.moving-deck { pointer-events: none; user-select: none; }'}</style>
+        <style>
+          {'.moving-deck { pointer-events: none; user-select: none; }'}
+        </style>
         <TopBar
           referencedByPortal={this.props.deck.referencedByPortal}
           onContextMenu={this.openContextMenu}
           color={this.props.deck.color}
         >
           <Title>
-            {this.props.portal
-                ? <React.Fragment>
-                  <EditPortalTitle portal={this.props.portal} />
-                  <ReferencedBy>
-                    <Arrow>←</Arrow>
-                    <ReferenceBoardTitle>{this.props.deck.boardTitle}</ReferenceBoardTitle>
-                    <ReferenceDeckTitle>{this.props.deck.title}</ReferenceDeckTitle>
+            {this.props.portal ? (
+              <React.Fragment>
+                <EditPortalTitle portal={this.props.portal} />
+                <ReferencedBy>
+                  <Arrow>←</Arrow>
+                  <ReferenceBoardTitle>
+                    {this.props.deck.boardTitle}
+                  </ReferenceBoardTitle>
+                  <ReferenceDeckTitle>
+                    {this.props.deck.title}
+                  </ReferenceDeckTitle>
+                </ReferencedBy>
+              </React.Fragment>
+            ) : (
+              <React.Fragment>
+                <EditDeckTitle deck={this.props.deck} />
+                {this.props.deck.portals.map(portal => (
+                  <ReferencedBy key={portal.portalId}>
+                    <Arrow>→</Arrow>
+                    <ReferenceBoardTitle>
+                      {portal.boardTitle}
+                    </ReferenceBoardTitle>
+                    <ReferenceDeckTitle>{portal.title}</ReferenceDeckTitle>
                   </ReferencedBy>
-                </React.Fragment>
-                : <React.Fragment>
-                  <EditDeckTitle deck={this.props.deck} />
-                  {this.props.deck.portals.map(portal =>
-                    <ReferencedBy key={portal.portalId}>
-                      <Arrow>→</Arrow>
-                      <ReferenceBoardTitle>{portal.boardTitle}</ReferenceBoardTitle>
-                      <ReferenceDeckTitle>{portal.title}</ReferenceDeckTitle>
-                    </ReferencedBy>
-                  )}
-                </React.Fragment>
-            }
+                ))}
+              </React.Fragment>
+            )}
           </Title>
           <MenuIcon onClick={this.openMenu} />
         </TopBar>
         <Body>
-          {this.props.deck.cards.map((card, index) =>
+          {this.props.deck.cards.map((card, index) => (
             <StyledCard
-              moving={this.moving || this.movingChild || sharedState.moving.length}
+              moving={
+                this.moving || this.movingChild || sharedState.moving.length
+              }
               placeholderWidth={this.placeholderWidth}
               placeholderHeight={this.placeholderHeight}
               getLastHoverIndex={this.getLastHoverIndex}
@@ -328,20 +320,27 @@ class Deck extends React.Component {
               index={index}
               card={card}
             />
+          ))}
+          {Boolean(
+            sharedState.moving.length &&
+              this.hoverIndex === this.props.deck.cards.length,
+          ) && (
+            <div
+              data-card-placeholder={this.props.deck.cards.length}
+              style={{
+                width:
+                  this.placeholderWidth ||
+                  sharedState.moving[0].placeholderWidth,
+                height:
+                  this.placeholderHeight ||
+                  sharedState.moving[0].placeholderHeight,
+              }}
+            />
           )}
-          {Boolean(sharedState.moving.length && this.hoverIndex === this.props.deck.cards.length) &&
-              <div
-                data-card-placeholder={this.props.deck.cards.length}
-                style={{
-                  width: this.placeholderWidth || sharedState.moving[0].placeholderWidth,
-                  height: this.placeholderHeight || sharedState.moving[0].placeholderHeight,
-                }}
-              />
-          }
         </Body>
         <AddCardInput
           deck={this.props.deck}
-          innerRef={e => this.input = e}
+          innerRef={e => (this.input = e)}
           isPortal={Boolean(this.props.portal)}
           referencedByPortal={this.props.deck.referencedByPortal}
         />
@@ -360,8 +359,12 @@ const Container = styled.div`
   border-radius: 4px;
   width: 150px;
   box-shadow: ${theme.shadows[0]};
-  ${p => p.lifted && css`box-shadow: ${theme.shadows[1]}`};
-  z-index: ${p => p.moving ? zIndexes.moving : zIndexes.movable};
+  ${p =>
+    p.lifted &&
+    css`
+      box-shadow: ${theme.shadows[1]};
+    `};
+  z-index: ${p => (p.moving ? zIndexes.moving : zIndexes.movable)};
 `
 
 const Title = styled.div`
@@ -392,8 +395,7 @@ const ReferenceBoardTitle = styled.span`
   }
 `
 
-const ReferenceDeckTitle = styled.span`
-`
+const ReferenceDeckTitle = styled.span``
 
 const Arrow = styled.span`
   font-weight: bold;
@@ -412,8 +414,11 @@ const TopBar = styled.div`
   padding: 10px;
   cursor: move;
   color: ${p => {
-    return getBestContrastColor(p.color || 'rgb(200, 200, 200)', ['white', '#333']);
-  }}
+    return getBestContrastColor(p.color || 'rgb(200, 200, 200)', [
+      'white',
+      '#333',
+    ])
+  }};
 `
 
 const TextArea = styled(AbstractTextArea)`
@@ -440,12 +445,7 @@ class EditPortalTitle extends React.Component {
   }
 
   render() {
-    return (
-      <TextArea
-        value={this.props.portal.title}
-        onChange={this.onChange}
-      />
-    )
+    return <TextArea value={this.props.portal.title} onChange={this.onChange} />
   }
 }
 
@@ -463,11 +463,6 @@ class EditDeckTitle extends React.Component {
   }
 
   render() {
-    return (
-      <TextArea
-        onChange={this.onChange}
-        value={this.props.deck.title}
-      />
-    )
+    return <TextArea onChange={this.onChange} value={this.props.deck.title} />
   }
 }

@@ -13,17 +13,16 @@ import React from 'react'
 class Backdrop extends React.Component {
   componentDidMount() {
     this.props.on(document, 'keydown', event => {
-      if (event.which === 27)
-        this.props.hide(event)
+      if (event.which === 27) this.props.hide(event)
     })
   }
 
   hide = event => {
     if (
-      event.target === this.container
-      &&
+      event.target === this.container &&
       typeof this.props.hide === 'function'
-    ) this.props.hide(event)
+    )
+      this.props.hide(event)
   }
 
   render() {
@@ -31,11 +30,9 @@ class Backdrop extends React.Component {
       <OuterContainer
         transparent={this.props.transparent}
         onClick={this.hide}
-        innerRef={e => this.container = e}
+        innerRef={e => (this.container = e)}
       >
-        <InnerContainer>
-          {this.props.children}
-        </InnerContainer>
+        <InnerContainer>{this.props.children}</InnerContainer>
       </OuterContainer>
     )
   }
@@ -54,11 +51,13 @@ const OuterContainer = styled.div`
   align-items: flex-start;
   display: flex;
 
-  background-color: rgba(0, 0, 0, .5);
+  background-color: rgba(0, 0, 0, 0.5);
 
-  ${p => p.transparent && css`
-    background-color: rgba(0, 0, 0, .0001);
-  `}
+  ${p =>
+    p.transparent &&
+    css`
+      background-color: rgba(0, 0, 0, 0.0001);
+    `}
 `
 
 const InnerContainer = styled.div`

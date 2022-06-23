@@ -16,8 +16,11 @@ export default WrappedComponent => {
   @withEvents
   @observer
   class NewComponent extends React.Component {
-    static displayName = `withMenu(${WrappedComponent.displayName || WrappedComponent.name})`
-    static WrappedComponent = WrappedComponent.WrappedComponent || WrappedComponent
+    static displayName = `withMenu(${
+      WrappedComponent.displayName || WrappedComponent.name
+    })`
+    static WrappedComponent =
+      WrappedComponent.WrappedComponent || WrappedComponent
 
     @observable options = null
     @observable x = null
@@ -25,8 +28,7 @@ export default WrappedComponent => {
 
     componentWillUnmount() {
       const index = openMenus.indexOf(this)
-      if (index > -1)
-        openMenus.splice(index, 1)
+      if (index > -1) openMenus.splice(index, 1)
     }
 
     showMenu = (event, options) => {
@@ -38,8 +40,7 @@ export default WrappedComponent => {
       this.y = event.clientY
       this.options = options
       this.props.on(document, 'click', event => {
-        if (! someParent(event.target, e => e === this.menu))
-          this.closeMenu()
+        if (!someParent(event.target, e => e === this.menu)) this.closeMenu()
       })
     }
 
@@ -50,11 +51,10 @@ export default WrappedComponent => {
       this.y = null
       this.props.off(document, 'click')
       const index = openMenus.indexOf(this)
-      if (index > -1)
-        openMenus.splice(index, 1)
+      if (index > -1) openMenus.splice(index, 1)
     }
 
-    selectItem = (e) => {
+    selectItem = e => {
       const key = e.target.getAttribute('data-key')
       this.options[key](e)
       this.closeMenu()
@@ -63,26 +63,23 @@ export default WrappedComponent => {
     render() {
       return (
         <React.Fragment>
-          <WrappedComponent
-            {...this.props}
-            showMenu={this.showMenu}
-          />
-          {this.options &&
-              <Portal>
-                <MenuWraper x={this.x} y={this.y} ref={e => this.menu = e}>
-                  {Object.keys(this.options).map((key, index) =>
-                    <MenuItem
-                      innerRef={e => index === 0 && e && e.focus()}
-                      {...onSelect(this.selectItem)}
-                      data-key={key}
-                      key={key}
-                    >
-                      {key}
-                    </MenuItem>
-                  )}
-                </MenuWraper>
-              </Portal>
-          }
+          <WrappedComponent {...this.props} showMenu={this.showMenu} />
+          {this.options && (
+            <Portal>
+              <MenuWraper x={this.x} y={this.y} ref={e => (this.menu = e)}>
+                {Object.keys(this.options).map((key, index) => (
+                  <MenuItem
+                    innerRef={e => index === 0 && e && e.focus()}
+                    {...onSelect(this.selectItem)}
+                    data-key={key}
+                    key={key}
+                  >
+                    {key}
+                  </MenuItem>
+                ))}
+              </MenuWraper>
+            </Portal>
+          )}
         </React.Fragment>
       )
     }

@@ -9,8 +9,12 @@ export default WrappedComponent => {
   @withRouter
   @observer
   class NewComponent extends React.Component {
-    static displayName = 'withModal(' + (WrappedComponent.displayName || WrappedComponent.name) + ')'
-    static WrappedComponent = WrappedComponent.WrappedComponent || WrappedComponent
+    static displayName =
+      'withModal(' +
+      (WrappedComponent.displayName || WrappedComponent.name) +
+      ')'
+    static WrappedComponent =
+      WrappedComponent.WrappedComponent || WrappedComponent
 
     @observable placement = null
     @observable backdrop = true
@@ -54,18 +58,15 @@ export default WrappedComponent => {
             showModal={this.showModal}
             showModalInPlace={this.showModalInPlace}
           />
-          {typeof this.Template === 'function'
-              ? <Modal
-                hide={this.hide}
-                placement={this.placement}
-                backdrop={this.backdrop}
-              >
-                <this.Template
-                  resolve={this.hide}
-                />
-              </Modal>
-              : null
-          }
+          {typeof this.Template === 'function' ? (
+            <Modal
+              hide={this.hide}
+              placement={this.placement}
+              backdrop={this.backdrop}
+            >
+              <this.Template resolve={this.hide} />
+            </Modal>
+          ) : null}
         </React.Fragment>
       )
     }

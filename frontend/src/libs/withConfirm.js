@@ -7,7 +7,6 @@ import Modal from 'ui/Modal'
 import React from 'react'
 
 export default Component => {
-
   @observer
   class WithConfirm extends React.Component {
     @observable placement = null
@@ -58,15 +57,15 @@ export default Component => {
             confirm={this.confirm}
             confirmInPlace={this.confirmInPlace}
           />
-          {this.Template &&
-              <Portal>
-                <Backdrop hide={this.no}>
-                  <Modal placement={this.placement} hide={this.no}>
-                    <this.Template yes={this.yes} no={this.no} />
-                  </Modal>
-                </Backdrop>
-              </Portal>
-          }
+          {this.Template && (
+            <Portal>
+              <Backdrop hide={this.no}>
+                <Modal placement={this.placement} hide={this.no}>
+                  <this.Template yes={this.yes} no={this.no} />
+                </Modal>
+              </Backdrop>
+            </Portal>
+          )}
         </React.Fragment>
       )
     }
@@ -78,7 +77,7 @@ export default Component => {
 }
 
 const Backdrop = styled.div`
-  background-color: rgba(0, 0, 0, .3);
+  background-color: rgba(0, 0, 0, 0.3);
   position: fixed;
   z-index: 10;
   bottom: 0;

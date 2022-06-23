@@ -3,11 +3,9 @@ import uuid from '../uuid.mjs'
 import knex from './db.mjs'
 
 export default async function createTestUserUnlessExists() {
-  const testUser = await knex('users')
-    .where('username', 'test')
-    .first()
+  const testUser = await knex('users').where('username', 'test').first()
 
-  if (! testUser) {
+  if (!testUser) {
     const userId = await createUser({
       username: 'test',
       email: 'test@test.com',
@@ -16,16 +14,14 @@ export default async function createTestUserUnlessExists() {
 
     const teamId = 'test'
 
-    await knex('teams')
-      .insert({
-        teamId,
-      })
+    await knex('teams').insert({
+      teamId,
+    })
 
-    await knex('userTeams')
-      .insert({
-        userId,
-        teamId,
-      })
+    await knex('userTeams').insert({
+      userId,
+      teamId,
+    })
 
     console.log('test user created. username: test, password: secret')
   } else {

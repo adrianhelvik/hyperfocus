@@ -30,9 +30,8 @@ function renderDebugged() {
   }
 
   for (const [element, outline] of outlines) {
-    if (isDetached(element) || ! element.hasAttribute('data-debug')) {
-      if (outline.parentNode)
-        outline.parentNode.removeChild(outline)
+    if (isDetached(element) || !element.hasAttribute('data-debug')) {
+      if (outline.parentNode) outline.parentNode.removeChild(outline)
       outlines.delete(outline)
     }
   }
@@ -64,7 +63,6 @@ window.point = function point(x, y = 200) {
 }
 
 window.removePoints = function removePoints() {
-  for (const point of points)
-    point.parentNode.removeChild(point)
+  for (const point of points) point.parentNode.removeChild(point)
   points = []
 }

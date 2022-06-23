@@ -4,12 +4,17 @@ import React from 'react'
 
 const MenuIcon = ({ onClick }) => (
   <MenuIcon.Container>
-    <MenuIcon.Icon data-disable-drag className="material-icons" onClick={onClick}>menu</MenuIcon.Icon>
+    <MenuIcon.Icon
+      data-disable-drag
+      className="material-icons"
+      onClick={onClick}
+    >
+      menu
+    </MenuIcon.Icon>
   </MenuIcon.Container>
 )
 
-MenuIcon.Container = styled.div`
-`
+MenuIcon.Container = styled.div``
 
 MenuIcon.Icon = styled.i`
   font-size: 15px;
