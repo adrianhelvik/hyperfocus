@@ -6,6 +6,7 @@ import styled from 'styled-components'
 import { observer } from 'mobx-react'
 import * as theme from 'theme'
 import Card from 'store/Card'
+import Color from 'color'
 import React from 'react'
 import api from 'api'
 
@@ -103,6 +104,13 @@ class AddCardInput extends React.Component {
         <Button
           isPortal={this.props.isPortal}
           referencedByPortal={this.props.referencedByPortal}
+          $color={
+            this.props.isPortal
+              ? theme.secondary1
+              : this.props.referencedByPortal
+              ? theme.tertiary1
+              : this.props.deck.color || 'white'
+          }
         >
           Add
         </Button>
@@ -131,14 +139,9 @@ const Input = styled(TextArea)`
 `
 
 const Button = styled.button`
-  background: ${p =>
-    p.isPortal
-      ? theme.secondary1
-      : p.referencedByPortal
-      ? theme.tertiary1
-      : theme.ui1};
+  background: ${p => p.$color};
   border: none;
-  color: ${p => (p.isPortal ? '#707070' : 'white')};
+  color: ${p => (Color(p.$color).blacken(0.7).isDark() ? 'white' : 'black')};
   margin: 3px;
   border-radius: 4px;
   padding: 3px 10px;
