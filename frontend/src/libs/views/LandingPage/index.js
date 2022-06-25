@@ -34,12 +34,21 @@ class LandingPage extends React.Component {
         <Section>
           <Content>
             <Title>
-              <strong>Open source</strong> kanban board with{' '}
+              <strong>Open source</strong> kanban boards with{' '}
               <strong>portals</strong>
             </Title>
             <Register to="/register">Register</Register>
             <LoginWrapper>
               Or <Login to="/login">log in</Login>
+            </LoginWrapper>
+            <LoginWrapper>
+              Or check out on{' '}
+              <a
+                href="https://github.com/adrianhelvik/subtask"
+                style={{ pointerEvents: 'auto' }}
+              >
+                GitHub
+              </a>
             </LoginWrapper>
           </Content>
         </Section>
