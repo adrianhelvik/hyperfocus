@@ -109,7 +109,7 @@ class AddCardInput extends React.Component {
               ? theme.secondary1
               : this.props.referencedByPortal
               ? theme.tertiary1
-              : this.props.deck.color || 'white'
+              : this.props.deck.color || theme.defaultDeckColor
           }
         >
           Add

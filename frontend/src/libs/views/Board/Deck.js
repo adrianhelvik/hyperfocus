@@ -244,8 +244,13 @@ class Deck extends React.Component {
         this.props.delete()
       },
       'Change color': event => {
-        this.props.showModalInPlace(event, () => (
-          <ColorPicker onChange={this.setColor} />
+        this.props.showModalInPlace(event, ({ resolve }) => (
+          <ColorPicker
+            onChange={color => {
+              this.setColor(color)
+              resolve()
+            }}
+          />
         ))
       },
     })
@@ -408,8 +413,8 @@ const Arrow = styled.span`
 const TopBar = styled.div`
   display: flex;
   background-color: ${p => {
-    if (!p.color) return css`rgb(200, 200, 200)`
-    return p.color || css`rgb(200, 200, 200)`
+    if (!p.color) return theme.defaultDeckColor
+    return p.color || theme.defaultDeckColor
   }};
   color: ${p => {
     if (!p.color) return css`black`
