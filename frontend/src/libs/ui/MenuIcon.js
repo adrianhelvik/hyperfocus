@@ -1,22 +1,23 @@
-import styled from 'styled-components'
+import styled, { css } from 'styled-components'
 import * as theme from 'theme'
 import React from 'react'
 
-const MenuIcon = ({ onClick }) => (
-  <MenuIcon.Container>
-    <MenuIcon.Icon
+const MenuIcon = ({ onClick, $dark }) => (
+  <Container>
+    <Icon
       data-disable-drag
       className="material-icons"
+      $dark={$dark}
       onClick={onClick}
     >
       menu
-    </MenuIcon.Icon>
-  </MenuIcon.Container>
+    </Icon>
+  </Container>
 )
 
-MenuIcon.Container = styled.div``
+const Container = styled.div``
 
-MenuIcon.Icon = styled.i`
+const Icon = styled.i`
   transition: background-color 0.3s;
   font-size: 15px;
   background-color: white;
@@ -28,6 +29,13 @@ MenuIcon.Icon = styled.i`
   :active:hover {
     background-color: rgb(200, 200, 200);
   }
+
+  ${p =>
+    p.$dark &&
+    css`
+      background: ${theme.ui1};
+      color: white;
+    `};
 `
 
 export default MenuIcon

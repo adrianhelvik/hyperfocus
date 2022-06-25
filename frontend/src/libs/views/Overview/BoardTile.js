@@ -64,7 +64,7 @@ class BoardTile extends React.Component {
     return (
       <Container {...onSelect(this.onSelect)} onContextMenu={this.openMenu}>
         <Title>{this.props.board.title}</Title>
-        <MenuIcon onClick={this.openMenu} />
+        <MenuIcon $dark onClick={this.openMenu} />
       </Container>
     )
   }
@@ -84,6 +84,11 @@ const Container = styled.div`
   position: relative;
   display: inline-flex;
   box-shadow: ${theme.shadows[0]};
+  transition: box-shadow 0.3s;
+
+  :hover {
+    box-shadow: ${theme.shadows[1]};
+  }
 `
 
 const Title = styled.div`
