@@ -223,6 +223,14 @@ class Board extends React.Component {
           <Title>{this.board.title}</Title>
         </Header>
         <Decks className="board-decks">
+          {this.board.children.length === 0 && (
+            <Empty>
+              There are no decks here yet.
+              <br />
+              Click <span class="material-symbols-outlined">add_circle</span> to
+              create your first deck!
+            </Empty>
+          )}
           {this.board.children.map((child, index) => {
             const props = {
               childContainer: this.childContainer,
@@ -361,4 +369,20 @@ const GoBack = styled.div`
   display: inline-block;
   margin-right: 10px;
   cursor: pointer;
+`
+
+const Empty = styled.div`
+  text-align: center;
+  font-size: 30px;
+  user-select: none;
+  text-align: center;
+  color: ${theme.placeholderGray};
+  margin: 0 auto;
+  margin-top: 100px;
+  line-height: 1.5;
+  > span {
+    font-size: 30px;
+    position: relative;
+    top: 5px;
+  }
 `
