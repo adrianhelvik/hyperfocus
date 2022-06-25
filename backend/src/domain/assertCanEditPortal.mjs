@@ -1,7 +1,7 @@
 import assertCanEditBoard from './assertCanEditBoard.mjs'
 import assertCanEditDeck from './assertCanEditDeck.mjs'
 import Boom from '@hapi/boom'
-import knex from './db.mjs'
+import knex from '../db.mjs'
 
 export default async function assertCanEditPortal(request, portalId) {
   const portal = await knex('portals').where({ portalId }).first()

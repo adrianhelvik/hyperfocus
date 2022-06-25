@@ -1,4 +1,4 @@
-import knex from './db.mjs'
+import knex from '../db.mjs'
 
 export default async function moveCard({ cardId, source, target, index }) {
   if (source === target) {

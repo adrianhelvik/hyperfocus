@@ -1,6 +1,6 @@
-import runCodeHeuristics from './libs/runCodeHeuristics.mjs'
+import runCodeHeuristics from './runCodeHeuristics.mjs'
+import uuid from './utils/uuid.mjs'
 import Hapi from '@hapi/hapi'
-import uuid from './uuid.mjs'
 import chalk from 'chalk'
 
 main()
@@ -15,15 +15,16 @@ async function main() {
     )
   }
 
-  const knex = await import('./libs/db.mjs').then(module => module.default)
+  const knex = await import('./db.mjs').then(module => module.default)
 
   const { default: createTestUserUnlessExists } = await import(
-    './libs/createTestUserUnlessExists.mjs'
+    './domain/createTestUserUnlessExists.mjs'
   )
 
-  if (process.env.NODE_ENV === 'development') await createTestUserUnlessExists()
-
-  // await runCodeHeuristics()
+  if (process.env.NODE_ENV === 'development') {
+    await createTestUserUnlessExists()
+    await runCodeHeuristics()
+  }
 
   const server = Hapi.server({
     host: '0.0.0.0',

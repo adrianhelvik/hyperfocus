@@ -5,7 +5,7 @@ import fs from 'fs'
 export default async function checkRouteLengths() {
   header('heuristic: Keep route definitions short')
 
-  const routes = await import('../../routes')
+  const routes = await import('../routes.mjs')
 
   let sum = 0
   let ok = 0

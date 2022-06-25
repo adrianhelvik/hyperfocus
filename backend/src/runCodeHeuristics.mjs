@@ -1,5 +1,4 @@
-import useUppercaseInCustomModules from './heuristics/useUppercaseInCustomModules.mjs'
-import checkRouteLengths from 'heuristics/checkRouteLengths.mjs'
+import checkRouteLengths from './heuristics/checkRouteLengths.mjs'
 import chalk from 'chalk'
 import path from 'path'
 import fs from 'fs'
@@ -10,7 +9,6 @@ export default async function runCodeHeuristics() {
   console.log(chalk.gray('Running heuristics...'))
 
   await checkRouteLengths()
-  await useUppercaseInCustomModules()
 
   console.log(chalk.gray('Heuristics done'))
 }

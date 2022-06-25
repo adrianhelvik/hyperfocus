@@ -1,5 +1,5 @@
 import Boom from '@hapi/boom'
-import knex from './db.mjs'
+import knex from '../db.mjs'
 
 /**
  * Cache requests, so we never authenticate

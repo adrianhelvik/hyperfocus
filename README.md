@@ -2,7 +2,7 @@
 
 ## Running in Docker
 1. Install Docker and Docker Compose (usually bundled with Docker)
-2. Run `docker-compose up --build` in the root folder.
+2. Run `./start` in the root folder.
 3. Open http://localhost:3000 in your web browser
 
 ## Demo usage

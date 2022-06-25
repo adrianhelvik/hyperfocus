@@ -1,4 +1,4 @@
-import knex from './db.mjs'
+import knex from '../db.mjs'
 
 export default async function getDeck(deckId) {
   const deck = await knex('decks')

@@ -1,4 +1,4 @@
-import isPasswordCorrect from './isPasswordCorrect.mjs'
+import isPasswordCorrect from '../utils/isPasswordCorrect.mjs'
 import createSession from './createSession.mjs'
 import getUser from './getUser.mjs'
 import Boom from '@hapi/boom'
