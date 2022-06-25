@@ -8,6 +8,9 @@ export default async function getBoardsForUser(userId) {
     .where('boards.createdBy', userId)
     .orWhere('userTeams.userId', userId)
     .select('boards.*')
+    .orderBy('createdAt', 'desc')
+
+  console.log(boards)
 
   await Promise.all(
     boards.map(async board => {

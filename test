@@ -1,0 +1,62 @@
+#!/bin/sh
+
+set -e
+
+GIT_COMMIT="$(git rev-parse HEAD)"
+ID="$GIT_COMMIT_$(date +%s)"
+
+NETWORK="${ID}_network"
+POSTGRES_SVC="${ID}_postgres"
+BACKEND_SVC="${ID}_backend"
+EXIT_CODE=1
+
+build() {
+  docker-compose build
+}
+
+run_tests() {
+  docker network create "$NETWORK"
+
+  docker run -d --rm \
+    --network "$NETWORK" \
+    --name "$POSTGRES_SVC" \
+    --expose "5432" \
+    -e "POSTGRES_DB=subtask_test" \
+    -e "POSTGRES_USER=subtask_test" \
+    -e "POSTGRES_PASSWORD=some_password" \
+    "postgres:14.2-alpine" \
+    postgres -c fsync=off -c full_page_writes=off
+
+  docker run -it --rm \
+    --network "$NETWORK" \
+    --name "$BACKEND_SVC" \
+    -e "PORT=$SESSION_SERVICE_PORT" \
+    -e "NODE_ENV=test" \
+    -e "PGUSER=subtask_test" \
+    -e "PGPASSWORD=some_password" \
+    -e "PGDATABASE=subtask_test" \
+    -e "PGHOST=$POSTGRES_SVC" \
+    -e "PGPORT=5432" \
+    -v "$PWD/backend/src:/backend/src" \
+    --entrypoint "/bin/sh" \
+    "subtask-backend" \
+    -c "apt update -y && yes | apt install postgresql-client && yarn test"
+
+  EXIT_CODE=$?
+}
+
+cleanup() {
+  set +e
+  docker kill --signal=9 "$POSTGRES_SVC" > /dev/null 2>&1
+  docker kill --signal=9 "$BACKEND_SVC" > /dev/null 2>&1
+  docker network rm "$NETWORK" /dev/null 2>&1
+  exit $EXIT_CODE
+}
+
+trap cleanup EXIT
+
+build
+echo "--- build complete ---"
+run_tests
+echo "--- tests complete ---"
+cleanup

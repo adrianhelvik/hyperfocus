@@ -1,9 +1,9 @@
-import assertCanEditBoard from 'assertCanEditBoard'
-import createSession from 'createSession'
-import createBoard from 'createBoard'
-import createUser from 'createUser'
-import uuid from 'uuid/v4'
-import knex from 'db'
+import assertCanEditBoard from './assertCanEditBoard.mjs'
+import createSession from './createSession.mjs'
+import createBoard from './createBoard.mjs'
+import createUser from './createUser.mjs'
+import { v4 as uuid } from 'uuid'
+import knex from './db.mjs'
 
 it('does not throw for an owner', async () => {
   const boardId = uuid()

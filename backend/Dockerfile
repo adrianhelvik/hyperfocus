@@ -2,6 +2,7 @@ FROM node
 
 WORKDIR /backend
 
+COPY ./backend/scripts ./scripts
 COPY ./backend/package.json ./
 COPY ./backend/yarn.lock ./
 

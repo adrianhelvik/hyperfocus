@@ -3,6 +3,7 @@ exports.up = async knex => {
     table.text('boardId').primary()
     table.text('title').notNullable().defaultTo('')
     table.text('createdBy').notNullable().references('users.userId')
+    table.timestamp('createdAt').defaultTo(knex.fn.now())
   })
 }
 
