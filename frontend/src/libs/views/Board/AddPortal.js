@@ -1,10 +1,13 @@
 import styled, { css } from 'styled-components'
 import { observer, inject } from 'mobx-react'
 import { observable, action } from 'mobx'
+import ModalFooter from 'ui/ModalFooter'
 import PortalModel from 'store/Portal'
 import BoardModel from 'store/Board'
 import onSelect from 'util/onSelect'
 import DeckModel from 'store/Deck'
+import ellipsify from 'ellipsify'
+import Button from 'ui/Button'
 import * as theme from 'theme'
 import Input from 'ui/Input'
 import React from 'react'
@@ -86,10 +89,11 @@ class AddPortal extends React.Component {
             {store.boards.map(board => (
               <Tile
                 key={board.boardId}
-                selected={this.board === board}
+                $selected={this.board === board}
+                $empty={board.decks.length === 0}
                 {...onSelect(() => this.setBoard(board))}
               >
-                {board.title}
+                {ellipsify(board.title || 'Untitled')}
               </Tile>
             ))}
           </Section>
@@ -99,18 +103,23 @@ class AddPortal extends React.Component {
               this.board.decks.map(deck => (
                 <Tile
                   key={deck.deckId}
-                  selected={this.deck === deck}
+                  $selected={this.deck === deck}
                   {...onSelect(() => this.setDeck(deck))}
                 >
-                  {deck.title}
+                  {ellipsify(deck.title || 'Untitled')}
                 </Tile>
               ))}
           </Section>
         </Sections>
         <hr />
-        <AddButton active={this.board && this.deck && this.title}>
-          Add
-        </AddButton>
+        <ModalFooter>
+          <Button $gray onClick={() => this.props.resolve()}>
+            Cancel
+          </Button>
+          <Button disabled={!this.board || !this.deck || !this.title}>
+            Create portal
+          </Button>
+        </ModalFooter>
       </form>
     )
   }
@@ -119,10 +128,14 @@ class AddPortal extends React.Component {
 export default AddPortal
 
 const Sections = styled.div`
-  display: flex;
+  display: grid;
+  grid-template-columns: 1fr 1fr;
 `
 
-const Tile = styled.div`
+const Tile = styled.button.attrs({
+  type: 'button',
+})`
+  width: 100%;
   border: 1px solid transparent;
   font-size: 0.8rem;
   cursor: pointer;
@@ -142,11 +155,17 @@ const Tile = styled.div`
   }
 
   ${p =>
-    p.selected &&
+    p.$selected &&
     css`
       background: ${theme.ui1};
       color: white;
     `};
+
+  ${p =>
+    p.$empty &&
+    css`
+      opacity: 0.5;
+    `}
 `
 
 const AddButton = styled.button`
@@ -182,6 +201,9 @@ const Section = styled.section`
     margin-right: 10px;
   }
   min-width: 200px;
+  min-height: 400px;
+  max-height: calc(100vh - 400px);
+  overflow: auto;
 `
 
 const Title = styled.div`

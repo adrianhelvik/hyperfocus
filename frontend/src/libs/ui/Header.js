@@ -36,11 +36,13 @@ const UndecoratedLink = styled(Link)`
 
 const Container = styled.div`
   background-color: ${theme.ui1};
-  position: relative;
+  position: sticky;
+  top: 0;
   padding: 20px;
   display: flex;
   justify-content: space-between;
   align-items: center;
+  z-index: 10;
   a,
   button {
     color: white;

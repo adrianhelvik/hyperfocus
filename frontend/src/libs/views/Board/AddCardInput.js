@@ -144,5 +144,6 @@ const Button = styled.button`
   color: ${p => (Color(p.$color).blacken(0.7).isDark() ? 'white' : 'black')};
   margin: 3px;
   border-radius: 4px;
-  padding: 3px 10px;
+  padding: 8px 12px;
+  align-self: end;
 `

@@ -14,6 +14,13 @@ export default styled.button`
   margin: 0;
 
   ${p => {
+    if (p.disabled) {
+      return css`
+        cursor: not-allowed;
+        background-color: ${theme.gray2};
+        color: ${theme.gray1};
+      `
+    }
     if (p.$danger)
       return css`
         background-color: ${theme.red};

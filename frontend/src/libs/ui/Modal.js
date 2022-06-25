@@ -20,7 +20,7 @@ class Modal extends React.Component {
         transparent={Boolean(this.props.placement)}
         hide={this.props.hide}
       >
-        <Container placement={this.props.placement}>
+        <Container $position={this.props.placement} $width={this.props.width}>
           {this.props.children}
         </Container>
       </Backdrop>
@@ -34,19 +34,22 @@ const Container = styled.div`
   background-color: white;
   padding: 20px;
   border-radius: 4px;
-  width: 400px;
+  max-height: 100vh;
+  overflow: auto;
+
   ${p =>
-    !p.placement &&
+    !p.$position &&
     css`
+      width: ${p => p.$width || 400}px;
       margin-bottom: 100px;
     `}
 
   ${p =>
-    p.placement &&
+    p.$position &&
     css`
       position: fixed;
-      left: ${p.placement.x}px;
-      top: ${p.placement.y + 20}px;
+      left: ${p.$position.x}px;
+      top: ${p.$position.y + 20}px;
       transform: translateX(-50%);
       box-shadow: ${theme.shadows[1]};
     `}

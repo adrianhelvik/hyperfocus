@@ -17,17 +17,19 @@ export default WrappedComponent => {
       WrappedComponent.WrappedComponent || WrappedComponent
 
     @observable placement = null
+    @observable width = null
     @observable backdrop = true
     @observable Template = null
     @observable promise = null
     @observable resolve = null
     @observable reject = null
 
-    @action.bound showModal(Template) {
+    @action.bound showModal(Template, options = {}) {
       this.promise = new Promise((resolve, reject) => {
         this.resolve = resolve
         this.reject = reject
         this.Template = Template
+        this.width = options.width || null
       })
     }
 
@@ -38,6 +40,7 @@ export default WrappedComponent => {
         y: event.clientY,
       }
       this.backdrop = false
+      this.width = null
     }
 
     @action.bound hide() {
@@ -48,6 +51,7 @@ export default WrappedComponent => {
       this.promise = null
       this.resolve = null
       this.reject = null
+      this.width = null
     }
 
     render() {
@@ -63,6 +67,7 @@ export default WrappedComponent => {
               hide={this.hide}
               placement={this.placement}
               backdrop={this.backdrop}
+              width={this.width}
             >
               <this.Template resolve={this.hide} />
             </Modal>

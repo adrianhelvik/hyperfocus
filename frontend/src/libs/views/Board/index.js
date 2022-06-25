@@ -84,8 +84,6 @@ class Board extends React.Component {
 
     const index = this.insertionPointForChild(clientX)
 
-    console.log(index)
-
     await this.props.showModal(props => (
       <AddDeck {...props} board={this.board} index={index} />
     ))
@@ -96,11 +94,10 @@ class Board extends React.Component {
 
     const index = this.insertionPointForChild(clientX)
 
-    console.log(index)
-
-    await this.props.showModal(props => (
-      <AddPortal {...props} board={this.board} index={index} />
-    ))
+    await this.props.showModal(
+      props => <AddPortal {...props} board={this.board} index={index} />,
+      { width: 700 },
+    )
   }
 
   insertionPointForChild(x) {
@@ -120,9 +117,10 @@ class Board extends React.Component {
   }
 
   addPortal = async ({ resolve, reject }) => {
-    await this.props.showModal(props => (
-      <AddPortal {...props} board={this.board} />
-    ))
+    await this.props.showModal(
+      props => <AddPortal {...props} board={this.board} />,
+      { width: 700 },
+    )
   }
 
   @action.bound simulateMove(fromIndex, toIndex) {

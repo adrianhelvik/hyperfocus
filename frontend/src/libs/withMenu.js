@@ -1,7 +1,7 @@
+import styled, { keyframes } from 'styled-components'
 import hoist from 'hoist-non-react-statics'
 import someParent from 'util/someParent'
 import withEvents from 'util/withEvents'
-import styled from 'styled-components'
 import { Portal } from 'react-portal'
 import { observer } from 'mobx-react'
 import onSelect from 'util/onSelect'
@@ -102,15 +102,35 @@ const MenuWraper = styled.div`
   color: #707070;
   border-radius: 4px;
   z-index: ${zIndexes.contextMenu};
+  overflow: hidden;
+
+  animation: ${keyframes`
+    0% {
+      max-height: 0;
+    }
+    100% {
+      max-height: 600px;
+    }
+  `} 0.7s;
 `
 
 const MenuItem = styled.div`
   padding: 10px;
   cursor: pointer;
   :hover {
-    background: ${theme.ui3};
+    background: ${theme.gray2};
   }
   :focus {
     outline: none;
+  }
+
+  :first-child {
+    border-top-left-radius: 4px;
+    border-top-right-radius: 4px;
+  }
+
+  :last-child {
+    border-bottom-left-radius: 4px;
+    border-bottom-right-radius: 4px;
   }
 `
