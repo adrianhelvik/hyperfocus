@@ -15,21 +15,29 @@ class AddCircle extends React.Component {
     setTimeout(() => {
       this.mounted = true
     })
+    document.addEventListener('click', this.onDocumentClick)
   }
 
-  onMouseOver = () => {
-    if (!this.open) this.open = true
+  componentWillUnmount() {
+    document.removeEventListener('click', this.onDocumentClick)
   }
 
-  onMouseLeave = () => {
+  onDocumentClick = event => {
+    if (this.container.contains(event.target)) {
+      return
+    }
+
     this.open = false
+  }
+
+  onClick = () => {
+    this.open = !this.open
   }
 
   render() {
     return (
       <Container
-        onMouseEnter={this.onMouseOver}
-        onMouseLeave={this.onMouseLeave}
+        onClick={this.onClick}
         innerRef={e => (this.container = e)}
         mounted={this.mounted}
         open={this.open}
