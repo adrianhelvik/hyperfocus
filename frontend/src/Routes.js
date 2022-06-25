@@ -9,25 +9,21 @@ import Board from 'views/Board'
 import Login from 'views/Login'
 import React from 'react'
 
-class Routes extends React.Component {
-  render() {
-    return (
-      <ProvideAuth>
-        <Reactions>
-          <Router>
-            <Switch>
-              <Route exact path="/" component={LandingPage} />
-              <Route exact path="/login" component={Login} />
-              <Route exact path="/app" component={Overview} />
-              <Route exact path="/board/:boardId" component={Board} />
-              <Route exact path="/register" component={Register} />
-              <Route path="*" component={NotFound} />
-            </Switch>
-          </Router>
-        </Reactions>
-      </ProvideAuth>
-    )
-  }
+export default function Routes() {
+  return (
+    <ProvideAuth>
+      <Reactions>
+        <Router>
+          <Switch>
+            <Route exact path="/" component={LandingPage} />
+            <Route exact path="/login" component={Login} />
+            <Route exact path="/app" component={Overview} />
+            <Route exact path="/board/:boardId" component={Board} />
+            <Route exact path="/register" component={Register} />
+            <Route path="*" component={NotFound} />
+          </Switch>
+        </Router>
+      </Reactions>
+    </ProvideAuth>
+  )
 }
-
-export default Routes
