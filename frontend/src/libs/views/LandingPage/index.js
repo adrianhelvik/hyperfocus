@@ -34,8 +34,8 @@ class LandingPage extends React.Component {
         <Section>
           <Content>
             <Title>
-              <strong>Open source</strong> task management done{' '}
-              <strong>right</strong>
+              <strong>Open source</strong> kanban board with{' '}
+              <strong>portals</strong>
             </Title>
             <Register to="/register">Register</Register>
             <LoginWrapper>
