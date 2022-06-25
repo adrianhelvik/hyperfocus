@@ -14,7 +14,7 @@ class AddCircle extends React.Component {
   componentDidMount() {
     setTimeout(() => {
       this.mounted = true
-    })
+    }, 400)
     document.addEventListener('click', this.onDocumentClick)
   }
 

@@ -6,3 +6,4 @@ export const moving = i++
 export const fade = i++
 export const backdrop = i++
 export const contextMenu = i++
+export const tooltip = i++

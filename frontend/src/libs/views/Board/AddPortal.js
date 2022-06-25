@@ -10,6 +10,7 @@ import ellipsify from 'ellipsify'
 import Button from 'ui/Button'
 import * as theme from 'theme'
 import Input from 'ui/Input'
+import Help from 'ui/Help'
 import React from 'react'
 import api from 'api'
 
@@ -74,7 +75,13 @@ class AddPortal extends React.Component {
 
     return (
       <form onSubmit={this.onSubmit}>
-        <MainTitle>Create portal</MainTitle>
+        <MainTitle>
+          Create portal{' '}
+          <Help iconStyle={{ fontSize: '25px' }}>
+            A portal is a link to a deck from another board. With portals it
+            becomes easier to move cards from one board to another.
+          </Help>
+        </MainTitle>
         <InputWrapper>
           <Input
             placeholder="Name in this board"

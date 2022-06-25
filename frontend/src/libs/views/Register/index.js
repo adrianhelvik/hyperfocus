@@ -54,21 +54,18 @@ class Register extends React.Component {
             onChange={this.setEmail}
             value={this.email}
           />
-          <br />
           <Input
             type="password"
             placeholder="Password"
             onChange={this.setPassword}
             value={this.password}
           />
-          <br />
           <Input
             type="password"
             placeholder="Repeat password"
             onChange={this.setRepeatedPassword}
             value={this.repeatedPassword}
           />
-          <br />
           <Button type="submit">Create user</Button>
         </InnerContainer>
       </Container>
@@ -80,11 +77,14 @@ export default Register
 
 const Container = styled.form`
   min-height: calc(100vh - 64px);
-  align-items: flex-start;
-  display: flex;
   margin: 0;
+  display: flex;
 `
 
 const InnerContainer = styled.div`
   margin: auto;
+  display: grid;
+  grid-auto-flow: row;
+  gap: 15px;
+  width: 250px;
 `
