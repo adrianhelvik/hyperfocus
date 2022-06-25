@@ -1,5 +1,4 @@
 import requestAnimationFrameAsync from 'util/requestAnimationFrameAsync'
-import getBestContrastColor from 'get-best-contrast-color'
 import { CirclePicker as ColorPicker } from 'react-color'
 import AbstractTextArea from 'react-textarea-autosize'
 import styled, { css } from 'styled-components'
@@ -14,6 +13,7 @@ import withModal from 'withModal'
 import withMenu from 'withMenu'
 import sleep from 'util/sleep'
 import * as theme from 'theme'
+import Color from 'color'
 import Card from './Card'
 import React from 'react'
 import api from 'api'
@@ -357,7 +357,7 @@ const Container = styled.div`
   flex-grow: 0;
   background: white;
   border-radius: 4px;
-  width: 150px;
+  width: 250px;
   box-shadow: ${theme.shadows[0]};
   ${p =>
     p.lifted &&
@@ -408,17 +408,25 @@ const Arrow = styled.span`
 const TopBar = styled.div`
   display: flex;
   background-color: ${p => {
+    if (!p.color) return css`rgb(200, 200, 200)`
     return p.color || css`rgb(200, 200, 200)`
+  }};
+  color: ${p => {
+    if (!p.color) return css`black`
+    try {
+      if (Color(p.color).blacken(0.7).isDark()) {
+        return 'white'
+      } else {
+        return 'black'
+      }
+    } catch (e) {
+      console.error('Failed determine foreground color')
+      return 'black'
+    }
   }};
   border-bottom: 1px solid #ddd;
   padding: 10px;
   cursor: move;
-  color: ${p => {
-    return getBestContrastColor(p.color || 'rgb(200, 200, 200)', [
-      'white',
-      '#333',
-    ])
-  }};
 `
 
 const TextArea = styled(AbstractTextArea)`

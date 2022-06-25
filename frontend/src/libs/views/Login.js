@@ -5,6 +5,7 @@ import { observable, action } from 'mobx'
 import styled from 'styled-components'
 import { observer } from 'mobx-react'
 import * as theme from 'theme'
+import Button from 'ui/Button'
 import Input from 'ui/Input'
 import React from 'react'
 import sleep from 'sleep'
@@ -102,21 +103,6 @@ const Form = styled.form`
 
 const InputWrapper = styled.div`
   margin-top: 25px;
-`
-
-const Button = styled.button`
-  background-color: ${theme.ui1};
-  border-radius: 4px;
-  padding: 7px 10px;
-  color: white;
-  text-align: center;
-  margin-top: 30px;
-  cursor: pointer;
-  display: block;
-  border: none;
-  font-size: inherit;
-  margin-left: auto;
-  margin-right: auto;
 `
 
 const Message = styled.div`

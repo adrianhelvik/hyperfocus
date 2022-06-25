@@ -10,6 +10,7 @@ services:
       dockerfile: ./frontend/Dockerfile
     volumes:
       - ./frontend/src:/frontend/src
+      - ./frontend/public:/frontend/public
     ports:
       - 3000:3000
     environment:

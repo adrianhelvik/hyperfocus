@@ -10,9 +10,9 @@ import React from 'react'
 class Input extends React.Component {
   @observable showPassword = false
 
-  @computed get overrideType() {
+  @computed get type() {
     if (this.showPassword) return 'text'
-    return null
+    return this.props.type
   }
 
   componentDidMount() {
@@ -39,7 +39,7 @@ class Input extends React.Component {
             onChange={this.props.onChange}
             value={this.props.value}
             innerRef={this.innerRef}
-            type={this.overrideType || this.props.type}
+            type={this.type}
             forPassword={this.props.type === 'password'}
             colored={this.showPassword}
           />

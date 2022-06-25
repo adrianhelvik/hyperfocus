@@ -7,6 +7,7 @@ import { Portal } from 'react-portal'
 import { observer } from 'mobx-react'
 import withConfirm from 'withConfirm'
 import * as zIndexes from 'zIndexes'
+import Button from 'ui/Button'
 import * as theme from 'theme'
 import React from 'react'
 import api from 'api'
@@ -38,7 +39,7 @@ class Card extends React.Component {
     event.stopPropagation()
     const { target, clientX, clientY } = event
 
-    if (target === this.removeElement) return this.remove(event)
+    if (this.removeElement.contains(target)) return this.remove(event)
 
     // extract values
     const rect = this.element.getBoundingClientRect()
@@ -125,8 +126,12 @@ class Card extends React.Component {
       !(await this.props.confirmInPlace(event, p => (
         <div>
           <div>Delete card?</div>
-          <button onClick={p.yes}>Yes</button>
-          <button onClick={p.no}>No</button>
+          <div style={{ display: 'flex', gap: 20 }}>
+            <Button $gray onClick={p.no}>Cancel</Button>
+            <Button $danger onClick={p.yes}>
+              Delete it
+            </Button>
+          </div>
         </div>
       )))
     )
@@ -151,7 +156,9 @@ class Card extends React.Component {
       >
         {Boolean(this.moving) && <style>{`body { user-select: none }`}</style>}
         <Title>{this.props.card.title}</Title>
-        <Remove innerRef={e => (this.removeElement = e)}>-</Remove>
+        <Remove innerRef={e => (this.removeElement = e)}>
+          <span className="material-symbols-outlined">delete</span>
+        </Remove>
       </Container>
     )
   }
@@ -212,8 +219,9 @@ const Title = styled.div`
 `
 
 const Remove = styled.div`
-  background: #aaa;
+  background: ${theme.red};
   width: 20px;
+  height: 20px;
   text-align: center;
   color: white;
   border-radius: 4px;
@@ -221,4 +229,17 @@ const Remove = styled.div`
   flex-shrink: 0;
   flex-grow: 0;
   align-self: flex-start;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  & > span {
+    font-size: 14px;
+  }
+
+  transition: opacity 0.3s;
+  opacity: 0;
+
+  ${Container}:hover & {
+    opacity: 1;
+  }
 `

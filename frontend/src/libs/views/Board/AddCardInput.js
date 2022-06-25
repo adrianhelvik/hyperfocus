@@ -123,6 +123,7 @@ const Input = styled(TextArea)`
   border: none;
   padding: 10px;
   display: block;
+  border-radius: 4px;
   width: 100%;
   :focus {
     outline: none;
@@ -138,4 +139,7 @@ const Button = styled.button`
       : theme.ui1};
   border: none;
   color: ${p => (p.isPortal ? '#707070' : 'white')};
+  margin: 3px;
+  border-radius: 4px;
+  padding: 3px 10px;
 `

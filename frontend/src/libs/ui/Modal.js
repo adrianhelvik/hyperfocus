@@ -33,6 +33,11 @@ const Container = styled.div`
   background-color: white;
   padding: 20px;
   border-radius: 4px;
+  ${p =>
+    !p.placement &&
+    css`
+      margin-bottom: 100px;
+    `}
 
   ${p =>
     p.placement &&
