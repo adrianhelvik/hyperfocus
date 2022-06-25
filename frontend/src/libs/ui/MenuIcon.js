@@ -17,12 +17,17 @@ const MenuIcon = ({ onClick }) => (
 MenuIcon.Container = styled.div``
 
 MenuIcon.Icon = styled.i`
+  transition: background-color 0.3s;
   font-size: 15px;
-  background-color: ${theme.ui3};
+  background-color: white;
   border-radius: 5px;
   padding: 4px;
   color: #333;
   cursor: pointer;
+  box-shadow: ${theme.shadows[0]};
+  :active:hover {
+    background-color: rgb(200, 200, 200);
+  }
 `
 
 export default MenuIcon

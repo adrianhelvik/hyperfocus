@@ -427,6 +427,8 @@ const TopBar = styled.div`
   border-bottom: 1px solid #ddd;
   padding: 10px;
   cursor: move;
+  border-top-left-radius: 4px;
+  border-top-right-radius: 4px;
 `
 
 const TextArea = styled(AbstractTextArea)`
