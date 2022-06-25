@@ -1,6 +1,7 @@
 import { runInAction, observable, computed, action } from 'mobx'
 import { Redirect, withRouter } from 'react-router-dom'
 import { inject, observer } from 'mobx-react'
+import ApplicationHeader from 'ui/Header'
 import PortalModel from 'store/Portal'
 import withConfirm from 'withConfirm'
 import BoardModel from 'store/Board'
@@ -218,10 +219,15 @@ class Board extends React.Component {
 
     return (
       <Container onContextMenu={this.onContextMenu}>
-        <Header>
-          <GoBack onClick={() => this.props.history.goBack()}>◀</GoBack>
-          <Title>{this.board.title}</Title>
-        </Header>
+        <ApplicationHeader>
+          <Breadcrumbs>
+            <GoBack onClick={() => this.props.history.goBack()}>
+              My boards
+            </GoBack>
+            <div>›</div>
+            <Title>{this.board.title}</Title>
+          </Breadcrumbs>
+        </ApplicationHeader>
         <Decks className="board-decks">
           {this.board.children.length === 0 && (
             <Empty>
@@ -311,10 +317,12 @@ const Container = styled.main`
   flex-direction: column;
 `
 
-const Header = styled.header`
-  background: ${theme.ui1};
-  padding: 10px;
+const Breadcrumbs = styled.header`
   color: white;
+  display: flex;
+  align-items: start;
+  gap: 10px;
+  margin-left: 20px;
 `
 
 const Title = styled.div`
@@ -367,7 +375,6 @@ const ChildPortal = styled(Portal)`
 
 const GoBack = styled.div`
   display: inline-block;
-  margin-right: 10px;
   cursor: pointer;
 `
 

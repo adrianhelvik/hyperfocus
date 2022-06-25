@@ -1,4 +1,5 @@
 import { withRouter } from 'react-router-dom'
+import * as zIndexes from '../zIndexes'
 import { Link } from 'react-router-dom'
 import { withAuth } from 'authContext'
 import styled from 'styled-components'
@@ -14,6 +15,7 @@ class Header extends React.Component {
         <UndecoratedLink to="/">
           <Logo />
         </UndecoratedLink>
+        <div>{this.props.children}</div>
         {this.props.auth.status === 'success' ? (
           this.props.location.pathname === '/' ? (
             <Login to="/login">Go to dashboard</Login>
@@ -38,15 +40,15 @@ const Container = styled.div`
   background-color: ${theme.ui1};
   position: sticky;
   top: 0;
-  padding: 20px;
-  display: flex;
-  justify-content: space-between;
+  padding: 15px;
+  display: grid;
+  grid-template-columns: auto 1fr auto;
   align-items: center;
-  z-index: 10;
+  z-index: ${zIndexes.header};
   a,
   button {
     color: white;
-    font-size: 16px;
+    font-size: 14px;
   }
 `
 

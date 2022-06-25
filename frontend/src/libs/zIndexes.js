@@ -1,5 +1,6 @@
 let i = 1
 
+export const header = i++
 export const movable = i++
 export const moving = i++
 export const fade = i++
