@@ -1,5 +1,6 @@
 import { observer, inject } from 'mobx-react'
 import { observable, action } from 'mobx'
+import ModalFooter from 'ui/ModalFooter'
 import styled from 'styled-components'
 import Board from 'store/Board'
 import Button from 'ui/Button'
@@ -38,12 +39,16 @@ class AddBoardModal extends React.Component {
             onChange={this.setTitle}
             value={this.title}
           />
-          <Footer>
-            <Button $gray type="button">
+          <ModalFooter>
+            <Button
+              $gray
+              type="button"
+              onClick={this.props.store.stopAddingBoard}
+            >
               Cancel
             </Button>
             <Button>Create</Button>
-          </Footer>
+          </ModalFooter>
         </Modal>
       </form>
     )
@@ -57,11 +62,4 @@ const Title = styled.h2`
   margin: 0;
   margin-bottom: 20px;
   color: #333;
-`
-
-const Footer = styled.footer`
-  display: flex;
-  justify-content: flex-end;
-  gap: 15px;
-  margin-top: 20px;
 `
