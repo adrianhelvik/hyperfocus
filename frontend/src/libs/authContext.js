@@ -4,16 +4,14 @@ import { observable, computed } from 'mobx'
 import { observer } from 'mobx-react'
 import React from 'react'
 
-const authContext = React.createContext()
-
-export default authContext
+const AuthContext = React.createContext()
 
 export function withAuth(WrappedComponent) {
   const name =
     WrappedComponent.displayName || WrappedComponent.name || '<component>'
 
   const WithAuth = props => {
-    const auth = React.useContext(authContext)
+    const auth = React.useContext(AuthContext)
 
     return <WrappedComponent {...props} auth={auth} />
   }
@@ -23,6 +21,10 @@ export function withAuth(WrappedComponent) {
   hoist(WithAuth, WrappedComponent)
 
   return WithAuth
+}
+
+export function useAuth() {
+  return React.useContext(AuthContext)
 }
 
 @observer
@@ -70,9 +72,9 @@ class ProvideAuth extends React.Component {
     if (!this.value.login) throw Error('Failure')
 
     return (
-      <authContext.Provider value={this.value}>
+      <AuthContext.Provider value={this.value}>
         {this.props.children}
-      </authContext.Provider>
+      </AuthContext.Provider>
     )
   }
 }
