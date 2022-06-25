@@ -24,13 +24,18 @@ class BoardList extends React.Component {
     if (this.props.auth.status === 'failed') return <Redirect to="/login" />
     return (
       <Container>
-        <Title>My boards</Title>
-        <Area>
+        <Header>
+          <Title>My boards</Title>
+          <PlusButton onClick={this.props.store.startAddingBoard}>
+            <span class="material-symbols-outlined">add</span>
+          </PlusButton>
+        </Header>
+        <Boards>
           {this.props.store.boards.map(board => (
             <BoardTile key={board.boardId} board={board} />
           ))}
-        </Area>
-        <Button onClick={this.props.store.startAddingBoard}>New board</Button>
+          {!this.props.store.boards.length && <div>You have no boards yet</div>}
+        </Boards>
       </Container>
     )
   }
@@ -44,34 +49,49 @@ const Container = styled.div`
   margin-top: 40px;
 `
 
-const Title = styled.h2`
-  font-weight: 400;
+const Boards = styled.div`
+  padding: 20px;
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+`
+
+const Header = styled.div`
+  display: flex;
+  align-items: center;
   margin-left: 20px;
   margin-bottom: 0;
   margin-top: 20px;
+  gap: 10px;
+`
+
+const PlusButton = styled.button`
+  background-color: ${theme.ui1};
+  border: none;
+  color: white;
+  width: 30px;
+  height: 30px;
+  border-radius: 4px;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  transition: background-color 0.3s, box-shadow 0.3s;
+  box-shadow: ${theme.shadows[0]};
+  cursor: pointer;
+
+  :hover {
+    background-color: ${theme.ui2};
+    box-shadow: ${theme.shadows[1]};
+  }
+
+  :hover:active {
+    background-color: ${theme.darkPurple};
+  }
+`
+
+const Title = styled.h2`
+  margin: 0;
+  font-weight: 400;
   font-size: 25px;
   color: ${theme.ui1};
   letter-spacing: 0.1rem;
-`
-
-const Area = styled.div`
-  padding: 20px;
-`
-
-const Button = styled.button`
-  display: block;
-  border: none;
-  background: ${theme.ui1};
-  color: white;
-  border-radius: 4px;
-  padding: 10px 20px;
-  font-size: 20px;
-  cursor: pointer;
-  border-radius: 4px;
-  margin: 20px;
-`
-
-const Text = styled.div` // eslint-disable-line
-  font-size: 18px;
-  color: #333;
 `

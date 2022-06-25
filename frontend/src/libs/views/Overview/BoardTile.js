@@ -63,7 +63,7 @@ class BoardTile extends React.Component {
   render() {
     return (
       <Container {...onSelect(this.onSelect)} onContextMenu={this.openMenu}>
-        <Title>{this.props.board.title}</Title>
+        <Title>{this.props.board.title || <Weak>Untitled</Weak>}</Title>
         <MenuIcon $dark onClick={this.openMenu} />
       </Container>
     )
@@ -80,11 +80,11 @@ const Container = styled.div`
   border-radius: 4px;
   margin-right: 10px;
   margin-bottom: 10px;
-  width: 150px;
   position: relative;
   display: inline-flex;
   box-shadow: ${theme.shadows[0]};
   transition: box-shadow 0.3s;
+  height: 80px;
 
   :hover {
     box-shadow: ${theme.shadows[1]};
@@ -92,5 +92,10 @@ const Container = styled.div`
 `
 
 const Title = styled.div`
-  flex-grow: 1;
+  overflow: hidden;
+  width: 100%;
+`
+
+const Weak = styled.span`
+  color: ${theme.placeholderGray};
 `

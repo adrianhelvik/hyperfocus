@@ -34,6 +34,7 @@ const Container = styled.div`
   background-color: white;
   padding: 20px;
   border-radius: 4px;
+  width: 400px;
   ${p =>
     !p.placement &&
     css`

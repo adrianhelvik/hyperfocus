@@ -7,25 +7,32 @@ export default styled.button`
   padding: 7px 10px;
   color: white;
   text-align: center;
-  margin-top: 30px;
   cursor: pointer;
   display: block;
   border: none;
   font-size: inherit;
-  margin-left: auto;
-  margin-right: auto;
-  box-shadow: ${theme.shadows[0]};
+  margin: 0;
 
-  ${p =>
-    p.$danger &&
-    css`
-      background-color: ${theme.red};
-    `}
+  ${p => {
+    if (p.$danger)
+      return css`
+        background-color: ${theme.red};
+      `
+    if (p.$gray)
+      return css`
+        background-color: ${theme.gray2};
+        color: black;
+      `
+    return css`
+      transition: background-color 0.3s, box-shadow 0.3s;
 
-  ${p =>
-    p.$gray &&
-    css`
-      background-color: ${theme.gray2};
-      color: black;
-    `}
+      :hover {
+        background-color: ${theme.ui2};
+      }
+
+      :hover:active {
+        background-color: ${theme.darkPurple};
+      }
+    `
+  }}
 `

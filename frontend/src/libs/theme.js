@@ -2,12 +2,16 @@ export const ui1 = `rgb(114, 32, 222)`
 export const ui2 = `rgb(150, 84, 236)`
 export const ui3 = `rgb(241, 216, 44)`
 
+export const darkPurple = `rgb(69, 35, 114)`
+
 export const secondary1 = `rgb(252, 227, 65)`
 
 export const tertiary1 = 'rgb(188, 66, 244)'
 
 export const gray1 = `#7a7a7a`
 export const gray2 = `#dbdbdb`
+
+export const placeholderGray = '#ababab'
 
 export const shadows = [
   `0 1px 3px rgba(0,0,0,0.12), 0 1px 2px rgba(0,0,0,0.24)`,

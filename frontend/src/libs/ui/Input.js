@@ -35,7 +35,7 @@ class Input extends React.Component {
     return (
       <Container>
         <Label>
-          <Field
+          <InputField
             onChange={this.props.onChange}
             value={this.props.value}
             innerRef={this.innerRef}
@@ -71,13 +71,13 @@ const Container = styled.div`
   margin-top: 15px;
 `
 
-const Field = styled.input`
+const InputField = styled.input`
   font-size: ${fontSize};
   padding: ${padding};
   border: 1px solid ${theme.gray1};
   box-sizing: border-box;
-  width: 200px;
   border-radius: 4px;
+  width: 100%;
   &:focus {
     outline: none;
     border-color: ${theme.ui1};
