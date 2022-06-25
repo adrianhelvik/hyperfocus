@@ -2,6 +2,7 @@ import { withRouter } from 'react-router-dom'
 import hoist from 'hoist-non-react-statics'
 import { observable, action } from 'mobx'
 import { observer } from 'mobx-react'
+import { Portal } from 'react-portal'
 import Modal from 'ui/Modal'
 import React from 'react'
 
@@ -63,14 +64,16 @@ export default WrappedComponent => {
             showModalInPlace={this.showModalInPlace}
           />
           {typeof this.Template === 'function' ? (
-            <Modal
-              hide={this.hide}
-              placement={this.placement}
-              backdrop={this.backdrop}
-              width={this.width}
-            >
-              <this.Template resolve={this.hide} />
-            </Modal>
+            <Portal>
+              <Modal
+                hide={this.hide}
+                placement={this.placement}
+                backdrop={this.backdrop}
+                width={this.width}
+              >
+                <this.Template resolve={this.hide} />
+              </Modal>
+            </Portal>
           ) : null}
         </React.Fragment>
       )
