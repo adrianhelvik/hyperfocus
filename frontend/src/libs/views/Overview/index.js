@@ -32,7 +32,9 @@ class Overview extends React.Component {
 
     return (
       <Container onContextMenu={this.onContextMenu}>
-        <Header />
+        <Header>
+          My boards
+        </Header>
         {this.props.store.isAddingBoard && <AddBoardModal />}
         <BoardList />
       </Container>

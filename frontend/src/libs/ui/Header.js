@@ -17,7 +17,7 @@ class Header extends React.Component {
         <UndecoratedLink to={isInApp ? '/app' : '/'}>
           <Logo />
         </UndecoratedLink>
-        <div>{this.props.children}</div>
+        <Children>{this.props.children}</Children>
         {this.props.auth.status === 'success' ? (
           this.props.location.pathname === '/' ? (
             <Login to="/login">Go to dashboard</Login>
@@ -47,11 +47,6 @@ const Container = styled.div`
   grid-template-columns: auto 1fr auto;
   align-items: center;
   z-index: ${zIndexes.header};
-  a,
-  button {
-    color: white;
-    font-size: 14px;
-  }
 `
 
 const Logo = () => (
@@ -100,4 +95,9 @@ const Logout = styled.button`
   background-color: transparent;
   border: 0;
   cursor: pointer;
+`
+
+const Children = styled.div`
+  color: white;
+  margin-left: 20px;
 `

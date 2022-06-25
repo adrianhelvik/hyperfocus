@@ -1,18 +1,18 @@
 import { runInAction, observable, computed, action } from 'mobx'
 import { Redirect, withRouter } from 'react-router-dom'
 import { inject, observer } from 'mobx-react'
-import ApplicationHeader from 'ui/Header'
 import PortalModel from 'store/Portal'
+import styled from 'styled-components'
 import withConfirm from 'withConfirm'
 import BoardModel from 'store/Board'
-import styled from 'styled-components'
-import DeckModel from 'store/Deck'
-import withModal from 'withModal'
 import AddPortal from './AddPortal'
 import AddCircle from './AddCircle'
+import DeckModel from 'store/Deck'
+import withModal from 'withModal'
 import Loading from 'ui/Loading'
 import AddDeck from './AddDeck'
 import withMenu from 'withMenu'
+import Header from 'ui/Header'
 import * as theme from 'theme'
 import Portal from './Portal'
 import Deck from './Deck'
@@ -219,7 +219,7 @@ class Board extends React.Component {
 
     return (
       <Container onContextMenu={this.onContextMenu}>
-        <ApplicationHeader>
+        <Header>
           <Breadcrumbs>
             <GoBack onClick={() => this.props.history.goBack()}>
               My boards
@@ -227,7 +227,7 @@ class Board extends React.Component {
             <div>›</div>
             <Title>{this.board.title}</Title>
           </Breadcrumbs>
-        </ApplicationHeader>
+        </Header>
         <Decks className="board-decks">
           {this.board.children.length === 0 && (
             <Empty>
@@ -322,7 +322,6 @@ const Breadcrumbs = styled.header`
   display: flex;
   align-items: start;
   gap: 10px;
-  margin-left: 20px;
 `
 
 const Title = styled.div`
@@ -373,9 +372,14 @@ const ChildPortal = styled(Portal)`
   }
 `
 
-const GoBack = styled.div`
-  display: inline-block;
+const GoBack = styled.button`
+  background: transparent;
+  font-size: inherit;
+  padding: 0;
+  margin: 0;
+  border: none;
   cursor: pointer;
+  color: inherit;
 `
 
 const Empty = styled.div`
