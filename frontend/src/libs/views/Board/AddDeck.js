@@ -40,6 +40,7 @@ class AddDeck extends React.Component {
   render() {
     return (
       <Container onSubmit={this.onSubmit}>
+        <Title>Create a deck</Title>
         <Input
           autofocus
           placeholder="Title"
@@ -56,6 +57,14 @@ export default AddDeck
 
 const Container = styled.form``
 
+const Title = styled.h2`
+  margin: 0;
+  margin-bottom: 30px;
+  color: #333;
+  font-size: 1.5rem;
+  font-weight: normal;
+`
+
 const Button = styled.button`
   display: block;
   border: none;
@@ -69,4 +78,5 @@ const Button = styled.button`
   border-radius: 4px;
   margin-top: 10px;
   margin-left: auto;
+  font-size: inherit;
 `

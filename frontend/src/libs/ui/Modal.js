@@ -16,6 +16,7 @@ class Modal extends React.Component {
 
     return (
       <Backdrop
+        is="dialog"
         transparent={Boolean(this.props.placement)}
         hide={this.props.hide}
       >

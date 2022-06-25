@@ -326,6 +326,10 @@ const AddItem = styled.div`
   height: 55px;
   display: flex;
   align-items: flex-start;
+
+  :first-child {
+    border-top-left-radius: 4px;
+  }
 `
 
 const AddItemText = styled.div`

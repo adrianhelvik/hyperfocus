@@ -71,9 +71,10 @@ class AddPortal extends React.Component {
 
     return (
       <form onSubmit={this.onSubmit}>
+        <MainTitle>Create portal</MainTitle>
         <InputWrapper>
           <Input
-            placeholder="Title"
+            placeholder="Name in this board"
             autofocus
             value={this.title}
             onChange={e => this.setTitle(e.target.value)}
@@ -193,4 +194,12 @@ const Title = styled.div`
 const InputWrapper = styled.div`
   padding-bottom: 10px;
   margin-bottom: 10px;
+`
+
+const MainTitle = styled.h2`
+  margin: 0;
+  margin-bottom: 30px;
+  color: #333;
+  font-size: 1.5rem;
+  font-weight: normal;
 `
