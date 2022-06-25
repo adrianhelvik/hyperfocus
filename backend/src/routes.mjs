@@ -22,14 +22,6 @@ import Boom from '@hapi/boom'
 import assert from 'assert'
 import knex from './db.mjs'
 
-export const homeRoute = {
-  method: 'GET',
-  path: '/',
-  handler(request, reply) {
-    return 'Welcome!'
-  },
-}
-
 export const loginRoute = {
   method: 'POST',
   path: '/login',

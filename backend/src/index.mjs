@@ -47,7 +47,13 @@ async function main() {
     method: '*',
     path: '/{any*}',
     handler(request, h) {
-      return '404: The Subtask API does not implement this endpoint'
+      return h
+        .response({
+          statusCode: 500,
+          error: 'Not Found',
+          message: 'The endpoint was not found',
+        })
+        .code(404)
     },
   })
 
