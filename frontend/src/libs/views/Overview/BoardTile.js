@@ -1,15 +1,19 @@
-import { withRouter } from 'react-router-dom'
+import { CirclePicker as ColorPicker } from 'react-color'
 import { inject, observer } from 'mobx-react'
+import { withRouter } from 'react-router-dom'
 import styled from 'styled-components'
 import withConfirm from 'withConfirm'
 import onSelect from 'util/onSelect'
 import withStatus from 'withStatus'
 import MenuIcon from 'ui/MenuIcon'
+import withModal from 'withModal'
 import withMenu from 'withMenu'
 import * as theme from 'theme'
+import Color from 'color'
 import React from 'react'
 import api from 'api'
 
+@withModal
 @withConfirm
 @withStatus
 @withMenu
@@ -21,11 +25,29 @@ class BoardTile extends React.Component {
     this.props.history.push(`/board/${this.props.board.boardId}`)
   }
 
+  setColor = ({ hex }) => {
+    this.props.board.color = hex
+    api.setBoardColor({
+      boardId: this.props.board.boardId,
+      color: hex,
+    })
+  }
+
   openMenu = event => {
     event.preventDefault()
     event.stopPropagation()
     event = event.nativeEvent
     this.props.showMenu(event, {
+      'Change color': async () => {
+        this.props.showModalInPlace(event, ({ resolve }) => (
+          <ColorPicker
+            onChange={color => {
+              this.setColor(color)
+              resolve()
+            }}
+          />
+        ))
+      },
       Delete: async () => {
         if (
           !(await this.props.confirmInPlace(event, p => (
@@ -62,9 +84,13 @@ class BoardTile extends React.Component {
 
   render() {
     return (
-      <Container {...onSelect(this.onSelect)} onContextMenu={this.openMenu}>
+      <Container
+        {...onSelect(this.onSelect)}
+        $color={this.props.board.color || 'white'}
+        onContextMenu={this.openMenu}
+      >
         <Title>{this.props.board.title || <Weak>Untitled</Weak>}</Title>
-        <MenuIcon $dark onClick={this.openMenu} />
+        <MenuIcon $dark={!this.props.board.color} onClick={this.openMenu} />
       </Container>
     )
   }
@@ -75,8 +101,8 @@ export default BoardTile
 const Container = styled.div`
   cursor: pointer;
   padding: 10px;
-  background: white;
-  color: #707070;
+  background: ${p => p.$color};
+  color: ${p => (Color(p.$color).blacken(0.7).isDark() ? 'white' : 'black')};
   border-radius: 4px;
   margin-right: 10px;
   margin-bottom: 10px;

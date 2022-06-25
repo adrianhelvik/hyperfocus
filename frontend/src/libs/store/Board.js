@@ -9,6 +9,7 @@ class Board {
   @observable title = ''
   @observable children = []
   @observable boardId = null
+  @observable color = null
 
   constructor(arg) {
     if (typeof arg === 'string') return this.fromTitle(arg)
@@ -19,6 +20,7 @@ class Board {
     this.title = board.title
     this.children.replace(board.children)
     this.boardId = board.boardId
+    this.color = board.color
   }
 
   fromTitle(title) {

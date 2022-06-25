@@ -4,6 +4,7 @@ import { Link } from 'react-router-dom'
 import { withAuth } from 'authContext'
 import styled from 'styled-components'
 import * as theme from '../theme'
+import Color from 'color'
 import React from 'react'
 
 @withRouter
@@ -11,11 +12,12 @@ import React from 'react'
 class Header extends React.Component {
   render() {
     const isInApp = /^\/(app|board)($|\/)/.test(this.props.match.path)
+    const pageColor = this.props.color || theme.ui1
 
     return (
-      <Container>
+      <Container $color={pageColor}>
         <UndecoratedLink to={isInApp ? '/app' : '/'}>
-          <Logo />
+          <Logo pageColor={pageColor} />
         </UndecoratedLink>
         <Children>{this.props.children}</Children>
         {this.props.auth.status === 'success' ? (
@@ -39,7 +41,8 @@ const UndecoratedLink = styled(Link)`
 `
 
 const Container = styled.div`
-  background-color: ${theme.ui1};
+  background-color: ${p => p.$color};
+  color: ${p => (Color(p.$color).isDark() ? 'white' : 'black')};
   position: sticky;
   top: 0;
   padding: 15px;
@@ -49,18 +52,18 @@ const Container = styled.div`
   z-index: ${zIndexes.header};
 `
 
-const Logo = () => (
+const Logo = ({ pageColor }) => (
   <Logo.Container>
-    <Logo.Text1>
+    <Logo.Text1 $pageColor={pageColor}>
       sub
-      <UnderLine />
+      <UnderLine $pageColor={pageColor} />
     </Logo.Text1>
-    <Logo.Text2>task</Logo.Text2>
+    <Logo.Text2 $pageColor={pageColor}>task</Logo.Text2>
   </Logo.Container>
 )
 
 Logo.Container = styled.div`
-  color: white;
+  color: inherit;
   font-size: 25px;
   text-transform: uppercase;
   letter-spacing: 4px;
@@ -68,17 +71,18 @@ Logo.Container = styled.div`
 `
 
 Logo.Text1 = styled.span`
-  color: ${theme.logo1};
+  color: ${p => (Color(p.$pageColor).isDark() ? theme.logo1 : theme.logo1Dark)};
   position: relative;
 `
 
 Logo.Text2 = styled.span`
-  color: ${theme.logo2};
+  color: ${p => (Color(p.$pageColor).isDark() ? theme.logo2 : theme.logo2Dark)};
 `
 
 const UnderLine = styled.div`
   height: 4px;
-  background-color: ${theme.logo1};
+  background-color: ${p =>
+    Color(p.$pageColor).isDark() ? theme.logo1 : theme.logo1Dark};
   width: 61px;
   position: absolute;
   top: 100%;
@@ -86,11 +90,11 @@ const UnderLine = styled.div`
 `
 
 const Login = styled(Link)`
-  color: white;
+  color: inherit;
 `
 
 const Logout = styled.button`
-  color: white;
+  color: inherit;
   text-decoration: underline;
   background-color: transparent;
   border: 0;
@@ -98,6 +102,6 @@ const Logout = styled.button`
 `
 
 const Children = styled.div`
-  color: white;
+  color: inherit;
   margin-left: 20px;
 `

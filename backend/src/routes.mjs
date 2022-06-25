@@ -453,9 +453,22 @@ export const setDeckColorRoute = {
   path: '/setDeckColor',
   async handler(request) {
     const { deckId, color } = request.payload
-    const session = await authenticate(request)
+    await assertCanEditDeck(request, deckId)
 
     await knex('decks').where({ deckId }).update({ color })
+
+    return { success: true }
+  },
+}
+
+export const setBoardColorRoute = {
+  method: 'POST',
+  path: '/setBoardColor',
+  async handler(request) {
+    const { boardId, color } = request.payload
+    await assertCanEditBoard(request, boardId)
+
+    await knex('boards').where({ boardId }).update({ color })
 
     return { success: true }
   },

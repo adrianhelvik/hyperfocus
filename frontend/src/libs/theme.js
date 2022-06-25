@@ -25,6 +25,9 @@ export const shadows = [
 export const logo1 = `rgb(198, 249, 255)`
 export const logo2 = `rgb(255, 255, 255)`
 
+export const logo1Dark = `rgb(90, 90, 90)`
+export const logo2Dark = `rgb(0, 0, 0)`
+
 export const red = `rgb(255, 0, 0)`
 
 export const defaultDeckColor = 'rgb(200, 200, 200)'

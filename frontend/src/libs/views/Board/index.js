@@ -37,7 +37,7 @@ class Board extends React.Component {
 
   async componentDidMount() {
     try {
-      var { boardId, title, children } = await api.getBoard({
+      var { boardId, color, title, children } = await api.getBoard({
         boardId: this.props.match.params.boardId,
       })
     } catch (e) {
@@ -59,6 +59,7 @@ class Board extends React.Component {
         }),
         boardId,
         title,
+        color,
       })
 
       this.props.store.setActiveBoard(new BoardModel(board))
@@ -219,7 +220,7 @@ class Board extends React.Component {
 
     return (
       <Container onContextMenu={this.onContextMenu}>
-        <Header>
+        <Header color={this.board.color}>
           <Breadcrumbs>
             <GoBack onClick={() => this.props.history.goBack()}>
               My boards
@@ -318,7 +319,6 @@ const Container = styled.main`
 `
 
 const Breadcrumbs = styled.header`
-  color: white;
   display: flex;
   align-items: start;
   gap: 10px;
