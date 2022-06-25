@@ -10,8 +10,6 @@ export default async function getBoardsForUser(userId) {
     .select('boards.*')
     .orderBy('createdAt', 'desc')
 
-  console.log(boards)
-
   await Promise.all(
     boards.map(async board => {
       board.children = []
