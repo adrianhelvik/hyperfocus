@@ -1,3 +1,4 @@
+import { BrowserRouter as Router, Switch, Route } from 'react-router-dom'
 import LandingPage from 'views/LandingPage'
 import { ProvideAuth } from 'authContext'
 import Register from 'views/Register'
@@ -7,7 +8,6 @@ import Reactions from './Reactions'
 import Board from 'views/Board'
 import Login from 'views/Login'
 import React from 'react'
-import { BrowserRouter as Router, Switch, Route } from 'react-router-dom'
 
 class Routes extends React.Component {
   render() {
