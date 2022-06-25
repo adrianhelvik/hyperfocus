@@ -54,21 +54,17 @@ class Login extends React.Component {
     return (
       <Container>
         <Form onSubmit={this.onSubmit}>
-          <InputWrapper>
-            <Input
-              placeholder="Username"
-              onChange={this.setUsername}
-              value={this.username}
-            />
-          </InputWrapper>
-          <InputWrapper>
-            <Input
-              placeholder="Password"
-              onChange={this.setPassword}
-              value={this.password}
-              type="password"
-            />
-          </InputWrapper>
+          <Input
+            placeholder="Username"
+            onChange={this.setUsername}
+            value={this.username}
+          />
+          <Input
+            placeholder="Password"
+            onChange={this.setPassword}
+            value={this.password}
+            type="password"
+          />
           <Button>Log in</Button>
           <Message>
             {this.message}
@@ -99,10 +95,9 @@ const Container = styled.div`
 const Form = styled.form`
   margin: auto;
   padding-bottom: 100px;
-`
-
-const InputWrapper = styled.div`
-  margin-top: 25px;
+  display: grid;
+  grid-auto-flow: row;
+  gap: 20px;
 `
 
 const Message = styled.div`

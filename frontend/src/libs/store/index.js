@@ -24,7 +24,7 @@ class Store {
 
   @action.bound addBoard(board) {
     this.uncomittedBoards.push(board)
-    this.boards.push(board)
+    this.boards.unshift(board)
   }
 
   getBoard(boardId) {

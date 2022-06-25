@@ -168,34 +168,6 @@ const Tile = styled.button.attrs({
     `}
 `
 
-const AddButton = styled.button`
-  border: none;
-  color: white;
-  font-size: 0.8rem;
-  padding: 10px;
-  border-radius: 4px;
-  background: ${p => (p.active ? theme.ui1 : '#ddd')};
-  width: fit-content;
-  display: block;
-  margin-left: auto;
-  cursor: ${p => (p.active ? 'pointer' : 'not-allowed')};
-  :focus {
-    outline: none;
-    ${p =>
-      p.active &&
-      css`
-        background: ${theme.ui2};
-      `}
-  }
-  :active:hover {
-    ${p =>
-      p.active &&
-      css`
-        background: #707070;
-      `}
-  }
-`
-
 const Section = styled.section`
   :not(:last-child) {
     margin-right: 10px;
