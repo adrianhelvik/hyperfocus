@@ -10,9 +10,11 @@ import React from 'react'
 @withAuth
 class Header extends React.Component {
   render() {
+    const isInApp = /^\/(app|board)($|\/)/.test(this.props.match.path)
+
     return (
       <Container>
-        <UndecoratedLink to="/">
+        <UndecoratedLink to={isInApp ? '/app' : '/'}>
           <Logo />
         </UndecoratedLink>
         <div>{this.props.children}</div>
