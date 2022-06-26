@@ -1,4 +1,4 @@
-export default function ellipsify(text, length = 60) {
+export default function ellipsify(text: string, length = 60) {
   if (typeof text !== 'string') return text
 
   if (text.length < length) {
