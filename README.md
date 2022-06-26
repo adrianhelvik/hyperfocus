@@ -3,7 +3,7 @@
 ## Running in Docker
 1. Install Docker and Docker Compose (usually bundled with Docker)
 2. Run `./start` in the root folder.
-3. Open http://localhost:3000 in your web browser
+3. Open http://localhost:8080 in your web browser
 
 ## Demo usage
 This is a work in progress, so expect some bugs if you go off the beaten path.

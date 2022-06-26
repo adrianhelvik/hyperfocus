@@ -19,4 +19,8 @@ export default {
       assert: '/src/libs/assert',
     },
   },
+  server: {
+    host: true,
+    port: 8080,
+  },
 }
