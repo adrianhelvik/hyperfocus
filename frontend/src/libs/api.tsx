@@ -45,7 +45,7 @@ async function callProcedure(name, body = {}) {
   return data
 }
 
-export function setPersistentHeader(key, value) {
+export function setPersistentHeader(key: string, value: string) {
   local.set('persistentHeaders', {
     ...local.get('persistentHeaders', {}),
     [key]: value,

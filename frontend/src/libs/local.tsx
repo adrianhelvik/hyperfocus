@@ -1,31 +1,34 @@
+type Storage = { [x: string]: string | undefined }
+
 const PREFIX = '_local_'
 
-let storage
+let storage: Storage
 
 try {
-  storage = window.localStorage
-  storage['____temp____'] = true
+  storage = window.localStorage as Storage
+  storage['____temp____'] = 'foo'
 } catch (e) {
   try {
-    storage = sessionStorage
-    storage['____temp____'] = true
+    storage = sessionStorage as Storage
+    storage['____temp____'] = 'foo'
   } catch (e) {
-    storage = {}
+    storage = {} as Storage
   }
 }
 
 const local = {
-  get(key, defaultValue) {
-    if (storage[PREFIX + key]) {
+  get(key: string, defaultValue?: any) {
+    const stringified = storage[PREFIX + key]
+    if (stringified) {
       try {
-        return JSON.parse(storage[PREFIX + key])
+        return JSON.parse(stringified)
       } catch (e) {
         return defaultValue
       }
     }
     return defaultValue
   },
-  has(key) {
+  has(key: string) {
     const value = storage[PREFIX + key]
     if (!value) return false
     try {
@@ -35,10 +38,10 @@ const local = {
       return false
     }
   },
-  delete(key) {
+  delete(key: string) {
     delete storage[PREFIX + key]
   },
-  set(key, value) {
+  set(key: string, value: any) {
     try {
       storage[PREFIX + key] = JSON.stringify(value)
       return true
@@ -47,11 +50,9 @@ const local = {
     }
     return false
   },
-  toggle(key) {
+  toggle(key: string) {
     this.set(key, !this.get(key))
   },
 }
-
-if (import.meta.env.NODE_ENV === 'development') window.local = local
 
 export default local

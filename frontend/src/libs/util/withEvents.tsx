@@ -1,15 +1,21 @@
 import hoist from 'hoist-non-react-statics'
 import React from 'react'
 
-export default WrappedComponent => {
-  class NewComponent extends React.Component {
+export default <P extends {}>(
+  WrappedComponent: React.ComponentType<P>,
+): React.ComponentType<P> => {
+  class NewComponent extends React.Component<P> {
     static displayName = WrappedComponent.displayName || WrappedComponent.name
-    static WrappedComponent =
-      WrappedComponent.WrappedComponent || WrappedComponent
-    listeners = []
 
-    on = (target, eventName, realHandler) => {
-      const handler = event => realHandler(event) // Prevents Babel bug
+    unmounted = false
+
+    listeners: Array<{
+      target: EventTarget
+      eventName: string
+      handler: (event: Event) => void
+    }> = []
+
+    on = (target: Node, eventName: string, handler: (event: any) => void) => {
       if (this.unmounted) {
         console.error(
           'Attempted to add event listener after unmounting. This is a noop',
@@ -20,9 +26,18 @@ export default WrappedComponent => {
       target.addEventListener(eventName, handler)
     }
 
-    off = (target, eventName) => {
-      const listeners = []
-      const toRemove = []
+    off = (target: Node, eventName: string) => {
+      const listeners: Array<{
+        target: EventTarget
+        eventName: string
+        handler: (event: Event) => void
+      }> = []
+
+      const toRemove: Array<{
+        target: EventTarget
+        eventName: string
+        handler: (event: Event) => void
+      }> = []
 
       for (const listener of this.listeners) {
         if (listener.target === target && listener.eventName === eventName)
