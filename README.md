@@ -6,8 +6,6 @@
 3. Open http://localhost:8080 in your web browser
 
 ## Demo usage
-This is a work in progress, so expect some bugs if you go off the beaten path.
-
 1. Click login and enter test / secret
 2. Create two boards (eg. "Design" and "Development")
 3. Open the "Development" board
@@ -18,3 +16,6 @@ This is a work in progress, so expect some bugs if you go off the beaten path.
   1. Select the board "Development"
   2. Select the deck "Design finished"
 8. The deck "Design finished" will now be shared between "Design" and "Development"
+
+## Notes
+- The project is in the process of being migrated from JavaScript to TypeScript.
