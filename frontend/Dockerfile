@@ -2,9 +2,11 @@ FROM node
 
 WORKDIR /frontend
 
+COPY ./frontend/vite.config.js ./
+COPY ./frontend/tsconfig.json ./
+COPY ./frontend/index.html ./index.html
 COPY ./frontend/scripts ./scripts
 COPY ./frontend/config ./config
-COPY ./frontend/public ./public
 
 COPY ./frontend/package.json ./
 COPY ./frontend/yarn.lock ./

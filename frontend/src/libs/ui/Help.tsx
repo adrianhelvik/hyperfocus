@@ -32,7 +32,7 @@ export default function Help({ children, style }) {
         className="material-symbols-outlined"
         onMouseEnter={() => setOpen(true)}
         onMouseLeave={() => setOpen(false)}
-        innerRef={setIconElement}
+        ref={setIconElement}
         style={style}
       >
         help
@@ -41,7 +41,7 @@ export default function Help({ children, style }) {
         <Portal>
           <FloatingHelp
             style={{ transform: `translateX(${x}px) translateY(${y}px)` }}
-            innerRef={setTooltipElement}
+            ref={setTooltipElement}
           >
             {children}
           </FloatingHelp>

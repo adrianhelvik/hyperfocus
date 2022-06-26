@@ -85,7 +85,7 @@ class AddPortal extends React.Component {
         <InputWrapper>
           <Input
             placeholder="Name in this board"
-            autofocus
+            autoFocus
             value={this.title}
             onChange={e => this.setTitle(e.target.value)}
           />

@@ -27,7 +27,7 @@ class BoardList extends React.Component {
         <Header>
           <Title>My boards</Title>
           <PlusButton onClick={this.props.store.startAddingBoard}>
-            <span class="material-symbols-outlined">add</span>
+            <span className="material-symbols-outlined">add</span>
           </PlusButton>
         </Header>
         <Boards>

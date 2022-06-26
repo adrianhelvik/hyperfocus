@@ -21,10 +21,12 @@ import api from 'api'
 export const elementToDeck = observable.map()
 const decks = observable.map()
 
-const sharedState = new (class {
+class SharedState {
   @observable moving = []
   @observable lastHoverIndex = null
-})()
+}
+
+const sharedState = new SharedState()
 
 @withModal
 @withMenu
@@ -260,7 +262,7 @@ class Deck extends React.Component {
     return (
       <Container
         data-board-child={this.props.index}
-        innerRef={e => (this.element = e)}
+        ref={e => (this.element = e)}
         className={this.props.className}
         onMouseOver={this.onMouseOver}
         onMouseLeave={this.onMouseLeave}

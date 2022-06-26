@@ -234,7 +234,7 @@ class Board extends React.Component {
             <Empty>
               There are no decks here yet.
               <br />
-              Click <span class="material-symbols-outlined">add_circle</span> to
+              Click <span className="material-symbols-outlined">add_circle</span> to
               create your first deck!
             </Empty>
           )}

@@ -1,18 +1,19 @@
 import { observer, Provider } from 'mobx-react'
 import { observable } from 'mobx'
+import Routes from './Routes'
 import * as mobx from 'mobx'
 import Store from 'store'
 import React from 'react'
 
 const components = observable({
-  Routes: require('./Routes').default,
+  Routes,
 })
 
-if (module.hot) {
-  module.hot.accept('./Routes.js', () => {
-    components.Routes = require('./Routes').default
+if (import.meta.hot) {
+  import.meta.hot.accept('./Routes.js', (module) => {
+    components.Routes = module.default
   })
-  module.hot.accept('store', () => {
+  import.meta.hot.accept('store', () => {
     window.location.reload()
   })
 }
@@ -23,7 +24,7 @@ class App extends React.Component {
   store = new Store()
 
   componentDidMount() {
-    if (process.env.NODE_ENV === 'development') {
+    if (import.meta.env.NODE_ENV === 'development') {
       window.store = this.store
       window.mobx = mobx
       console.info('Use window.store for debugging the application state')

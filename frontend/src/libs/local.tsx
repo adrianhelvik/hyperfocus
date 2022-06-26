@@ -52,6 +52,6 @@ const local = {
   },
 }
 
-if (process.env.NODE_ENV === 'development') global.local = local
+if (import.meta.env.NODE_ENV === 'development') window.local = local
 
 export default local

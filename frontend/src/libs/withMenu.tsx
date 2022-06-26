@@ -1,7 +1,7 @@
 import styled, { keyframes } from 'styled-components'
 import hoist from 'hoist-non-react-statics'
-import someParent from 'util/someParent'
 import withEvents from 'util/withEvents'
+import someParent from 'util/someParent'
 import { Portal } from 'react-portal'
 import { observer } from 'mobx-react'
 import onSelect from 'util/onSelect'
@@ -22,6 +22,7 @@ export default WrappedComponent => {
     static WrappedComponent =
       WrappedComponent.WrappedComponent || WrappedComponent
 
+    @observable.ref menu = null
     @observable options = null
     @observable x = null
     @observable y = null
@@ -39,8 +40,10 @@ export default WrappedComponent => {
       this.x = event.clientX
       this.y = event.clientY
       this.options = options
-      this.props.on(document, 'click', event => {
-        if (!someParent(event.target, e => e === this.menu)) this.closeMenu()
+      setTimeout(() => {
+        this.props.on(document, 'click', event => {
+          if (!this.menu.contains(event.target)) this.closeMenu()
+        })
       })
     }
 
@@ -66,10 +69,10 @@ export default WrappedComponent => {
           <WrappedComponent {...this.props} showMenu={this.showMenu} />
           {this.options && (
             <Portal>
-              <MenuWraper x={this.x} y={this.y} ref={e => (this.menu = e)}>
+              <MenuWrapper x={this.x} y={this.y} ref={e => (this.menu = e)}>
                 {Object.keys(this.options).map((key, index) => (
                   <MenuItem
-                    innerRef={e => index === 0 && e && e.focus()}
+                    ref={e => index === 0 && e && e.focus()}
                     {...onSelect(this.selectItem)}
                     data-key={key}
                     key={key}
@@ -77,7 +80,7 @@ export default WrappedComponent => {
                     {key}
                   </MenuItem>
                 ))}
-              </MenuWraper>
+              </MenuWrapper>
             </Portal>
           )}
         </React.Fragment>
@@ -90,7 +93,7 @@ export default WrappedComponent => {
   return NewComponent
 }
 
-const MenuWraper = styled.div`
+const MenuWrapper = styled.div`
   position: fixed;
   top: ${p => p.y}px;
   left: ${p => p.x}px;

@@ -1,6 +1,5 @@
 import TextArea from 'react-textarea-autosize'
 import renderToBody from 'util/renderToBody'
-import { autobind } from 'core-decorators'
 import { observable, action } from 'mobx'
 import styled from 'styled-components'
 import { observer } from 'mobx-react'
@@ -18,13 +17,13 @@ class AddCardInput extends React.Component {
     this.title = event.target.value
   }
 
-  @autobind async onSubmit(event) {
+  onSubmit = async event => {
     event.preventDefault()
 
     await this.save()
   }
 
-  @autobind async save() {
+  save = async () => {
     if (!this.title) {
       this.warn('The input field can not be empty')
       return
@@ -42,7 +41,9 @@ class AddCardInput extends React.Component {
 
   inputRef = input => {
     this.input = input
-    typeof this.props.innerRef === 'function' && this.props.innerRef(input)
+    if (typeof this.props.innerRef === 'function') {
+      this.props.innerRef(input)
+    }
   }
 
   warn(warning) {
@@ -83,7 +84,7 @@ class AddCardInput extends React.Component {
     }, duration)
   }
 
-  @autobind async submitIfEnter(event) {
+  submitIfEnter = async event => {
     if (event.which !== 13) return
 
     event.preventDefault()
@@ -99,7 +100,7 @@ class AddCardInput extends React.Component {
           value={this.title}
           onChange={this.setTitle}
           placeholder="Add card"
-          inputRef={this.inputRef}
+          ref={this.inputRef}
         />
         <Button
           isPortal={this.props.isPortal}

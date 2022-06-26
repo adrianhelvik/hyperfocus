@@ -1,6 +1,6 @@
+import { observable, computed, action } from 'mobx'
 import api, { setPersistentHeader } from 'api'
 import hoist from 'hoist-non-react-statics'
-import { observable, computed } from 'mobx'
 import { observer } from 'mobx-react'
 import React from 'react'
 
@@ -31,8 +31,12 @@ export function useAuth() {
 class ProvideAuth extends React.Component {
   @observable status = 'pending'
 
+  @action setStatus(status) {
+    this.status = status
+  }
+
   async login(payload) {
-    this.status = 'pending'
+    this.setStatus('pending')
     const { sessionId } = await api.login(payload)
     setPersistentHeader('Authorization', `Bearer ${sessionId}`)
     await this.authenticate()
@@ -43,13 +47,14 @@ class ProvideAuth extends React.Component {
       await api.authenticate()
       console.log(
         '%cauthentication successful',
-        'background:lightgreen;padding:4px',
+        'background:lightgreen;color:black;padding:4px',
       )
-      this.status = 'success'
+      this.setStatus('success')
+      console.log(this.status)
       return true
     } catch (e) {
       console.log('%cauthentication failed', 'background:red;padding:4px')
-      this.status = 'failure'
+      this.setStatus('failure')
       return false
     }
   }
@@ -59,7 +64,7 @@ class ProvideAuth extends React.Component {
     window.location.href = '/'
   }
 
-  @computed get value() {
+  @computed get auth() {
     return {
       authenticate: this.authenticate.bind(this),
       logout: this.logout.bind(this),
@@ -69,10 +74,12 @@ class ProvideAuth extends React.Component {
   }
 
   render() {
-    if (!this.value.login) throw Error('Failure')
+    if (!this.auth.login) throw Error('Failure')
+
+    console.log('this.auth:', this.auth)
 
     return (
-      <AuthContext.Provider value={this.value}>
+      <AuthContext.Provider value={this.auth}>
         {this.props.children}
       </AuthContext.Provider>
     )

@@ -18,7 +18,7 @@ class Board {
 
   fromBoard(board) {
     this.title = board.title
-    this.children.replace(board.children)
+    this.children = board.children.slice()
     this.boardId = board.boardId
     this.color = board.color
   }

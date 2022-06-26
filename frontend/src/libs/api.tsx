@@ -3,7 +3,7 @@ import local from 'local'
 let persistentHeaders = local.get('persistentHeaders', {})
 
 export default new Proxy(
-  {},
+  {} as any,
   {
     get(_, name) {
       return body => callProcedure(name, body)
@@ -20,7 +20,7 @@ async function callProcedure(name, body = {}) {
   }
 
   try {
-    var response = await fetch(`${process.env.REACT_APP_API_URL}/${name}`, {
+    var response = await fetch(`${import.meta.env.VITE_API_URL}/${name}`, {
       method: 'POST',
       mode: 'cors',
       cache: 'no-cache',

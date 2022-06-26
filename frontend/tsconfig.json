@@ -1,0 +1,9 @@
+{
+  "compilerOptions": {
+    "target": "ES5",
+    "experimentalDecorators": true,
+    "jsx": "react-jsx",
+    "baseUrl": ".",
+    "lib": ["es2022", "dom"]
+  }
+}

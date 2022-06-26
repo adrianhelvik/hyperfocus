@@ -38,7 +38,7 @@ class AddCircle extends React.Component {
     return (
       <Container
         onClick={this.onClick}
-        innerRef={e => (this.container = e)}
+        ref={e => (this.container = e)}
         mounted={this.mounted}
         open={this.open}
       >

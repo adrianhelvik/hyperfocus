@@ -13,10 +13,6 @@ import React from 'react'
 class AddBoardModal extends React.Component {
   @observable title = ''
 
-  componentDidMount() {
-    this.input.focus()
-  }
-
   @action.bound setTitle(event) {
     this.title = event.target.value
   }
@@ -34,10 +30,10 @@ class AddBoardModal extends React.Component {
         <Modal hide={this.props.store.stopAddingBoard}>
           <Title>Name your board</Title>
           <Input
-            innerRef={e => (this.input = e)}
             placeholder="Enter a name"
             onChange={this.setTitle}
             value={this.title}
+            autoFocus
           />
           <ModalFooter>
             <Button

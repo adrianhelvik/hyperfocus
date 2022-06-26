@@ -146,7 +146,7 @@ class Card extends React.Component {
     return (
       <Container
         data-card={this.props.index}
-        innerRef={e => (this.element = e)}
+        ref={e => (this.element = e)}
         className={this.props.className}
         onMouseDown={this.onMouseDown}
         noPointer={this.noPointer}
@@ -156,7 +156,7 @@ class Card extends React.Component {
       >
         {Boolean(this.moving) && <style>{`body { user-select: none }`}</style>}
         <Title>{this.props.card.title}</Title>
-        <Remove innerRef={e => (this.removeElement = e)}>
+        <Remove ref={e => (this.removeElement = e)}>
           <span className="material-symbols-outlined">delete</span>
         </Remove>
       </Container>

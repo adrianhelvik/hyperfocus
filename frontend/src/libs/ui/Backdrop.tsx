@@ -30,7 +30,7 @@ class Backdrop extends React.Component {
       <OuterContainer
         transparent={this.props.transparent}
         onClick={this.hide}
-        innerRef={e => (this.container = e)}
+        ref={e => (this.container = e)}
       >
         <InnerContainer>{this.props.children}</InnerContainer>
       </OuterContainer>

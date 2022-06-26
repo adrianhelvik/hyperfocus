@@ -1,4 +1,3 @@
-import { autobind } from 'core-decorators'
 import { observable, action } from 'mobx'
 import ModalFooter from 'ui/ModalFooter'
 import styled from 'styled-components'
@@ -18,7 +17,7 @@ class AddDeck extends React.Component {
     this.title = event.target.value
   }
 
-  @autobind async onSubmit(event) {
+  onSubmit = async (event) => {
     if (this.loading) return
     this.loading = true
     event.preventDefault()
@@ -43,7 +42,7 @@ class AddDeck extends React.Component {
       <Container onSubmit={this.onSubmit}>
         <Title>Create a deck</Title>
         <Input
-          autofocus
+          autoFocus
           placeholder="Title"
           onChange={this.setTitle}
           value={this.title}
