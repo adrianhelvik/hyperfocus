@@ -38,8 +38,6 @@ export default observer(function Login() {
     auth.authenticate()
   }, [])
 
-  console.log('auth:', auth)
-
   if (auth.status === 'success') return <Redirect to="/app" />
 
   return (

@@ -23,14 +23,15 @@ export default React.forwardRef(function Input(props, ref) {
   }, [props.autoFocus, element])
 
   useEffect(() => {
+    if (!showPassword) return
     const onMouseUp = e => {
-      if (showPassword) setShowPassword(false)
+      setShowPassword(false)
     }
     document.addEventListener('mouseup', onMouseUp)
     return () => {
       document.removeEventListener('mouseup', onMouseUp)
     }
-  }, [])
+  }, [showPassword])
 
   const innerRef = useCallback(
     element => {
@@ -53,7 +54,7 @@ export default React.forwardRef(function Input(props, ref) {
           onChange={props.onChange}
           value={props.value}
           ref={innerRef}
-          type={type}
+          type={showPassword ? 'text' : type}
           forPassword={props.type === 'password'}
           colored={showPassword}
         />
