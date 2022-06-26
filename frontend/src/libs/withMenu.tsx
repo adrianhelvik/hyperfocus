@@ -36,16 +36,20 @@ export default WrappedComponent => {
     componentWillUnmount() {
       const index = openMenus.indexOf(this)
       if (index > -1) openMenus.splice(index, 1)
+      clearTimeout(this.showMenuTimeout)
     }
 
     showMenu = (event, options) => {
-      openMenus.forEach(menu => {
-        menu.closeMenu()
-      })
-      openMenus.push(this)
-      this.x = event.clientX
-      this.y = event.clientY
-      this.options = options
+      clearTimeout(this.showMenuTimeout)
+      this.showMenuTimeout = setTimeout(() => {
+        openMenus.forEach(menu => {
+          menu.closeMenu()
+        })
+        openMenus.push(this)
+        this.x = event.clientX
+        this.y = event.clientY
+        this.options = options
+      }, 100)
     }
 
     closeMenu = () => {
