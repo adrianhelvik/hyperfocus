@@ -428,15 +428,21 @@ export const deleteBoardRoute = {
   path: '/deleteBoard',
   async handler(request) {
     const { boardId } = request.payload
-    const user = await authenticate(request)
+    await assertCanEditBoard(request, boardId)
 
-    const deleted = await knex('boards')
-      .where({ boardId })
-      .andWhere({ createdBy: user.userId })
-      .del()
+    const decks = await knex('decks').where({ boardId })
 
-    if (deleted) return { success: true }
-    else throw Boom.notFound('No accessible board with the given id')
+    await knex.transaction(async trx => {
+      for (const { deckId } of decks) {
+        await knex('portals').where({ deckId }).del()
+        await knex('cards').where({ deckId }).del()
+      }
+      await knex('decks').where({ boardId }).del()
+      await knex('portals').where({ boardId }).del()
+      await knex('boards').where({ boardId }).del()
+    })
+
+    return { success: true }
   },
 }
 
