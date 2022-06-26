@@ -49,7 +49,8 @@ cleanup() {
   set +e
   docker kill --signal=9 "$POSTGRES_SVC" > /dev/null 2>&1
   docker kill --signal=9 "$BACKEND_SVC" > /dev/null 2>&1
-  docker network rm "$NETWORK" /dev/null 2>&1
+  docker network rm "$NETWORK" > /dev/null 2>&1
+  echo "Exit code: $EXIT_CODE"
   exit $EXIT_CODE
 }
 
