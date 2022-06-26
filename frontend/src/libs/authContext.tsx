@@ -4,9 +4,9 @@ import hoist from 'hoist-non-react-statics'
 import { observer } from 'mobx-react'
 import React from 'react'
 
-const AuthContext = React.createContext()
+const AuthContext = React.createContext(null)
 
-export function withAuth(WrappedComponent) {
+export function withAuth(WrappedComponent: React.Component | React.FC) {
   const name =
     WrappedComponent.displayName || WrappedComponent.name || '<component>'
 
