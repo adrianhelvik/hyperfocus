@@ -27,6 +27,12 @@ export default WrappedComponent => {
     @observable x = null
     @observable y = null
 
+    componentDidMount() {
+      this.props.on(document, 'click', event => {
+        if (this.menu && !this.menu.contains(event.target)) this.closeMenu()
+      })
+    }
+
     componentWillUnmount() {
       const index = openMenus.indexOf(this)
       if (index > -1) openMenus.splice(index, 1)
@@ -40,11 +46,6 @@ export default WrappedComponent => {
       this.x = event.clientX
       this.y = event.clientY
       this.options = options
-      setTimeout(() => {
-        this.props.on(document, 'click', event => {
-          if (!this.menu.contains(event.target)) this.closeMenu()
-        })
-      })
     }
 
     closeMenu = () => {
@@ -52,7 +53,6 @@ export default WrappedComponent => {
       this.options = null
       this.x = null
       this.y = null
-      this.props.off(document, 'click')
       const index = openMenus.indexOf(this)
       if (index > -1) openMenus.splice(index, 1)
     }
