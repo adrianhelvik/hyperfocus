@@ -2,7 +2,7 @@ import { observable, computed, action } from 'mobx'
 import api, { setPersistentHeader } from 'api'
 import hoist from 'hoist-non-react-statics'
 import { observer } from 'mobx-react'
-import React from 'react'
+import React, { useContext } from 'react'
 
 const AuthContext = React.createContext(null)
 
@@ -24,7 +24,7 @@ export function withAuth(WrappedComponent: React.Component | React.FC) {
 }
 
 export function useAuth() {
-  return React.useContext(AuthContext)
+  return useContext(AuthContext)
 }
 
 @observer
@@ -45,12 +45,7 @@ class ProvideAuth extends React.Component {
   async authenticate() {
     try {
       await api.authenticate()
-      console.log(
-        '%cauthentication successful',
-        'background:lightgreen;color:black;padding:4px',
-      )
       this.setStatus('success')
-      console.log(this.status)
       return true
     } catch (e) {
       console.log('%cauthentication failed', 'background:red;padding:4px')
@@ -75,8 +70,6 @@ class ProvideAuth extends React.Component {
 
   render() {
     if (!this.auth.login) throw Error('Failure')
-
-    console.log('this.auth:', this.auth)
 
     return (
       <AuthContext.Provider value={this.auth}>
