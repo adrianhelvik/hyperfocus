@@ -4,16 +4,30 @@ import hoist from 'hoist-non-react-statics'
 import { observer } from 'mobx-react'
 import React, { useContext } from 'react'
 
-const AuthContext = React.createContext(null)
+type Status = 'pending' | 'success' | 'failure'
 
-export function withAuth(WrappedComponent: React.Component | React.FC) {
+interface Auth {
+  authenticate: () => Promise<boolean>
+  logout: () => Promise<void>
+  login: (payload: { username: string; password: string }) => Promise<void>
+  status: Status
+}
+
+const AuthContext = React.createContext<Auth | null>(null)
+
+export function withAuth<P extends object>(
+  WrappedComponent: React.ComponentType<P>,
+) {
   const name =
-    WrappedComponent.displayName || WrappedComponent.name || '<component>'
+    WrappedComponent.displayName ||
+    WrappedComponent['displayName'] ||
+    WrappedComponent.name ||
+    '<component>'
 
-  const WithAuth = props => {
+  const WithAuth = (props: P) => {
     const auth = React.useContext(AuthContext)
 
-    return <WrappedComponent {...props} auth={auth} />
+    return <WrappedComponent {...(props as P)} auth={auth} />
   }
 
   WithAuth.displayName = `withContext(${name})`
@@ -28,21 +42,21 @@ export function useAuth() {
 }
 
 @observer
-class ProvideAuth extends React.Component {
-  @observable status = 'pending'
+class ProvideAuth extends React.Component<{ children: React.ReactElement }> {
+  @observable status: Status = 'pending'
 
-  @action setStatus(status) {
+  @action setStatus(status: Status) {
     this.status = status
   }
 
-  async login(payload) {
+  async login(payload: { username: string; password: string }) {
     this.setStatus('pending')
     const { sessionId } = await api.login(payload)
     setPersistentHeader('Authorization', `Bearer ${sessionId}`)
     await this.authenticate()
   }
 
-  async authenticate() {
+  async authenticate(): Promise<boolean> {
     try {
       await api.authenticate()
       this.setStatus('success')
@@ -54,7 +68,7 @@ class ProvideAuth extends React.Component {
     }
   }
 
-  async logout() {
+  async logout(): Promise<void> {
     await api.logout()
     window.location.href = '/'
   }
