@@ -1,7 +1,6 @@
 import styled, { keyframes } from 'styled-components'
 import hoist from 'hoist-non-react-statics'
 import withEvents from 'util/withEvents'
-import someParent from 'util/someParent'
 import { Portal } from 'react-portal'
 import { observer } from 'mobx-react'
 import onSelect from 'util/onSelect'
