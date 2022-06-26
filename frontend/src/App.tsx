@@ -10,7 +10,7 @@ const components = observable({
 })
 
 if (import.meta.hot) {
-  import.meta.hot.accept('./Routes.js', (module) => {
+  import.meta.hot.accept('./Routes.js', module => {
     components.Routes = module.default
   })
   import.meta.hot.accept('store', () => {
@@ -24,12 +24,6 @@ class App extends React.Component {
   store = new Store()
 
   componentDidMount() {
-    if (import.meta.env.NODE_ENV === 'development') {
-      window.store = this.store
-      window.mobx = mobx
-      console.info('Use window.store for debugging the application state')
-    }
-
     window.addEventListener('unhandledRejection', e => {
       this.unhandledRejection = e
     })
@@ -38,11 +32,7 @@ class App extends React.Component {
   render() {
     if (this.unhandledRejection)
       return <div>{this.unhandledRejection.stack}</div>
-    return (
-      <Provider store={this.store}>
-        <components.Routes />
-      </Provider>
-    )
+    return <Provider store={this.store} children={<components.Routes />} />
   }
 }
 

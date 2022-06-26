@@ -1,9 +1,12 @@
 {
   "compilerOptions": {
-    "target": "ES5",
+    "target": "esnext",
+    "module": "esnext",
     "experimentalDecorators": true,
     "jsx": "react-jsx",
     "baseUrl": ".",
-    "lib": ["es2022", "dom"]
+    "lib": ["es2022", "dom"],
+    "types": ["vite/client"],
+    "moduleResolution": "node"
   }
 }
