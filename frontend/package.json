@@ -70,6 +70,8 @@
   },
   "devDependencies": {
     "@types/hoist-non-react-statics": "^3.3.1",
+    "@types/react-portal": "^4.0.4",
+    "@types/styled-components": "^5.1.25",
     "prettier": "^2.7.1",
     "vite": "^2.9.12"
   }
