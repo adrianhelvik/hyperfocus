@@ -22,7 +22,7 @@ import api from 'api'
 @observer
 class BoardTile extends React.Component {
   onSelect = () => {
-    this.props.history.push(`/board/${this.props.board.boardId}`)
+    window.location.pathname = `/board/${this.props.board.boardId}`
   }
 
   setColor = ({ hex }) => {
