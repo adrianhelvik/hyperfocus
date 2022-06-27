@@ -1,46 +1,44 @@
-import styled, { css } from 'styled-components'
-import withEvents from '../util/withEvents'
+import styled, { keyframes, css } from 'styled-components'
 import * as zIndexes from '../zIndexes'
-import { observer } from 'mobx-react'
-import fade from './fade'
 import React from 'react'
 
-@withEvents
-@fade({
-  close: 'hide',
-})
-@observer
-class Backdrop extends React.Component {
-  componentDidMount() {
-    this.props.on(document, 'keydown', event => {
-      if (event.which === 27) this.props.hide(event)
-    })
+type Props = {
+  transparent?: boolean
+  hide: (event?: Event) => void
+  children: JSX.Element
+}
+
+const Backdrop: React.FC<Props> = ({ hide, transparent, children }) => {
+  const [container, setContainer] = React.useState<Element>()
+
+  React.useEffect(() => {
+    const onKeyDown = (event: KeyboardEvent) => {
+      if (event.which === 27) hide(event)
+    }
+    document.addEventListener('keydown', onKeyDown)
+    return () => {
+      document.removeEventListener('keydown', onKeyDown)
+    }
+  }, [])
+
+  const onContainerClick = (event: MouseEvent) => {
+    if (event.target === container && typeof hide === 'function') hide(event)
   }
 
-  hide = event => {
-    if (
-      event.target === this.container &&
-      typeof this.props.hide === 'function'
-    )
-      this.props.hide(event)
-  }
-
-  render() {
-    return (
-      <OuterContainer
-        transparent={this.props.transparent}
-        onClick={this.hide}
-        ref={e => (this.container = e)}
-      >
-        <InnerContainer>{this.props.children}</InnerContainer>
-      </OuterContainer>
-    )
-  }
+  return (
+    <OuterContainer
+      transparent={transparent}
+      onClick={onContainerClick}
+      ref={setContainer}
+    >
+      <InnerContainer>{children}</InnerContainer>
+    </OuterContainer>
+  )
 }
 
 export default Backdrop
 
-const OuterContainer = styled.div`
+const OuterContainer = styled.div<any>`
   position: fixed;
   bottom: 0;
   right: 0;
@@ -52,6 +50,8 @@ const OuterContainer = styled.div`
   display: flex;
 
   background-color: rgba(0, 0, 0, 0.5);
+
+  animation: ${keyframes`from { opacity: 0; }`} 0.5s;
 
   ${p =>
     p.transparent &&

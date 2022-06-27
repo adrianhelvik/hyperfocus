@@ -1,10 +1,16 @@
 import styled, { css } from 'styled-components'
 import Backdrop from './Backdrop'
+import { Coord } from 'types'
 import * as theme from 'theme'
 import assert from 'assert'
 import React from 'react'
 
-class Modal extends React.Component {
+type Props = {
+  placement?: Coord
+  hide: () => any
+}
+
+class Modal extends React.Component<Props> {
   render() {
     if (this.props.placement) {
       assert.equal(typeof this.props.placement.x, 'number')
