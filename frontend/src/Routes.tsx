@@ -7,7 +7,6 @@ import NotFound from 'views/NotFound'
 import Reactions from './Reactions'
 import Board from 'views/Board'
 import Login from 'views/Login'
-import React from 'react'
 
 export default function Routes() {
   return (

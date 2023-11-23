@@ -1,16 +1,22 @@
 import { observable, computed, action } from 'mobx'
+import Card from './Card'
+
+type DeckParam = {
+  title?: string
+  cards?: Card[]
+}
 
 class Deck {
   @observable title = ''
-  @observable cards = []
+  @observable cards = observable.array<Card>()
   @observable color = ''
+  focus = true
 
-  constructor(deck) {
+  constructor(deck: DeckParam) {
     Object.assign(this, deck)
-    this.focus = true
   }
 
-  @action addCard(card, index) {
+  @action addCard(card: Card, index: number) {
     if (typeof index === 'number' && !isNaN(index)) {
       this.cards.splice(index, 0, card)
     } else {
@@ -22,7 +28,7 @@ class Deck {
     return Boolean(this.cards.length)
   }
 
-  @action.bound removeCard(card) {
+  @action.bound removeCard(card: Card) {
     if (!this.cards.remove(card)) console.error('Failed to remove card:', card)
     else console.info('Removed card:', card)
   }

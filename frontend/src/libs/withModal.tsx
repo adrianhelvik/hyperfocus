@@ -6,7 +6,7 @@ import { Portal } from 'react-portal'
 import Modal from 'ui/Modal'
 import React from 'react'
 
-export default WrappedComponent => {
+export default (WrappedComponent: any) => {
   @withRouter
   @observer
   class NewComponent extends React.Component {

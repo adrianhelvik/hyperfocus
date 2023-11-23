@@ -1,14 +1,25 @@
-import { useCallback, useEffect, useState, useMemo } from 'react'
+import {
+  useCallback,
+  useEffect,
+  useState,
+  useMemo,
+  ChangeEventHandler,
+} from 'react'
 import styled, { css } from 'styled-components'
-import { observable, computed } from 'mobx'
-import withEvents from 'util/withEvents'
-import { observer } from 'mobx-react'
 import * as theme from '../theme'
-import React from 'react'
 
-export default React.forwardRef(function Input(props, ref) {
+type Props = {
+  onChange: ChangeEventHandler<HTMLInputElement>
+  type?: string
+  autoFocus?: boolean
+  innerRef?: (element: HTMLInputElement) => void
+  value: string
+  placeholder?: string;
+}
+
+export default function Input(props: Props) {
   const [showPassword, setShowPassword] = useState(false)
-  const [element, setElement] = useState()
+  const [element, setElement] = useState<HTMLInputElement>()
 
   const type = useMemo(() => {
     if (showPassword) return 'text'
@@ -24,7 +35,7 @@ export default React.forwardRef(function Input(props, ref) {
 
   useEffect(() => {
     if (!showPassword) return
-    const onMouseUp = e => {
+    const onMouseUp = () => {
       setShowPassword(false)
     }
     document.addEventListener('mouseup', onMouseUp)
@@ -34,7 +45,7 @@ export default React.forwardRef(function Input(props, ref) {
   }, [showPassword])
 
   const innerRef = useCallback(
-    element => {
+    (element: HTMLInputElement) => {
       if (typeof props.innerRef === 'function') {
         props.innerRef(element)
       }
@@ -43,7 +54,7 @@ export default React.forwardRef(function Input(props, ref) {
     [props.innerRef],
   )
 
-  const show = useCallback(event => {
+  const show = useCallback(() => {
     setShowPassword(true)
   }, [])
 
@@ -73,7 +84,7 @@ export default React.forwardRef(function Input(props, ref) {
       )}
     </Container>
   )
-})
+}
 
 const padding = '7px 5px'
 const fontSize = '1rem'
@@ -83,7 +94,7 @@ const Container = styled.div`
   margin-top: 15px;
 `
 
-const InputField = styled.input`
+const InputField = styled.input<{ forPassword: boolean; colored: boolean }>`
   font-size: ${fontSize};
   padding: ${padding};
   border: 1px solid ${theme.gray1};
@@ -110,7 +121,7 @@ const InputField = styled.input`
     `}
 `
 
-const LabelText = styled.div`
+const LabelText = styled.div<{ hasContent: boolean }>`
   position: absolute;
   font-size: ${fontSize};
   padding: ${padding};
@@ -133,7 +144,7 @@ const LabelText = styled.div`
 
 const Label = styled.label``
 
-const Icon = styled.i`
+const Icon = styled.i<{ colored: boolean }>`
   position: absolute;
   right: 5px;
   top: 50%;

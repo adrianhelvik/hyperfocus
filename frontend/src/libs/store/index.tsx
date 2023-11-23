@@ -1,10 +1,11 @@
 import { observable, computed, action } from 'mobx'
+import Board from './Board'
 
 class Store {
-  @observable uncomittedBoards = []
+  @observable uncomittedBoards = observable.array<Board>()
   @observable isAddingBoard = false
-  @observable board = null
-  @observable boards = []
+  @observable board: Board | null = null
+  @observable boards = observable.array<Board>()
 
   @computed get boardsById() {
     const boardsById = observable.map()
@@ -22,24 +23,24 @@ class Store {
     this.isAddingBoard = false
   }
 
-  @action.bound addBoard(board) {
+  @action.bound addBoard(board: Board) {
     this.uncomittedBoards.push(board)
     this.boards.unshift(board)
   }
 
-  getBoard(boardId) {
+  getBoard(boardId: string) {
     return this.boardsById.get(boardId)
   }
 
-  @action.bound setBoards(boards) {
+  @action.bound setBoards(boards: Board[]) {
     this.boards.replace(boards)
   }
 
-  @action setActiveBoard(board) {
+  @action setActiveBoard(board: Board) {
     this.board = board
   }
 
-  @action deleteBoard(boardId) {
+  @action deleteBoard(boardId: string) {
     let index = -1
     for (let i = 0; i < this.boards.length; i++) {
       if (this.boards[i].boardId === boardId) {

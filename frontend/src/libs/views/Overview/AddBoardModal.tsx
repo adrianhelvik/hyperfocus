@@ -6,18 +6,19 @@ import Board from 'store/Board'
 import Button from 'ui/Button'
 import Input from 'ui/Input'
 import Modal from 'ui/Modal'
-import React from 'react'
+import React, { ChangeEvent, FormEvent } from 'react'
+import Store from 'src/libs/store'
 
 @inject('store')
 @observer
-class AddBoardModal extends React.Component {
+class AddBoardModal extends React.Component<{ store: Store }> {
   @observable title = ''
 
-  @action.bound setTitle(event) {
+  @action.bound setTitle(event: ChangeEvent<HTMLInputElement>) {
     this.title = event.target.value
   }
 
-  @action.bound onSubmit(event) {
+  @action.bound onSubmit(event: FormEvent<HTMLFormElement>) {
     event.preventDefault()
     this.props.store.addBoard(new Board(this.title))
     this.title = ''
