@@ -1,0 +1,39 @@
+.button {
+    background-color: var(--ui1);
+    border-radius: 4px;
+    padding: 7px 10px;
+    color: white;
+    text-align: center;
+    cursor: pointer;
+    display: block;
+    border: none;
+    font-size: inherit;
+    margin: 0;
+
+    transition:
+        background-color 0.3s,
+        box-shadow 0.3s;
+
+    &[disabled] {
+        cursor: not-allowed;
+        background-color: var(--gray2);
+        color: var(--gray1);
+    }
+
+    &.disabled {
+        background-color: var(--red);
+    }
+
+    &.gray {
+        background-color: var(--gray2);
+        color: black;
+    }
+
+    &:hover {
+        background-color: var(--ui2);
+    }
+
+    &:hover:active {
+        background-color: var(--darkPurple);
+    }
+}

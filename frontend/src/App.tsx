@@ -1,39 +1,31 @@
-import { observer, Provider } from 'mobx-react'
-import { observable } from 'mobx'
-import Routes from './Routes'
-import * as mobx from 'mobx'
-import Store from 'store'
-import React from 'react'
+import { pendingActions, setPendingActions } from "store";
+import { createEffect } from "solid-js";
+import Routes from "./Routes";
+import { MenuRenderer } from "./libs/showMenu";
 
-const components = observable({
-  Routes,
-})
+export default function App() {
+    let promise = Promise.resolve();
 
-if (import.meta.hot) {
-  import.meta.hot.accept('./Routes.js', module => {
-    components.Routes = module.default
-  })
-  import.meta.hot.accept('store', () => {
-    window.location.reload()
-  })
+    createEffect(() => {
+        const actions = pendingActions();
+        if (!actions.length) return;
+        setPendingActions([]);
+
+        for (const action of actions) {
+            promise = promise.then(
+                () => {
+                    console.log(`Performing action: ${action.name}`);
+                    return action.operation();
+                },
+                (error) => {
+                    alert(error.message);
+                },
+            );
+        }
+    });
+
+    return <>
+        <Routes />
+        <MenuRenderer />
+    </>;
 }
-
-@observer
-class App extends React.Component {
-  @observable unhandledRejection = null
-  store = new Store()
-
-  componentDidMount() {
-    window.addEventListener('unhandledRejection', e => {
-      this.unhandledRejection = e
-    })
-  }
-
-  render() {
-    if (this.unhandledRejection)
-      return <div>{this.unhandledRejection.stack}</div>
-    return <Provider store={this.store} children={<components.Routes />} />
-  }
-}
-
-export default App

@@ -1,0 +1,55 @@
+.container {
+    background-color: var(--page-color);
+    color: var(--page-text-color);
+    position: sticky;
+    top: 0;
+    padding: 15px;
+    display: grid;
+    grid-template-columns: auto 1fr auto;
+    align-items: center;
+    z-index: var(--z-index-header);
+}
+
+.children {
+    color: inherit;
+    margin-left: 20px;
+}
+
+.login {
+    color: inherit;
+}
+
+.logout {
+    color: inherit;
+    text-decoration: underline;
+    background-color: transparent;
+    border: 0;
+    cursor: pointer;
+}
+
+.logoContainer {
+    color: inherit;
+    font-size: 25px;
+    text-transform: uppercase;
+    letter-spacing: 4px;
+    font-weight: bold;
+    text-decoration: none;
+}
+
+.logoText1 {
+    color: var(--logo-text1);
+    position: relative;
+}
+
+.logoText2 {
+    color: var(--logo-text2);
+}
+
+.logoUnderline {
+    height: 4px;
+    background-color: var(--logo-text1);
+    width: 61px;
+    position: absolute;
+    top: 100%;
+    left: 0;
+}

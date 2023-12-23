@@ -1,4 +1,4 @@
-import styled from 'styled-components'
+import { styled } from 'solid-styled-components'
 
 const ModalFooter = styled.footer`
   display: flex;

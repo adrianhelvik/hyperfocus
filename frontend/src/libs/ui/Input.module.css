@@ -1,0 +1,55 @@
+.container {
+    position: relative;
+    margin-top: 15px;
+}
+
+.input {
+    border: 1px solid var(--gray1);
+    box-sizing: border-box;
+    border-radius: 4px;
+    padding: 7px 5px;
+    width: 100%;
+    &:focus {
+        outline: none;
+        border-color: var(--ui1);
+    }
+    &:focus + * {
+        transform: translateY(calc(-100% - 7px)) scale(0.7) translateX(-5px);
+        color: var(--ui1);
+    }
+
+    &[type="password"] {
+        padding-right: 30px;
+        border-color: var(--ui1);
+    }
+}
+
+.labelText {
+    position: absolute;
+    pointer-events: none;
+    color: var(--gray1);
+    padding: 7px 5px;
+    font-size: 1rem;
+    top: 50%;
+    left: 3px;
+    transform: translateY(-50%);
+    transform-origin: 0 0;
+    transition: 0.3s;
+    &.hasContent {
+        transform: translateY(calc(-100% - 7px)) scale(0.7) translateX(-5px);
+    }
+    :-webkit-autofill + & {
+        transform: translateY(calc(-100% - 7px)) scale(0.7) translateX(-5px);
+    }
+}
+
+.icon {
+    position: absolute;
+    right: 5px;
+    top: 50%;
+    transform: translateY(-50%);
+    cursor: pointer;
+    &.colored {
+        color: var(--ui1);
+    }
+}

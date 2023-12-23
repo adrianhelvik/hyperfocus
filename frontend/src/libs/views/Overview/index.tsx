@@ -1,55 +1,37 @@
-import { inject, observer } from 'mobx-react'
-import { Redirect } from 'react-router-dom'
-import AddBoardModal from './AddBoardModal'
-import { withAuth } from 'authContext'
-import styled from 'styled-components'
-import BoardList from './BoardList'
-import withMenu from 'withMenu'
-import Header from 'ui/Header'
-import React from 'react'
+import * as store from "store";
+import AddBoardModal from "./AddBoardModal";
+import auth from "auth";
+import styles from "./styles.module.css";
+import BoardList from "./BoardList";
+import withMenu from "withMenu";
+import Header from "ui/Header";
+import { createEffect } from "solid-js";
 
-@withMenu
-@withAuth
-@inject('store')
-@observer
-class Overview extends React.Component {
-  componentDidMount() {
-    this.props.auth.authenticate()
-  }
+export default function Overview() {
+    createEffect(() => {
+        auth.authenticate();
+    });
+    const menu = withMenu();
 
-  onContextMenu = event => {
-    event.preventDefault()
+    const onContextMenu = (event: MouseEvent) => {
+        event.preventDefault();
 
-    this.props.showMenu(event, {
-      'New board': () => {
-        this.props.store.isAddingBoard = true
-      },
-    })
-  }
+        menu.showMenu(event, {
+            "New board": () => {
+                store.setIsAddingBoard(true);
+            },
+        });
+    };
 
-  render() {
-    if (this.props.auth.status === 'failure') return <Redirect to="/" />
+    createEffect(() => {
+        if (auth.status === "failure") window.location.href = "/";
+    });
 
     return (
-      <Container onContextMenu={this.onContextMenu}>
-        <Header>
-          My boards
-        </Header>
-        {this.props.store.isAddingBoard && <AddBoardModal />}
-        <BoardList />
-      </Container>
-    )
-  }
+        <div onContextMenu={onContextMenu} class={styles.container}>
+            <Header>My boards</Header>
+            {store.isAddingBoard() && <AddBoardModal />}
+            <BoardList />
+        </div>
+    );
 }
-
-export default Overview
-
-const Container = styled.div`
-  background-color: #eee;
-  position: absolute;
-  bottom: 0;
-  right: 0;
-  left: 0;
-  top: 0;
-  overflow: auto;
-`

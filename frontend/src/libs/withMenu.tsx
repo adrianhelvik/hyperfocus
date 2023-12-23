@@ -1,3 +1,12 @@
+export default function withMenu() {
+    return {
+        showMenu(_event: MouseEvent, _options: Record<string, () => void>) {
+        // TODO
+        },
+    };
+}
+
+/*
 import styled, { keyframes } from 'styled-components'
 import hoist from 'hoist-non-react-statics'
 import withEvents from 'util/withEvents'
@@ -140,3 +149,4 @@ const MenuItem = styled.div`
     border-bottom-right-radius: 4px;
   }
 `
+*/

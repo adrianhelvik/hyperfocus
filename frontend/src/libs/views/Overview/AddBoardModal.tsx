@@ -1,62 +1,44 @@
-import { observer, inject } from 'mobx-react'
-import { observable, action } from 'mobx'
-import ModalFooter from 'ui/ModalFooter'
-import styled from 'styled-components'
-import Board from 'store/Board'
-import Button from 'ui/Button'
-import Input from 'ui/Input'
-import Modal from 'ui/Modal'
-import React, { ChangeEvent, FormEvent } from 'react'
-import Store from 'src/libs/store'
+import styles from "./AddBoardModal.module.css";
+import { batch, createSignal } from "solid-js";
+import ModalFooter from "ui/ModalFooter";
+import { v4 as uuid } from "uuid";
+import * as store from "store";
+import Button from "ui/Button";
+import Input from "ui/Input";
+import Modal from "ui/Modal";
 
-@inject('store')
-@observer
-class AddBoardModal extends React.Component<{ store: Store }> {
-  @observable title = ''
+export default function AddBoardModal() {
+    const [title, setTitle] = createSignal("");
 
-  @action.bound setTitle(event: ChangeEvent<HTMLInputElement>) {
-    this.title = event.target.value
-  }
+    function onSubmit(event: SubmitEvent) {
+        event.preventDefault();
+        batch(() => {
+            store.createBoard({
+                boardId: uuid(),
+                title: title(),
+            });
+            setTitle("");
+            store.stopAddingBoard();
+        });
+    }
 
-  @action.bound onSubmit(event: FormEvent<HTMLFormElement>) {
-    event.preventDefault()
-    this.props.store.addBoard(new Board(this.title))
-    this.title = ''
-    this.props.store.stopAddingBoard()
-  }
-
-  render() {
     return (
-      <form onSubmit={this.onSubmit}>
-        <Modal hide={this.props.store.stopAddingBoard}>
-          <Title>Name your board</Title>
-          <Input
-            placeholder="Enter a name"
-            onChange={this.setTitle}
-            value={this.title}
-            autoFocus
-          />
-          <ModalFooter>
-            <Button
-              $gray
-              type="button"
-              onClick={this.props.store.stopAddingBoard}
-            >
-              Cancel
-            </Button>
-            <Button>Create</Button>
-          </ModalFooter>
-        </Modal>
-      </form>
-    )
-  }
+        <form onSubmit={onSubmit}>
+            <Modal hide={store.stopAddingBoard}>
+                <h2 class={styles.title}>Name your board</h2>
+                <Input
+                    placeholder="Enter a name"
+                    onChange={setTitle}
+                    value={title}
+                    autoFocus
+                />
+                <ModalFooter>
+                    <Button $gray type="button" onClick={store.stopAddingBoard}>
+                        Cancel
+                    </Button>
+                    <Button>Create</Button>
+                </ModalFooter>
+            </Modal>
+        </form>
+    );
 }
-
-export default AddBoardModal
-
-const Title = styled.h2`
-  font-weight: normal;
-  margin: 0;
-  margin-bottom: 20px;
-  color: #333;
-`

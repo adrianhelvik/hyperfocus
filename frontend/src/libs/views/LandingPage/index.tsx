@@ -1,60 +1,43 @@
-import { withAuth } from 'authContext'
-import Header from 'ui/Header'
-import React from 'react'
+import styles from "./styles.module.css";
+import { createEffect } from "solid-js";
+import Header from "ui/Header";
 
-import {
-  LoginWrapper,
-  Particles,
-  Register,
-  Content,
-  Section,
-  Login,
-  Title,
-} from './components'
+export default function LandingPage() {
+    createEffect(() => {
+        (window as any).particlesJS.load(
+            "particles-js",
+            "particles.json",
+            () => {
+                console.log("callback - particles.js config loaded");
+            },
+        );
+    });
 
-@withAuth
-class LandingPage extends React.Component {
-  particles = React.createRef()
-
-  componentDidMount() {
-    if (window.particlesJS) {
-      window.particlesJS.load('particles-js', 'particles.json', function () {
-        console.log('callback - particles.js config loaded')
-      })
-    }
-
-    this.props.auth.authenticate()
-  }
-
-  render() {
     return (
-      <React.Fragment>
-        <Particles id="particles-js" />
-        <Header />
-        <Section>
-          <Content>
-            <Title>
-              <strong>Open source</strong> kanban boards with{' '}
-              <strong>portals</strong>
-            </Title>
-            <Register to="/register">Register</Register>
-            <LoginWrapper>
-              Or <Login to="/login">log in</Login>
-            </LoginWrapper>
-            <LoginWrapper>
-              Or check out on{' '}
-              <a
-                href="https://github.com/adrianhelvik/subtask"
-                style={{ pointerEvents: 'auto' }}
-              >
-                GitHub
-              </a>
-            </LoginWrapper>
-          </Content>
-        </Section>
-      </React.Fragment>
-    )
-  }
+        <>
+            <div class={styles.particles} id="particles-js" />
+            <Header />
+            <section class={styles.section}>
+                <div class={styles.content}>
+                    <h1 class={styles.title}>
+                        <strong>Open source</strong> kanban boards with{" "}
+                        <strong>portals</strong>
+                    </h1>
+                    <a class={styles.register} href="/register">Register</a>
+                    <div class={styles.loginWrapper}>
+                        Or <a class={styles.login} href="/login">log in</a>
+                    </div>
+                    <div class={styles.loginWrapper}>
+                        Or check out on{" "}
+                        <a
+                            href="https://github.com/adrianhelvik/subtask"
+                            class={styles.githubLink}
+                        >
+                            GitHub
+                        </a>
+                    </div>
+                </div>
+            </section>
+        </>
+    );
 }
-
-export default LandingPage

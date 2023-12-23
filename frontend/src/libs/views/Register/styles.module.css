@@ -1,0 +1,13 @@
+.container {
+    min-height: calc(100vh - 64px);
+    margin: 0;
+    display: flex;
+}
+
+.innerContainer {
+    margin: auto;
+    display: grid;
+    grid-auto-flow: row;
+    gap: 15px;
+    width: 250px;
+}

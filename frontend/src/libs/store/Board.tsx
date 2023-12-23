@@ -1,63 +1,78 @@
-import arrayMove from 'util/arrayMove'
-import { v4 as uuid } from 'uuid'
-import Portal from './Portal'
-import Deck from './Deck'
+import arrayMove from "util/arrayMove";
+import { Deck, Portal } from "./types";
 
-import { observable, computed, action } from 'mobx'
+import { createMemo, createSignal } from "solid-js";
 
-class Board {
-  @observable title = ''
-  @observable children = []
-  @observable boardId = null
-  @observable color = null
+type Child = Deck | Portal;
 
-  constructor(arg) {
-    if (typeof arg === 'string') return this.fromTitle(arg)
-    else return this.fromBoard(arg)
-  }
+function Board() {
+    const [title, setTitle] = createSignal("");
+    const [children, setChildren] = createSignal<Child[]>([]);
+    const [boardId, setBoardId] = createSignal<string | null>(null);
+    const [color, setColor] = createSignal<string | null>(null);
 
-  fromBoard(board) {
-    this.title = board.title
-    this.children = board.children.slice()
-    this.boardId = board.boardId
-    this.color = board.color
-  }
+    const decks = createMemo(() => {
+        return children().filter((x) => x.type === "deck");
+    });
 
-  fromTitle(title) {
-    this.title = title
-    this.boardId = uuid()
-  }
+    const portals = createMemo(() => {
+        return children().filter((x) => x.type === "portal");
+    });
 
-  @computed get decks() {
-    return this.children.filter(x => x instanceof Deck)
-  }
+    const decksById = createMemo(() => {
+        const decksById = new Map<string, Child>();
 
-  @computed get portals() {
-    return this.children.filter(x => x instanceof Portal)
-  }
+        for (const deck of decks()) {
+            decksById.set(deck.deckId, deck);
+        }
 
-  @computed get decksById() {
-    const decksById = observable.map()
+        return decksById;
+    });
 
-    for (const deck of this.decks) decksById.set(deck.deckId, deck)
+    const addDeck = (deck: Deck, index?: number) => {
+        setChildren((prevChildren) => {
+            if (typeof index !== "number") return prevChildren.concat([deck]);
+            const newChildren: Child[] = [];
+            for (let i = 0; i < index; i++) {
+                newChildren.push(prevChildren[i]);
+            }
+            newChildren.push(deck);
+            for (let i = index; i < prevChildren.length; i++) {
+                newChildren.push(prevChildren[i]);
+            }
+            return newChildren;
+        });
+    };
 
-    return decksById
-  }
+    const addPortal = (title: string, deck: Deck) => {
+        const portal: Portal = {
+            type: "portal",
+            title,
+            deckId: deck.deckId,
+        };
+        setChildren((children) => children.concat(portal));
+        return portal;
+    };
 
-  @action addDeck(deck, index) {
-    if (typeof index === 'number') this.children.splice(index, 0, deck)
-    else this.children.push(deck)
-  }
+    const move = (fromIndex: number, toIndex: number) => {
+        setChildren((children) =>
+            arrayMove(children.slice(), fromIndex, toIndex),
+        );
+    };
 
-  @action addPortal(title, deck) {
-    const portal = new Portal(title, deck)
-    this.children.push(portal)
-    return portal
-  }
-
-  @action move(fromIndex, toIndex) {
-    arrayMove(this.children, fromIndex, toIndex)
-  }
+    return {
+        portals,
+        color,
+        setColor,
+        boardId,
+        setBoardId,
+        title,
+        setTitle,
+        move,
+        addPortal,
+        addDeck,
+        decksById,
+    };
 }
 
-export default Board
+export default Board;

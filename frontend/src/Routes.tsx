@@ -1,28 +1,37 @@
+import { Router, Route } from "@solidjs/router";
+import LandingPage from "views/LandingPage";
+
+/*
 import { BrowserRouter as Router, Switch, Route } from 'react-router-dom'
-import LandingPage from 'views/LandingPage'
 import { ProvideAuth } from 'authContext'
-import Register from 'views/Register'
-import Overview from 'views/Overview'
 import NotFound from 'views/NotFound'
 import Reactions from './Reactions'
 import Board from 'views/Board'
-import Login from 'views/Login'
+*/
+import Register from "views/Register";
+import Overview from "views/Overview";
+import Login from "views/Login";
 
-export default function Routes() {
-  return (
-    <ProvideAuth>
-      <Reactions>
+export default function () {
+    return (
         <Router>
-          <Switch>
-            <Route exact path="/" component={LandingPage} />
-            <Route exact path="/login" component={Login} />
-            <Route exact path="/app" component={Overview} />
-            <Route exact path="/board/:boardId" component={Board} />
-            <Route exact path="/register" component={Register} />
-            <Route path="*" component={NotFound} />
-          </Switch>
+            <Route path="/" component={LandingPage} />
+            <Route path="/login" component={Login} />
+            <Route path="/register" component={Register} />
+            <Route path="/app" component={Overview} />
         </Router>
-      </Reactions>
-    </ProvideAuth>
+    );
+
+    /*
+  return (
+    <>
+      <Route exact path="/" component={LandingPage} />
+      <Route exact path="/login" component={Login} />
+      <Route exact path="/app" component={Overview} />
+      <Route exact path="/board/:boardId" component={Board} />
+      <Route exact path="/register" component={Register} />
+      <Route path="*" component={NotFound} />
+    </>
   )
+  */
 }

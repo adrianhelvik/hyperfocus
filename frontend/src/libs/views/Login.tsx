@@ -1,98 +1,73 @@
-import { useEffect, useState } from 'react'
-import { Redirect } from 'react-router-dom'
-import { useAuth } from '../authContext'
-import styled from 'styled-components'
-import { observer } from 'mobx-react'
-import * as theme from 'theme'
-import Button from 'ui/Button'
-import Input from 'ui/Input'
-import React from 'react'
-import sleep from 'sleep'
+import { createEffect, createSignal } from "solid-js";
+import styles from "./Login.module.css";
+import Button from "ui/Button";
+import Input from "ui/Input";
+import sleep from "sleep";
+import auth from "auth";
 
-export default observer(function Login() {
-  const [username, setUsername] = useState('')
-  const [password, setPassword] = useState('')
-  const [message, setMessage] = useState('')
-  const [error, setError] = useState('')
-  const auth = useAuth()
+export default function Login() {
+    const [username, setUsername] = createSignal("");
+    const [password, setPassword] = createSignal("");
+    const [message, setMessage] = createSignal("");
+    const [error, setError] = createSignal("");
 
-  const onSubmit = async event => {
-    event.preventDefault()
-    setError('')
-    setMessage('Logging in...')
+    createEffect(() => {
+        console.log("error:", error());
+    });
 
-    await sleep(500)
+    const onSubmit = async (event: SubmitEvent) => {
+        event.preventDefault();
+        setError("");
+        setMessage("Logging in...");
 
-    await auth
-      .login({
-        username,
-        password,
-      })
-      .catch(e => {
-        setError(e.message)
-        setMessage('')
-      })
-  }
+        await sleep(500);
 
-  useEffect(() => {
-    auth.authenticate()
-  }, [])
+        await auth
+            .login({
+                username: username(),
+                password: password(),
+            })
+            .catch((e: Error) => {
+                setError(e.message);
+                setMessage("");
+            });
+    };
 
-  if (auth.status === 'success') return <Redirect to="/app" />
+    createEffect(() => {
+        auth.authenticate();
+    });
 
-  return (
-    <Container>
-      <Form onSubmit={onSubmit}>
-        <Input
-          placeholder="Username"
-          onChange={e => setUsername(e.target.value)}
-          value={username}
-        />
-        <Input
-          placeholder="Password"
-          onChange={e => setPassword(e.target.value)}
-          value={password}
-          type="password"
-        />
-        <Button>Log in</Button>
-        <Message>
-          {message}
-          {error && (
-            <React.Fragment>
-              <strong>An error occurred</strong>
-              {error}
-            </React.Fragment>
-          )}
-        </Message>
-      </Form>
-    </Container>
-  )
-})
+    createEffect(() => {
+        if (auth.status === "success") {
+            window.location.href = "/app";
+        }
+    });
 
-const Container = styled.div`
-  position: absolute;
-  bottom: 0;
-  right: 0;
-  left: 0;
-  top: 0;
-  display: flex;
-`
-
-const Form = styled.form`
-  margin: auto;
-  padding-bottom: 100px;
-  display: grid;
-  grid-auto-flow: row;
-  gap: 20px;
-`
-
-const Message = styled.div`
-  color: ${theme.ui1};
-  text-align: center;
-  margin-top: 30px;
-  height: 80px;
-
-  & strong {
-    display: block;
-  }
-`
+    return (
+        <div class={styles.container}>
+            <form class={styles.form} onSubmit={onSubmit}>
+                <Input
+                    placeholder="Username"
+                    onChange={(e) => setUsername(e.target.value)}
+                    value={username()}
+                />
+                <Input
+                    placeholder="Password"
+                    onChange={(e) => setPassword(e.target.value)}
+                    value={password()}
+                    type="password"
+                />
+                <Button>Log in</Button>
+                <div class={styles.message}>
+                    {message()}
+                    {error() && (
+                        <>
+                            <strong>An error occurred</strong>
+                            {error()}
+                        </>
+                    )}
+                </div>
+            </form>
+        </div>
+    );
+}

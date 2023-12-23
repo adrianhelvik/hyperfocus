@@ -1,72 +1,56 @@
-import { useHistory } from 'react-router-dom'
-import styled from 'styled-components'
-import { useState } from 'react'
-import Button from 'ui/Button'
-import Input from 'ui/Input'
-import React from 'react'
-import api from 'api'
+import styles from "./styles.module.css";
+import { createSignal } from "solid-js";
+import Button from "ui/Button";
+import Input from "ui/Input";
+import api from "api";
 
 export default function Register() {
-  const [repeatedPassword, setRepeatedPassword] = useState('')
-  const [password, setPassword] = useState('')
-  const [email, setEmail] = useState('')
+    const [repeatedPassword, setRepeatedPassword] = createSignal("");
+    const [password, setPassword] = createSignal("");
+    const [email, setEmail] = createSignal("");
 
-  const history = useHistory()
+    const onSubmit = async (event: SubmitEvent) => {
+        event.preventDefault();
 
-  const onSubmit = async (event) => {
-    event.preventDefault()
+        console.log(password(), repeatedPassword());
 
-    if (password !== repeatedPassword)
-      return alert('The passwords do not match')
+        if (password() !== repeatedPassword())
+            return alert("The passwords do not match");
 
-    try {
-      await api.registerUser({
-        password,
-        email,
-      })
-      history.push('/login')
-    } catch (e) {
-      console.error(e)
-      alert(e.message)
-    }
-  }
+        try {
+            await api.registerUser({
+                password: password(),
+                email: email(),
+            });
+            window.location.href = "/login";
+        } catch (e: any) {
+            console.error(e);
+            alert(e.message);
+        }
+    };
 
-  return (
-    <Container onSubmit={onSubmit}>
-      <InnerContainer>
-        <Input
-          placeholder="Email"
-          onChange={e => setEmail(e.target.value)}
-          value={email}
-        />
-        <Input
-          type="password"
-          placeholder="Password"
-          onChange={e => setPassword(e.target.value)}
-          value={password}
-        />
-        <Input
-          type="password"
-          placeholder="Repeat password"
-          onChange={e => setRepeatedPassword(e.target.value)}
-          value={repeatedPassword}
-        />
-        <Button type="submit">Create user</Button>
-      </InnerContainer>
-    </Container>
-  )
+    return (
+        <form class={styles.container} onSubmit={onSubmit}>
+            <div class={styles.innerContainer}>
+                <Input
+                    placeholder="Email"
+                    onChange={(e) => setEmail(e.target.value)}
+                    value={email}
+                />
+                <Input
+                    type="password"
+                    placeholder="Password"
+                    onChange={(e) => setPassword(e.target.value)}
+                    value={password}
+                />
+                <Input
+                    type="password"
+                    placeholder="Repeat password"
+                    onChange={(e) => setRepeatedPassword(e.target.value)}
+                    value={repeatedPassword}
+                />
+                <Button type="submit">Create user</Button>
+            </div>
+        </form>
+    );
 }
-
-const Container = styled.form`
-  min-height: calc(100vh - 64px);
-  margin: 0;
-  display: flex;
-`
-
-const InnerContainer = styled.div`
-  margin: auto;
-  display: grid;
-  grid-auto-flow: row;
-  gap: 15px;
-  width: 250px;
-`

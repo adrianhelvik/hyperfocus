@@ -1,55 +1,50 @@
-import { observable, computed, action } from 'mobx'
-import Board from './Board'
+import { createSignal } from "solid-js";
+import { Board } from "./types";
+import api from "api";
 
-class Store {
-  @observable uncomittedBoards = observable.array<Board>()
-  @observable isAddingBoard = false
-  @observable board: Board | null = null
-  @observable boards = observable.array<Board>()
+type Action = {
+    name: string;
+    operation: () => Promise<void>;
+};
 
-  @computed get boardsById() {
-    const boardsById = observable.map()
+export const [pendingActions, setPendingActions] = createSignal<Action[]>([]);
+export const [isAddingBoard, setIsAddingBoard] = createSignal(false);
+export const [boards, setBoards] = createSignal<Board[]>([]);
 
-    for (const board of this.boards) boardsById.set(board.boardId, board)
+export const setBoardColor = (boardId: string, color: string) => {
+    setBoards((boards) => {
+        return boards.map((board) => {
+            if (board.boardId !== boardId) return board;
+            else
+                return {
+                    ...board,
+                    color,
+                };
+        });
+    });
+};
 
-    return boardsById
-  }
+export const stopAddingBoard = () => {
+    setIsAddingBoard(false);
+};
 
-  @action.bound startAddingBoard() {
-    this.isAddingBoard = true
-  }
+export const deleteBoard = (boardId: string) => {
+    setBoards((boards) => boards.filter((board) => board.boardId !== boardId));
 
-  @action.bound stopAddingBoard() {
-    this.isAddingBoard = false
-  }
+    sync("Delete board", () => api.deleteBoard(boardId));
+};
 
-  @action.bound addBoard(board: Board) {
-    this.uncomittedBoards.push(board)
-    this.boards.unshift(board)
-  }
+export const createBoard = (board: Board) => {
+    setBoards((boards) => [board, ...boards]);
 
-  getBoard(boardId: string) {
-    return this.boardsById.get(boardId)
-  }
+    sync("Create board", () => api.createBoard(board));
+};
 
-  @action.bound setBoards(boards: Board[]) {
-    this.boards.replace(boards)
-  }
-
-  @action setActiveBoard(board: Board) {
-    this.board = board
-  }
-
-  @action deleteBoard(boardId: string) {
-    let index = -1
-    for (let i = 0; i < this.boards.length; i++) {
-      if (this.boards[i].boardId === boardId) {
-        index = i
-        break
-      }
-    }
-    if (index !== -1) this.boards.splice(index, 1)
-  }
-}
-
-export default Store
+const sync = (name: string, operation: () => Promise<void>) => {
+    setPendingActions((pendingActions) =>
+        pendingActions.concat({
+            name,
+            operation,
+        }),
+    );
+};
