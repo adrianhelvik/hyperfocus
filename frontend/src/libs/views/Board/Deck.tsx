@@ -5,7 +5,8 @@ import Color from "color";
 import Card from "./Card";
 
 export default function DeckView(props: any) {
-    return <></>;
+    return <Container>
+    </Container>;
 }
 
 const Container = styled.div<{ lifted: any; moving: any }>`

@@ -10,19 +10,30 @@ import Portal from "./Portal";
 import confirm from "confirm";
 import Deck from "./Deck";
 import api from "api";
-import { For, batch, createEffect, createMemo, createSignal } from "solid-js";
+import { For, createEffect, createMemo, createSignal } from "solid-js";
 import { useParams } from "@solidjs/router";
 import showMenu from "showMenu";
-import Board from "store/Board";
+import { Board } from "store/types";
 
-export default function BoardView() {
+export default function PossiblyRenderBoard() {
     const params = useParams();
-    const board = Board({ boardId: params.boardId, fetch: true });
 
+    const [board, setBoard] = createSignal<Board | null>(null);
+
+    createEffect(() => {
+        api.getBoard({ boardId: params.boardId }).then((board: any) => {
+            console.log("Board:", board);
+            setBoard(board);
+        });
+    });
+
+    return <>{!board() ? <Loading /> : <BoardView board={board()} />}</>;
+}
+
+function BoardView(props: { board: Board }) {
+    const board: () => Board = () => props.board;
     const [fromIndex, setFromIndex] = createSignal<number | null>(null);
     const [toIndex, setToIndex] = createSignal<number | null>(null);
-
-    const [loading, setLoading] = createSignal<boolean>(true);
 
     const addDeck = async () => {
         await showModal((props: any) => <AddDeck {...props} board={board} />);
@@ -72,27 +83,19 @@ export default function BoardView() {
         // TODO
     };
 
-    const moveRight = createMemo(() => {
-        const moveRight = [];
-        console.log(board);
-        for (let i = 0; i < board.children.length ?? 0; i++)
-            if (shouldIndexMoveRight(i)) moveRight.push(i);
-        return moveRight;
-    });
-
-    const moveLeft = createMemo(() => {
-        const moveLeft = [];
-        for (let i = 0; i < board?.children.length; i++)
-            if (shouldIndexMoveLeft(i)) moveLeft.push(i);
-        return moveLeft;
-    });
-
     const shouldIndexMoveRight = (index: number) => {
         const from = fromIndex();
         const to = toIndex();
         if (from == null || to == null) return false;
         return to < from && index >= to && index < from;
     };
+
+    const moveRight = createMemo(() => {
+        const moveRight = [];
+        for (let i = 0; i < board().children.length ?? 0; i++)
+            if (shouldIndexMoveRight(i)) moveRight.push(i);
+        return moveRight;
+    });
 
     const shouldIndexMoveLeft = (index: number) => {
         const from = fromIndex();
@@ -101,8 +104,15 @@ export default function BoardView() {
         return to > from && index > from && index <= to;
     };
 
+    const moveLeft = createMemo(() => {
+        const moveLeft = [];
+        for (let i = 0; i < board().children.length; i++)
+            if (shouldIndexMoveLeft(i)) moveLeft.push(i);
+        return moveLeft;
+    });
+
     const move = (fromIndex: number, toIndex: number) => {
-        let item: any = board.children[fromIndex];
+        let item: any = board().children[fromIndex];
 
         if (item.type === "portal")
             item = { type: "portal", portalId: item.portalId };
@@ -113,10 +123,10 @@ export default function BoardView() {
             throw Error("Invalid type. Check log");
         }
 
-        board.move(fromIndex, toIndex);
+        board().move(fromIndex, toIndex);
 
         api.moveBoardChildToIndex({
-            boardId: board.boardId,
+            boardId: board().boardId,
             index: toIndex,
             item,
         });
@@ -139,148 +149,117 @@ export default function BoardView() {
         });
     };
 
-    createEffect(() => {
-        if (board instanceof Error) {
-            window.location.href = "/";
-        } else if (board !== null) {
-            setLoading(false);
-        }
-    });
-
     return (
-        <>
-            {loading() ? (
-                <Loading />
-            ) : (
-                <Container onContextMenu={onContextMenu}>
-                    <Header color={board.color()!}>
-                        <Breadcrumbs>
-                            <GoBack
-                                onClick={() => {
-                                    window.location.href = "/app";
-                                }}
-                            >
-                                My boards
-                            </GoBack>
-                            <div>›</div>
-                            <Title>{board.title()}</Title>
-                        </Breadcrumbs>
-                    </Header>
-                    <Decks class="board-decks">
-                        {board.children.length === 0 && (
-                            <Empty>
-                                There are no decks here yet.
-                                <br />
-                                Click{" "}
-                                <span class="material-symbols-outlined">
-                                    add_circle
-                                </span>{" "}
-                                to create your first deck!
-                            </Empty>
-                        )}
-                        <For each={board.children}>
-                            {(child, index) => {
-                                const props = {
-                                    //childContainer: childContainer,
-                                    simulateMove: simulateMove,
-                                    moveRight: moveRight().includes(index()),
-                                    moveLeft: moveLeft().includes(index()),
-                                    move: move,
-                                    index: index,
-                                };
+        <Container onContextMenu={onContextMenu}>
+            <Header color={board().color}>
+                <Breadcrumbs>
+                    <GoBack
+                        onClick={() => {
+                            window.location.href = "/app";
+                        }}
+                    >
+                        My boards
+                    </GoBack>
+                    <div>›</div>
+                    <Title>{board().title}</Title>
+                </Breadcrumbs>
+            </Header>
+            <Decks class="board-decks">
+                {board().children.length === 0 && (
+                    <Empty>
+                        There are no decks here yet.
+                        <br />
+                        Click{" "}
+                        <span class="material-symbols-outlined">
+                            add_circle
+                        </span>{" "}
+                        to create your first deck!
+                    </Empty>
+                )}
+                <For each={board().children}>
+                    {(child, index) => {
+                    console.log("child:", child);
+                        const props = {
+                            //childContainer: childContainer,
+                            simulateMove: simulateMove,
+                            moveRight: moveRight().includes(index()),
+                            moveLeft: moveLeft().includes(index()),
+                            move: move,
+                            index: index,
+                        };
 
-                                if (child.type === "portal") {
-                                    return (
-                                        <Portal
-                                            delete={async () => {
-                                                const confirmed =
-                                                    await confirm(
-                                                        ({ yes, no }) => (
-                                                            <div>
-                                                                <div>
-                                                                    Delete
-                                                                    portal
-                                                                </div>
-                                                                <button
-                                                                    onClick={
-                                                                        yes
-                                                                    }
-                                                                >
-                                                                    Delete
-                                                                </button>
-                                                                <button
-                                                                    onClick={no}
-                                                                >
-                                                                    Keep
-                                                                </button>
-                                                            </div>
-                                                        ),
-                                                    );
-                                                if (!confirmed) return;
-                                                api.deletePortal({
-                                                    portalId: child.portalId,
-                                                });
-                                                board.children.splice(index(), 1);
-                                            }}
-                                            portal={child}
-                                            {...props}
-                                        />
+                        if (child.type === "portal") {
+                            return (
+                                <Portal
+                                    delete={async () => {
+                                        const confirmed = await confirm(
+                                            ({ yes, no }) => (
+                                                <div>
+                                                    <div>Delete portal</div>
+                                                    <button onClick={yes}>
+                                                        Delete
+                                                    </button>
+                                                    <button onClick={no}>
+                                                        Keep
+                                                    </button>
+                                                </div>
+                                            ),
+                                        );
+                                        if (!confirmed) return;
+                                        api.deletePortal({
+                                            portalId: child.portalId,
+                                        });
+                                        board.children.splice(index(), 1);
+                                    }}
+                                    portal={child}
+                                    {...props}
+                                />
+                            );
+                        }
+
+                        return (
+                            <Deck
+                                delete={async () => {
+                                    const confirmed = await confirm(
+                                        ({ yes, no }) => (
+                                            <div>
+                                                <div>Delete deck</div>
+                                                <div>
+                                                    All cards in the deck will
+                                                    be deleted as well.
+                                                </div>
+                                                <button onClick={yes}>
+                                                    Delete
+                                                </button>
+                                                <button onClick={no}>
+                                                    Keep
+                                                </button>
+                                            </div>
+                                        ),
                                     );
-                                }
-
-                                return (
-                                    <Deck
-                                        delete={async () => {
-                                            const confirmed =
-                                                await confirm(
-                                                    ({ yes, no }) => (
-                                                        <div>
-                                                            <div>
-                                                                Delete deck
-                                                            </div>
-                                                            <div>
-                                                                All cards in the
-                                                                deck will be
-                                                                deleted as well.
-                                                            </div>
-                                                            <button
-                                                                onClick={yes}
-                                                            >
-                                                                Delete
-                                                            </button>
-                                                            <button
-                                                                onClick={no}
-                                                            >
-                                                                Keep
-                                                            </button>
-                                                        </div>
-                                                    ),
-                                                );
-                                            if (!confirmed) return;
-                                            api.deleteDeck({
-                                                deckId: child.deckId,
-                                            });
-                                            board.children.splice(index(), 1);
-                                        }}
-                                        key={child.deckId}
-                                        deck={child}
-                                        {...props}
-                                    />
-                                );
-                            }}
-                        </For>
-                    </Decks>
-                    <AddCircle>
-                        <AddItem onClick={addDeck}>
-                            <AddItemText>Add Deck</AddItemText>
-                        </AddItem>
-                        <AddItem onClick={addPortal}>
-                            <AddItemText>Add portal</AddItemText>
-                        </AddItem>
-                    </AddCircle>
-                </Container>
-            )}
-        </>
+                                    if (!confirmed) return;
+                                    api.deleteDeck({
+                                        deckId: child.deckId,
+                                    });
+                                    board.children.splice(index(), 1);
+                                }}
+                                key={child.deckId}
+                                deck={child}
+                                {...props}
+                            />
+                        );
+                    }}
+                </For>
+            </Decks>
+            <AddCircle>
+                <AddItem onClick={addDeck}>
+                    <AddItemText>Add Deck</AddItemText>
+                </AddItem>
+                <AddItem onClick={addPortal}>
+                    <AddItemText>Add portal</AddItemText>
+                </AddItem>
+            </AddCircle>
+        </Container>
     );
 }
 
