@@ -1,7 +1,7 @@
 import { styled, css } from "solid-styled-components";
 import * as theme from "theme";
 
-const MenuIcon = (props: { onClick: (e: any) => void; $dark: boolean }) => (
+const MenuIcon = (props: { onClick: (e: any) => void; $dark?: boolean }) => (
     <Container>
         <Icon
             data-disable-drag
@@ -16,7 +16,7 @@ const MenuIcon = (props: { onClick: (e: any) => void; $dark: boolean }) => (
 
 const Container = styled.div``;
 
-const Icon = styled("i")<{ $dark: boolean }>`
+const Icon = styled("i")<{ $dark: any }>`
     transition: background-color 0.3s;
     font-size: 15px;
     background-color: white;

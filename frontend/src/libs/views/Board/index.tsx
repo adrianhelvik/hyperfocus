@@ -14,11 +14,10 @@ import { For, createEffect, createMemo, createSignal } from "solid-js";
 import { useParams } from "@solidjs/router";
 import showMenu from "showMenu";
 import { Board } from "store/types";
+import { board, setBoard } from "store";
 
 export default function PossiblyRenderBoard() {
     const params = useParams();
-
-    const [board, setBoard] = createSignal<Board | null>(null);
 
     createEffect(() => {
         api.getBoard({ boardId: params.boardId }).then((board: any) => {

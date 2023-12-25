@@ -7,10 +7,12 @@ import * as theme from "theme";
 import { batch, createMemo, createSignal } from "solid-js";
 import useEventManager from "useEventManager";
 import { Portal } from "solid-js/web";
+import { Deck } from "src/libs/store/types";
 
 function getLastHoverIndex() {}
 
 export default function Card(props: any) {
+    const elementToDeck = new Map<HTMLElement, Deck>();
     const [element, setElement] = createSignal<HTMLElement>();
     const [removeElement, setRemoveElement] = createSignal<HTMLElement>();
 
@@ -91,7 +93,7 @@ export default function Card(props: any) {
                 left: clientX(),
                 width: width(),
                 height: height(),
-                transform: `translateX(${this.insetX}px) translateY(${this.insetY}px)`,
+                transform: `translateX(${insetX}px) translateY(${insetY}px)`,
             };
         return {};
     });
@@ -131,17 +133,17 @@ export default function Card(props: any) {
                 ref={setElement}
                 class={props.class}
                 onMouseDown={onMouseDown}
-                noPointer={this.noPointer}
-                index={this.props.index}
-                moving={this.moving}
-                style={this.style}
+                noPointer={noPointer}
+                index={props.index}
+                moving={moving}
+                style={style}
             >
-                {Boolean(this.moving) && (
+                {Boolean(moving) && (
                     <style>{`body { user-select: none }`}</style>
                 )}
-                <Title>{this.props.card.title}</Title>
-                <Remove ref={(e) => (this.removeElement = e)}>
-                    <span className="material-symbols-outlined">delete</span>
+                <Title>{props.card.title}</Title>
+                <Remove ref={(e) => (setRemoveElement(e))}>
+                    <span class="material-symbols-outlined">delete</span>
                 </Remove>
             </Container>
         );

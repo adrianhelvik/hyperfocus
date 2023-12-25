@@ -11,6 +11,7 @@ type Action = {
 export const [pendingActions, setPendingActions] = createSignal<Action[]>([]);
 export const [isAddingBoard, setIsAddingBoard] = createSignal(false);
 export const [boards, setBoards] = createSignal<Board[]>([]);
+export const [board, setBoard] = createSignal<Board | null>(null);
 
 export const patchDeck = (_deckId: string, _patch: Partial<Deck>) => {
     // TODO

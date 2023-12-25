@@ -1,15 +1,84 @@
 import { styled, css } from "solid-styled-components";
+import { Deck, Portal } from "store/types";
+import { For, createMemo } from "solid-js";
 import * as zIndexes from "zIndexes";
+import MenuIcon from "ui/MenuIcon";
 import * as theme from "theme";
-import Color from "color";
 import Card from "./Card";
+import Color from "color";
+import api from "api";
 
-export default function DeckView(props: any) {
-    return <Container>
-    </Container>;
+export default function DeckView(props: { deck: Deck | Portal }) {
+    const deck = createMemo(() => {
+        return props.deck;
+    });
+
+    return (
+        <Container $moving={false}>
+            <style>
+                {".moving-deck { pointer-events: none; user-select: none; }"}
+            </style>
+            <TopBar color={deck().color}>
+                <Title>
+                    <TextArea
+                        value={deck().title}
+                        onBlur={(e) => {
+                            api.setDeckTitle({
+                                deckId: deck().deckId,
+                                title: e.target.value,
+                            });
+                            // XXX: Code smell
+                            deck().title = e.target.value;
+                        }}
+                    />
+                    <For each={(deck() as Portal).portals ?? []}>
+                        {(portal: any) => (
+                            <ReferencedBy>
+                                <Arrow>→</Arrow>
+                                <ReferenceBoardTitle>
+                                    {portal.boardTitle}
+                                </ReferenceBoardTitle>
+                                <ReferenceDeckTitle>
+                                    {portal.title}
+                                </ReferenceDeckTitle>
+                            </ReferencedBy>
+                        )}
+                    </For>
+                </Title>
+                <MenuIcon onClick={() => {}} />
+            </TopBar>
+            <Body>
+                <For each={deck().cards}>{(card) => <Card card={card} />}</For>
+                {/*
+          {Boolean(
+            sharedState.moving.length &&
+              this.hoverIndex === this.props.deck.cards.length,
+          ) && (
+            <div
+              data-card-placeholder={this.props.deck.cards.length}
+              style={{
+                width:
+                  this.placeholderWidth ||
+                  sharedState.moving[0].placeholderWidth,
+                height:
+                  this.placeholderHeight ||
+                  sharedState.moving[0].placeholderHeight,
+              }}
+            />
+          )}
+          */}
+            </Body>
+            <AddCardInput
+                deck={props.deck}
+                isPortal={Boolean(props.deck.type === "portal")}
+            />
+        </Container>
+    );
 }
 
-const Container = styled.div<{ lifted: any; moving: any }>`
+const AddCardInput = (() => null) as any;
+
+const Container = styled.div<{ $moving: boolean }>`
     user-select: none;
     flex-shrink: 0;
     flex-grow: 0;
@@ -17,12 +86,7 @@ const Container = styled.div<{ lifted: any; moving: any }>`
     border-radius: 4px;
     width: 250px;
     box-shadow: ${theme.shadows[0]};
-    ${(p) =>
-        p.lifted &&
-        css`
-            box-shadow: ${theme.shadows[1]};
-        `};
-    z-index: ${(p) => (p.moving ? zIndexes.moving : zIndexes.movable)};
+    z-index: ${(p) => (p.$moving ? zIndexes.moving : zIndexes.movable)};
 `;
 
 const Title = styled.div`
@@ -31,13 +95,6 @@ const Title = styled.div`
 
 const Body = styled.div`
     background: #eee;
-`;
-
-const StyledCard = styled(Card)`
-    border-bottom: 1px solid #ddd;
-    padding: 10px;
-    font-size: 0.8rem;
-    line-height: 15px;
 `;
 
 const ReferencedBy = styled.div`
