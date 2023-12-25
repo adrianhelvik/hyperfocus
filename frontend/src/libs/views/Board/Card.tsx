@@ -1,245 +1,223 @@
-import { action, observable, computed, runInAction } from 'mobx'
-import styled, { css } from 'styled-components'
-import someParent from 'util/someParent'
-import withEvents from 'util/withEvents'
-import { elementToDeck } from './Deck'
-import { Portal } from 'react-portal'
-import { observer } from 'mobx-react'
-import withConfirm from 'withConfirm'
-import * as zIndexes from 'zIndexes'
-import Button from 'ui/Button'
-import * as theme from 'theme'
-import React from 'react'
-import api from 'api'
+import { styled, css } from "solid-styled-components";
+import confirmInPlace from "confirmInPlace";
+import someParent from "util/someParent";
+import * as zIndexes from "zIndexes";
+import Button from "ui/Button";
+import * as theme from "theme";
+import { batch, createMemo, createSignal } from "solid-js";
+import useEventManager from "useEventManager";
+import { Portal } from "solid-js/web";
 
-export const elementToCard = observable.map()
+function getLastHoverIndex() {}
 
-@withConfirm
-@withEvents
-@observer
-class Card extends React.Component {
-  @observable initialClientX = null
-  @observable initialClientY = null
-  @observable noPointer = false
-  @observable clientX = null
-  @observable clientY = null
-  @observable moving = false
-  @observable insetX = null
-  @observable insetY = null
+export default function Card(props: any) {
+    const [element, setElement] = createSignal<HTMLElement>();
+    const [removeElement, setRemoveElement] = createSignal<HTMLElement>();
 
-  componentDidMount() {
-    elementToCard.set(this.element, this)
-  }
+    const [initialClientX, setInitialClientX] = createSignal<number | null>(
+        null,
+    );
+    const [initialClientY, setInitialClientY] = createSignal<number | null>(
+        null,
+    );
+    const [clientX, setClientX] = createSignal<number | null>(null);
+    const [clientY, setClientY] = createSignal<number | null>(null);
+    const [moving, setMoving] = createSignal(false);
+    const [width, setWidth] = createSignal<number | null>(null);
+    const [height, setHeight] = createSignal<number | null>(null);
 
-  componentWillUnmount() {
-    elementToCard.delete(this.element)
-  }
+    const { on, off } = useEventManager();
 
-  @action.bound onMouseDown(event) {
-    event.stopPropagation()
-    const { target, clientX, clientY } = event
+    const onMouseDown = (event: MouseEvent) => {
+        event.stopPropagation();
+        const { target, clientX, clientY } = event;
 
-    if (this.removeElement.contains(target)) return this.remove(event)
+        if (removeElement()!.contains(target as any)) {
+            remove(event);
+            return;
+        }
 
-    // extract values
-    const rect = this.element.getBoundingClientRect()
-    this.initialClientX = this.clientX = clientX
-    this.initialClientY = this.clientY = clientY
-    this.insetX = rect.left - this.initialClientX
-    this.insetY = rect.top - this.initialClientY
-    this.width = this.element.offsetWidth
-    this.height = this.element.offsetHeight
+        // extract values
+        setInitialClientX(clientX);
+        setClientX(clientX);
+        setInitialClientY(clientY);
+        setClientY(clientY);
+        setWidth(element()!.offsetWidth);
+        setHeight(element()!.offsetHeight);
 
-    // start moving
-    this.moving = true
-    this.props.setMoving(true)
-    this.props.setHoverIndex(this.props.index)
+        // start moving
+        setMoving(true);
+        props.setHoverIndex(props.index);
 
-    this.props.on(document, 'mousemove', event => {
-      this.clientX = event.clientX
-      this.clientY = event.clientY
-    })
+        on(document, "mousemove", (event: MouseEvent) => {
+            setClientX(event.clientX);
+            setClientY(event.clientY);
+        });
 
-    this.props.on(document, 'mouseup', event => {
-      this.moving = false
-      this.props.setMoving(false)
-      const { clientX, clientY } = event
-      const target = document.elementFromPoint(clientX, clientY)
-      this.noPointer = false
+        on(document, "mouseup", (event: MouseEvent) => {
+            setMoving(false);
+            props.setMoving(false);
+            const { clientX, clientY } = event;
+            const target = document.elementFromPoint(clientX, clientY);
 
-      this.props.setHoverIndex(null)
-      const element = someParent(target, e => {
-        return elementToDeck.has(e)
-      })
-      const otherDeckComponent = elementToDeck.get(element)
+            props.setHoverIndex(null);
+            const element = someParent(target, (e: HTMLElement) => {
+                return elementToDeck.has(e);
+            });
+            const otherDeckComponent = elementToDeck.get(element);
 
-      if (otherDeckComponent) {
-        const otherDeck = otherDeckComponent.props.deck
-        const index = this.props.getLastHoverIndex()
-        const card = this.props.card
+            if (otherDeckComponent) {
+                const otherDeck = otherDeckComponent.props.deck;
+                const index = getLastHoverIndex();
 
-        api.moveCard({
-          cardId: card.cardId,
-          source: this.props.deck.deckId,
-          target: otherDeck.deckId,
-          index,
-        })
+                // TODO: Move card
+            }
 
-        runInAction(() => {
-          this.props.deck.removeCard(this.props.card)
-          otherDeck.addCard(this.props.card, index)
-        })
-      }
+            off(document, "mousemove");
+            off(document, "mouseup");
+            batch(() => {
+                setClientX(clientX);
+                setClientY(0);
+                setInitialClientX(0);
+                setInitialClientY(0);
+            });
+        });
+    };
 
-      this.props.off(document, 'mousemove')
-      this.props.off(document, 'mouseup')
-      this.clientX =
-        this.clientY =
-        this.initialClientX =
-        this.initialClientY =
-          0
-    })
-  }
+    const style = createMemo(() => {
+        if (moving())
+            return {
+                top: clientY(),
+                left: clientX(),
+                width: width(),
+                height: height(),
+                transform: `translateX(${this.insetX}px) translateY(${this.insetY}px)`,
+            };
+        return {};
+    });
 
-  @computed get style() {
-    if (this.moving)
-      return {
-        top: this.clientY,
-        left: this.clientX,
-        width: this.width,
-        height: this.height,
-        transform: `translateX(${this.insetX}px) translateY(${this.insetY}px)`,
-      }
-    return {}
-  }
+    const deltaX = () => {
+        return clientX() - initialClientX();
+    };
 
-  @computed get deltaX() {
-    return this.clientX - this.initialClientX
-  }
+    const deltaY = () => {
+        return clientY() - initialClientY();
+    };
 
-  @computed get deltaY() {
-    return this.clientY - this.initialClientY
-  }
+    const remove = async (event: MouseEvent) => {
+        if (
+            !(await confirmInPlace(event, (p: any) => (
+                <div>
+                    <div>Delete card?</div>
+                    <div style={{ display: "flex", gap: 20 } as any}>
+                        <Button $gray onClick={p.no}>
+                            Cancel
+                        </Button>
+                        <Button $danger onClick={p.yes}>
+                            Delete it
+                        </Button>
+                    </div>
+                </div>
+            )))
+        )
+            return;
+        // TODO: Remove card
+    };
 
-  remove = async event => {
-    if (
-      !(await this.props.confirmInPlace(event, p => (
-        <div>
-          <div>Delete card?</div>
-          <div style={{ display: 'flex', gap: 20 }}>
-            <Button $gray onClick={p.no}>Cancel</Button>
-            <Button $danger onClick={p.yes}>
-              Delete it
-            </Button>
-          </div>
-        </div>
-      )))
-    )
-      return
-    this.props.deck.removeCard(this.props.card)
-    await api.deleteCard({
-      cardId: this.props.card.cardId,
-    })
-  }
+    const template = () => {
+        return (
+            <Container
+                data-card={props.index}
+                ref={setElement}
+                class={props.class}
+                onMouseDown={onMouseDown}
+                noPointer={this.noPointer}
+                index={this.props.index}
+                moving={this.moving}
+                style={this.style}
+            >
+                {Boolean(this.moving) && (
+                    <style>{`body { user-select: none }`}</style>
+                )}
+                <Title>{this.props.card.title}</Title>
+                <Remove ref={(e) => (this.removeElement = e)}>
+                    <span className="material-symbols-outlined">delete</span>
+                </Remove>
+            </Container>
+        );
+    };
 
-  template() {
-    return (
-      <Container
-        data-card={this.props.index}
-        ref={e => (this.element = e)}
-        className={this.props.className}
-        onMouseDown={this.onMouseDown}
-        noPointer={this.noPointer}
-        index={this.props.index}
-        moving={this.moving}
-        style={this.style}
-      >
-        {Boolean(this.moving) && <style>{`body { user-select: none }`}</style>}
-        <Title>{this.props.card.title}</Title>
-        <Remove ref={e => (this.removeElement = e)}>
-          <span className="material-symbols-outlined">delete</span>
-        </Remove>
-      </Container>
-    )
-  }
+    const placeholder = () => {
+        if (!moving()) return null;
 
-  placeholder() {
-    if (!this.props.moving) return null
+        return (
+            <div
+                data-card-placeholder={props.index}
+                style={{
+                    width: props.placeholderWidth,
+                    height: props.placeholderHeight,
+                }}
+            />
+        );
+    };
 
     return (
-      <div
-        data-card-placeholder={this.props.index}
-        style={{
-          width: this.props.placeholderWidth,
-          height: this.props.placeholderHeight,
-        }}
-      />
-    )
-  }
-
-  render() {
-    const Wrapper = this.moving ? Portal : React.Fragment
-
-    return (
-      <React.Fragment>
-        {this.props.hoverIndex === this.props.index && this.placeholder()}
-        <Wrapper>{this.template()}</Wrapper>
-      </React.Fragment>
-    )
-  }
+        <>
+            {props.hoverIndex === props.index && placeholder()}
+            {moving() ? template() : <Portal>{template()}</Portal>}
+        </>
+    );
 }
 
-export default Card
-
-const Container = styled.div`
-  display: flex;
-  background: white;
-  position: ${p => (p.moving ? 'fixed' : 'relative')};
-  transition: box-shadow 0.3s;
-  z-index: ${p => (p.moving ? zIndexes.moving : zIndexes.movable)};
-  ${p =>
-    p.moving &&
-    css`
-      pointer-events: none;
-    `};
-  ${p =>
-    p.moving &&
-    css`
-      box-shadow: ${theme.shadows[1]};
-    `};
-  cursor: move;
-  ::after {
-    content: ${p => String(p.index)};
-  }
-`
+const Container = styled.div<{ $moving: any; $index: any }>`
+    display: flex;
+    background: white;
+    position: ${(p) => (p.$moving ? "fixed" : "relative")};
+    transition: box-shadow 0.3s;
+    z-index: ${(p) => (p.$moving ? zIndexes.moving : zIndexes.movable)};
+    ${(p) =>
+        p.$moving &&
+        css`
+            pointer-events: none;
+        `};
+    ${(p) =>
+        p.$moving &&
+        css`
+            box-shadow: ${theme.shadows[1]};
+        `};
+    cursor: move;
+    ::after {
+        content: ${(p) => String(p.$index)};
+    }
+`;
 
 const Title = styled.div`
-  white-space: pre-line;
-  flex-grow: 1;
-`
+    white-space: pre-line;
+    flex-grow: 1;
+`;
 
 const Remove = styled.div`
-  background: ${theme.red};
-  width: 20px;
-  height: 20px;
-  text-align: center;
-  color: white;
-  border-radius: 4px;
-  cursor: pointer;
-  flex-shrink: 0;
-  flex-grow: 0;
-  align-self: flex-start;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  & > span {
-    font-size: 14px;
-  }
+    background: ${theme.red};
+    width: 20px;
+    height: 20px;
+    text-align: center;
+    color: white;
+    border-radius: 4px;
+    cursor: pointer;
+    flex-shrink: 0;
+    flex-grow: 0;
+    align-self: flex-start;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    & > span {
+        font-size: 14px;
+    }
 
-  transition: opacity 0.3s;
-  opacity: 0;
+    transition: opacity 0.3s;
+    opacity: 0;
 
-  ${Container}:hover & {
-    opacity: 1;
-  }
-`
+    [data-card]:hover & {
+        opacity: 1;
+    }
+`;

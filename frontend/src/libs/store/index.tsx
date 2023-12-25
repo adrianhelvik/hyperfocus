@@ -1,6 +1,7 @@
-import { createSignal } from "solid-js";
+import { createMemo, createSignal } from "solid-js";
 import { Board } from "./types";
 import api from "api";
+import { Deck } from "./types";
 
 type Action = {
     name: string;
@@ -11,17 +12,13 @@ export const [pendingActions, setPendingActions] = createSignal<Action[]>([]);
 export const [isAddingBoard, setIsAddingBoard] = createSignal(false);
 export const [boards, setBoards] = createSignal<Board[]>([]);
 
+export const patchDeck = (_deckId: string, _patch: Partial<Deck>) => {
+    // TODO
+};
+
 export const setBoardColor = (boardId: string, color: string) => {
-    setBoards((boards) => {
-        return boards.map((board) => {
-            if (board.boardId !== boardId) return board;
-            else
-                return {
-                    ...board,
-                    color,
-                };
-        });
-    });
+    const board = boards().find((board) => board.boardId === boardId)!;
+    board.setColor(color);
 };
 
 export const stopAddingBoard = () => {

@@ -1,21 +1,5 @@
-import { observer } from 'mobx-react'
-import { observable } from 'mobx'
-import Deck from './Deck'
-import React from 'react'
+import Deck from "./Deck";
 
-@observer
-class Portal extends React.Component {
-  @observable error = null
-
-  componentDidCatch(error) {
-    console.error(error)
-    this.error = error
-  }
-
-  render() {
-    if (this.error) return <div>An error occurred</div>
-    return <Deck {...this.props} />
-  }
+export default function Portal(props: Parameters<typeof Deck>[0]) {
+    return <Deck {...props} />;
 }
-
-export default Portal

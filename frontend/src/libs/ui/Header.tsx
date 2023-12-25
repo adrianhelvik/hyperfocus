@@ -1,12 +1,13 @@
 import styles from "./Header.module.css";
 import { createMemo } from "solid-js";
 import * as theme from "../theme";
+import { JSX } from "solid-js";
 import Color from "color";
 import auth from "auth";
 
 export default function Header(props: {
     color?: string;
-    children?: string | HTMLElement;
+    children?: JSX.Element;
 }) {
     // TODO: Make reactive
     const isInApp = createMemo(() =>

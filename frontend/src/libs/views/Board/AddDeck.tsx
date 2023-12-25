@@ -1,71 +1,66 @@
-import { observable, action } from 'mobx'
-import ModalFooter from 'ui/ModalFooter'
-import styled from 'styled-components'
-import { observer } from 'mobx-react'
-import Button from 'ui/Button'
-import Deck from 'store/Deck'
-import Input from 'ui/Input'
-import React from 'react'
-import api from 'api'
+import ModalFooter from "ui/ModalFooter";
+import { styled } from "solid-styled-components";
+import Button from "ui/Button";
+import Input from "ui/Input";
+import api from "api";
+import { createSignal } from "solid-js";
+import * as store from "store";
 
-@observer
-class AddDeck extends React.Component {
-  @observable loading = false
-  @observable title = ''
+type Props = {
+    resolve: () => void;
+    index: number;
+};
 
-  @action.bound setTitle(event) {
-    this.title = event.target.value
-  }
+export default function AddDeck(props: Props) {
+    const [loading, setLoading] = createSignal(false);
+    const [title, setTitle] = createSignal("");
 
-  onSubmit = async (event) => {
-    if (this.loading) return
-    this.loading = true
-    event.preventDefault()
-    const { deckId } = await api.addDeck({
-      boardId: this.props.board.boardId,
-      title: this.title,
-      index: this.props.index,
-    })
-    const deck = new Deck({
-      deckId,
-      boardId: this.props.board.boardId,
-      portals: [],
-      title: this.title,
-    })
-    deck.initialFocus = true
-    this.props.board.addDeck(deck, this.props.index)
-    this.props.resolve()
-  }
+    const onSubmit = async (event: SubmitEvent) => {
+        if (loading()) return;
+        setLoading(true);
+        event.preventDefault();
+        const { deckId } = await api.addDeck({
+            boardId: store.board()!.boardId,
+            title: title(),
+            index: props.index,
+        });
+        const deck = {
+            deckId,
+            type: "deck" as const,
+            boardId: store.board()!.boardId,
+            portals: [],
+            title: title(),
+        };
+        store.patchDeck(deckId, { initialFocus: true });
+        store.board()!.addDeck(deck, props.index);
+        props.resolve();
+    };
 
-  render() {
     return (
-      <Container onSubmit={this.onSubmit}>
-        <Title>Create a deck</Title>
-        <Input
-          autoFocus
-          placeholder="Title"
-          onChange={this.setTitle}
-          value={this.title}
-        />
-        <ModalFooter>
-          <Button $gray type="button" onClick={() => this.props.resolve()}>
-            Cancel
-          </Button>
-          <Button>Create</Button>
-        </ModalFooter>
-      </Container>
-    )
-  }
+        <Container onSubmit={onSubmit}>
+            <Title>Create a deck</Title>
+            <Input
+                autoFocus
+                placeholder="Title"
+                onChange={setTitle}
+                value={title}
+            />
+            <ModalFooter>
+                <Button $gray type="button" onClick={() => props.resolve()}>
+                    Cancel
+                </Button>
+                <Button>Create</Button>
+            </ModalFooter>
+        </Container>
+    );
 }
 
-export default AddDeck
-
-const Container = styled.form``
+const Container = styled.form``;
 
 const Title = styled.h2`
-  margin: 0;
-  margin-bottom: 30px;
-  color: #333;
-  font-size: 1.5rem;
-  font-weight: normal;
-`
+    margin: 0;
+    margin-bottom: 30px;
+    color: #333;
+    font-size: 1.5rem;
+    font-weight: normal;
+`;

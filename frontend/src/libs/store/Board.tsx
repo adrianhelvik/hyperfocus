@@ -2,14 +2,21 @@ import arrayMove from "util/arrayMove";
 import { Deck, Portal } from "./types";
 
 import { createMemo, createSignal } from "solid-js";
+import api from "../api";
 
 type Child = Deck | Portal;
 
-function Board() {
+function Board({ boardId, fetch }: { boardId: string; fetch: boolean }) {
     const [title, setTitle] = createSignal("");
     const [children, setChildren] = createSignal<Child[]>([]);
-    const [boardId, setBoardId] = createSignal<string | null>(null);
     const [color, setColor] = createSignal<string | null>(null);
+
+    if (fetch) {
+        api.getBoard({ boardId, children }).then((board: any) => {
+            console.log(board);
+            setChildren(children);
+        });
+    }
 
     const decks = createMemo(() => {
         return children().filter((x) => x.type === "deck");
@@ -65,13 +72,16 @@ function Board() {
         color,
         setColor,
         boardId,
-        setBoardId,
         title,
         setTitle,
         move,
         addPortal,
         addDeck,
         decksById,
+        decks,
+        get children() {
+            return children()
+        },
     };
 }
 
