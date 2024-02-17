@@ -1,68 +1,70 @@
-import isDetached from 'util/isDetached'
-const outlines = new Map()
+import isDetached from "util/isDetached";
+const outlines = new Map();
 
-setInterval(renderDebugged, 1000)
+setInterval(renderDebugged, 1000);
 
 function renderDebugged() {
-  const matchingElements = Array.from(document.querySelectorAll('[data-debug]'))
+    const matchingElements = Array.from(
+        document.querySelectorAll("[data-debug]")
+    );
 
-  for (const element of matchingElements) {
-    const outline = outlines.has(element)
-      ? outlines.get(element)
-      : createOutline(element)
+    for (const element of matchingElements) {
+        const outline = outlines.has(element)
+            ? outlines.get(element)
+            : createOutline(element);
 
-    const rect = element.getBoundingClientRect()
-    const { borderRadius } = getComputedStyle(element)
+        const rect = element.getBoundingClientRect();
+        const { borderRadius } = getComputedStyle(element);
 
-    Object.assign(outline.style, {
-      outline: '1px solid rgba(0, 0, 0, .6)',
-      pointerEvents: 'none',
-      borderRadius,
+        Object.assign(outline.style, {
+            outline: "1px solid rgba(0, 0, 0, .6)",
+            pointerEvents: "none",
+            borderRadius,
 
-      position: 'fixed',
-      zIndex: 10000,
+            position: "fixed",
+            zIndex: 10000,
 
-      height: rect.height + 'px',
-      width: rect.width + 'px',
-      left: rect.left + 'px',
-      top: rect.top + 'px',
-    })
-  }
-
-  for (const [element, outline] of outlines) {
-    if (isDetached(element) || !element.hasAttribute('data-debug')) {
-      if (outline.parentNode) outline.parentNode.removeChild(outline)
-      outlines.delete(outline)
+            height: rect.height + "px",
+            width: rect.width + "px",
+            left: rect.left + "px",
+            top: rect.top + "px",
+        });
     }
-  }
+
+    for (const [element, outline] of outlines) {
+        if (isDetached(element) || !element.hasAttribute("data-debug")) {
+            if (outline.parentNode) outline.parentNode.removeChild(outline);
+            outlines.delete(outline);
+        }
+    }
 }
 
 function createOutline(element) {
-  const outline = document.createElement('div')
-  document.body.appendChild(outline)
-  outlines.set(element, outline)
-  return outline
+    const outline = document.createElement("div");
+    document.body.appendChild(outline);
+    outlines.set(element, outline);
+    return outline;
 }
 
-let points = []
+let points = [];
 
 window.point = function point(x, y = 200) {
-  const div = document.createElement('div')
-  Object.assign(div.style, {
-    position: 'fixed',
-    left: x + 'px',
-    top: y + 'px',
-    background: 'red',
-    height: '3px',
-    width: '3px',
-    transform: 'translateX(-50%) translateY(-50%)',
-    zIndex: 10000,
-  })
-  document.body.appendChild(div)
-  points.push(div)
-}
+    const div = document.createElement("div");
+    Object.assign(div.style, {
+        position: "fixed",
+        left: x + "px",
+        top: y + "px",
+        background: "red",
+        height: "3px",
+        width: "3px",
+        transform: "translateX(-50%) translateY(-50%)",
+        zIndex: 10000,
+    });
+    document.body.appendChild(div);
+    points.push(div);
+};
 
 window.removePoints = function removePoints() {
-  for (const point of points) point.parentNode.removeChild(point)
-  points = []
-}
+    for (const point of points) point.parentNode.removeChild(point);
+    points = [];
+};

@@ -1,1 +1,1 @@
-export default () => new Promise(r => requestAnimationFrame(r))
+export default () => new Promise((r) => requestAnimationFrame(r));
