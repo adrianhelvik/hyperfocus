@@ -33,8 +33,6 @@ export default function withModal<Props>(
             "withModal(" +
             (WrappedComponent.displayName || WrappedComponent.name) +
             ")";
-        static WrappedComponent =
-            (WrappedComponent as any).WrappedComponent || WrappedComponent;
 
         @observable placement = null;
         @observable width = null;

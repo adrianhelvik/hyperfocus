@@ -18,23 +18,15 @@ export type WithMenuProps = {
     ) => void;
 };
 
-export default function <Props>(
+export default function withMenu<Props>(
     WrappedComponent: React.ComponentType<Props & WithMenuProps>,
-): React.ComponentType<Props> & {
-    WrappedComponent: React.ComponentType<Props>;
-} {
+): React.ComponentType<Props> {
     const openMenus = [];
 
     @observer
     class NewComponent extends React.Component<
         WithEventsProps & WithMenuProps & Props
     > {
-        static displayName = `withMenu(${
-            WrappedComponent.displayName || WrappedComponent.name
-        })`;
-        static WrappedComponent =
-            (WrappedComponent as any).WrappedComponent || WrappedComponent;
-
         @observable.ref menu = null;
         @observable options = null;
         @observable x = null;
@@ -43,6 +35,7 @@ export default function <Props>(
         showMenuTimeout?: ReturnType<typeof setTimeout>;
 
         componentDidMount() {
+            console.log("withMenu.componentDidMount props:", this.props);
             this.props.on(document, "click", (event) => {
                 if (this.menu && !this.menu.contains(event.target))
                     this.closeMenu();
@@ -120,9 +113,9 @@ export default function <Props>(
         }
     }
 
-    hoist(NewComponent as any, withEvents(WrappedComponent as any) as any);
+    hoist(NewComponent as any, WrappedComponent as any);
 
-    return NewComponent;
+    return withEvents(NewComponent);
 }
 
 const MenuWrapper = styled.div<{ x: number; y: number }>`

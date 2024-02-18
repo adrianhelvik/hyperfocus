@@ -12,7 +12,7 @@ import api from "api";
 const RedirectAny = Redirect as any;
 
 class BoardList extends React.Component<{ auth: Auth }> {
-    contextType = StoreContext;
+    static contextType = StoreContext;
     declare context: Store;
 
     async componentDidMount() {

@@ -10,11 +10,10 @@ export type WithEventsProps = {
     off: (target: EventTarget, eventName: string) => void;
 };
 
-export default <Props extends {}>(WrappedComponent: React.ComponentType<Props & WithEventsProps>): React.ComponentType<Props> => {
+export default function withEvents<Props>(
+    WrappedComponent: React.ComponentType<Props & WithEventsProps>,
+): React.ComponentType<Props> {
     class NewComponent extends React.Component<Props & WithEventsProps> {
-        static displayName =
-            WrappedComponent.displayName || WrappedComponent.name;
-
         unmounted = false;
 
         listeners: Array<{
@@ -82,4 +81,4 @@ export default <Props extends {}>(WrappedComponent: React.ComponentType<Props & 
     hoist(NewComponent as any, WrappedComponent as any);
 
     return NewComponent;
-};
+}

@@ -5,7 +5,7 @@ import Store, { StoreContext } from "store";
 import api from "api";
 
 @observer
-export class Reactions extends React.Component<{
+export default class Reactions extends React.Component<{
     children?: React.ReactNode;
 }> {
     static contextType = StoreContext;
