@@ -1,5 +1,4 @@
 import createUser from './createUser.mjs'
-import uuid from '../utils/uuid.mjs'
 import knex from '../db.mjs'
 
 export default async function createTestUserUnlessExists() {
