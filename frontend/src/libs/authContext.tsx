@@ -6,33 +6,32 @@ import React, { useContext } from "react";
 
 type Status = "pending" | "success" | "failure";
 
-interface Auth {
+export type Auth = {
     authenticate: () => Promise<boolean>;
     logout: () => Promise<void>;
     login: (payload: { username: string; password: string }) => Promise<void>;
     status: Status;
-}
+};
+
+export type WithAuthProps = { auth: Auth };
 
 const AuthContext = React.createContext<Auth | null>(null);
 
-export function withAuth<P extends object>(
-    WrappedComponent: React.ComponentType<P>
-) {
+export function withAuth<Props>(
+    WrappedComponent: React.ComponentType<Props & WithAuthProps>,
+): React.ComponentType<Props> {
     const name =
-        WrappedComponent.displayName ||
-        WrappedComponent["displayName"] ||
-        WrappedComponent.name ||
-        "<component>";
+        WrappedComponent.displayName || WrappedComponent.name || "<component>";
 
-    const WithAuth = (props: P) => {
+    const WithAuth = (props: Props) => {
         const auth = React.useContext(AuthContext);
 
-        return <WrappedComponent {...(props as P)} auth={auth} />;
+        return <WrappedComponent {...props} auth={auth} />;
     };
 
     WithAuth.displayName = `withContext(${name})`;
 
-    hoist(WithAuth, WrappedComponent);
+    hoist(WithAuth, WrappedComponent as any);
 
     return WithAuth;
 }
@@ -42,7 +41,9 @@ export function useAuth() {
 }
 
 @observer
-class ProvideAuth extends React.Component<{ children: React.ReactElement }> {
+export class ProvideAuth extends React.Component<{
+    children: React.ReactElement;
+}> {
     @observable status: Status = "pending";
 
     @action setStatus(status: Status) {
@@ -64,7 +65,7 @@ class ProvideAuth extends React.Component<{ children: React.ReactElement }> {
         } catch (e) {
             console.log(
                 "%cauthentication failed",
-                "background:red;padding:4px"
+                "background:red;padding:4px",
             );
             this.setStatus("failure");
             return false;
@@ -95,5 +96,3 @@ class ProvideAuth extends React.Component<{ children: React.ReactElement }> {
         );
     }
 }
-
-export { ProvideAuth };

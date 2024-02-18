@@ -1,4 +1,4 @@
-import { withAuth } from "authContext";
+import { WithAuthProps, withAuth } from "authContext";
 import Header from "ui/Header";
 import React from "react";
 
@@ -12,13 +12,14 @@ import {
     Title,
 } from "./components";
 
-@withAuth
-class LandingPage extends React.Component {
+type Props = WithAuthProps;
+
+class LandingPage extends React.Component<Props> {
     particles = React.createRef();
 
     componentDidMount() {
-        if (window.particlesJS) {
-            window.particlesJS.load(
+        if ((window as any).particlesJS) {
+            (window as any).particlesJS.load(
                 "particles-js",
                 "particles.json",
                 function () {
@@ -61,4 +62,4 @@ class LandingPage extends React.Component {
     }
 }
 
-export default LandingPage;
+export default withAuth(LandingPage);

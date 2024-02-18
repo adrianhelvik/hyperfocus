@@ -1,26 +1,39 @@
 import { CirclePicker as ColorPicker } from "react-color";
-import { inject, observer } from "mobx-react";
+import Store, { StoreContext } from "src/libs/store";
 import { withRouter } from "react-router-dom";
 import styled from "styled-components";
-import withConfirm from "withConfirm";
+import { observer } from "mobx-react";
+import withConfirm, { WithConfirmProps } from "withConfirm";
 import onSelect from "util/onSelect";
-import withStatus from "withStatus";
+import withStatus, { WithStatusProps } from "withStatus";
 import MenuIcon from "ui/MenuIcon";
-import withModal from "withModal";
-import withMenu from "withMenu";
+import withModal, { WithModalProps } from "withModal";
+import withMenu, { WithMenuProps } from "withMenu";
 import * as theme from "theme";
+import Board from "store/Board";
 import Color from "color";
-import React from "react";
+import React, { MouseEvent } from "react";
 import api from "api";
 
-@withModal
-@withConfirm
-@withStatus
-@withMenu
-@withRouter
-@inject("store")
+const ColorPickerAny = ColorPicker as any as React.ComponentType<any>;
+
+const withRouterAny = withRouter as any as <T extends React.ComponentType<any>>(
+    component: T,
+) => T;
+
+type Props = WithConfirmProps &
+    WithStatusProps &
+    WithMenuProps &
+    WithModalProps &
+    WithConfirmProps & {
+        board: Board;
+    };
+
 @observer
-class BoardTile extends React.Component {
+class BoardTile extends React.Component<Props> {
+    static contextType = StoreContext;
+    declare context: Store;
+
     onSelect = () => {
         window.location.pathname = `/board/${this.props.board.boardId}`;
     };
@@ -33,15 +46,15 @@ class BoardTile extends React.Component {
         });
     };
 
-    openMenu = (event) => {
+    openMenu = (event: MouseEvent) => {
         event.preventDefault();
         event.stopPropagation();
-        event = event.nativeEvent;
-        this.props.showMenu(event, {
+        const nativeEvent: any = event.nativeEvent;
+        this.props.showMenu(nativeEvent, {
             "Change color": async () => {
-                this.props.showModalInPlace(event, ({ resolve }) => (
-                    <ColorPicker
-                        onChange={(color) => {
+                this.props.showModalInPlace(nativeEvent, ({ resolve }) => (
+                    <ColorPickerAny
+                        onChange={(color: { hex: string }) => {
                             this.setColor(color);
                             resolve();
                         }}
@@ -50,7 +63,7 @@ class BoardTile extends React.Component {
             },
             Delete: async () => {
                 if (
-                    !(await this.props.confirmInPlace(event, (p) => (
+                    !(await this.props.confirmInPlace(nativeEvent, (p) => (
                         <div>
                             <div>Delete board permanently</div>
                             <button onClick={p.yes}>Yes</button>
@@ -64,7 +77,7 @@ class BoardTile extends React.Component {
                     await api.deleteBoard({
                         boardId,
                     });
-                    this.props.store.deleteBoard(boardId);
+                    this.context.deleteBoard(boardId);
                 } catch (e) {
                     this.props.showStatus(() => (
                         <div>
@@ -101,9 +114,11 @@ class BoardTile extends React.Component {
     }
 }
 
-export default BoardTile;
+export default withModal(
+    withConfirm(withStatus(withMenu(withRouterAny(BoardTile)))),
+);
 
-const Container = styled.div`
+const Container = styled.div<{ $color: string }>`
     cursor: pointer;
     padding: 10px;
     background: ${(p) => p.$color};

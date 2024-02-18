@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import { FormEvent, useEffect, useState } from "react";
 import { Redirect } from "react-router-dom";
 import { useAuth } from "../authContext";
 import styled from "styled-components";
@@ -9,6 +9,8 @@ import Input from "ui/Input";
 import React from "react";
 import sleep from "sleep";
 
+const RedirectAny = Redirect as any as React.FC<{ to: string }>;
+
 export default observer(function Login() {
     const [username, setUsername] = useState("");
     const [password, setPassword] = useState("");
@@ -16,7 +18,7 @@ export default observer(function Login() {
     const [error, setError] = useState("");
     const auth = useAuth();
 
-    const onSubmit = async (event) => {
+    const onSubmit = async (event: FormEvent) => {
         event.preventDefault();
         setError("");
         setMessage("Logging in...");
@@ -38,7 +40,7 @@ export default observer(function Login() {
         auth.authenticate();
     }, []);
 
-    if (auth.status === "success") return <Redirect to="/app" />;
+    if (auth.status === "success") return <RedirectAny to="/app" />;
 
     return (
         <Container>

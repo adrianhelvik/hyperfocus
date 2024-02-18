@@ -1,9 +1,18 @@
 import { observable, computed, action } from "mobx";
+import Portal from "./Portal";
 import Card from "./Card";
 
-type DeckParam = {
+export type DeckParam = {
+    boardId?: string;
+    deckId?: string;
+    index?: number;
+    target?: Deck;
     title?: string;
     cards?: Card[];
+    portalId?: string;
+    portals?: unknown[];
+    children?: (Card | Portal)[];
+    type?: "deck";
 };
 
 class Deck {
@@ -11,12 +20,19 @@ class Deck {
     @observable cards = observable.array<Card>();
     @observable color = "";
     focus = true;
+    deckId: string;
+    initialFocus?: boolean;
+
+    type?: "deck" = "deck";
+    referencedByPortal: boolean;
+    boardTitle: string;
+    portals: Portal[];
 
     constructor(deck: DeckParam) {
         Object.assign(this, deck);
     }
 
-    @action addCard(card: Card, index: number) {
+    @action addCard(card: Card, index?: number) {
         if (typeof index === "number" && !isNaN(index)) {
             this.cards.splice(index, 0, card);
         } else {

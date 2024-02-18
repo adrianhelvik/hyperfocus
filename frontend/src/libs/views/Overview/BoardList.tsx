@@ -1,41 +1,44 @@
-import { observer, inject } from "mobx-react";
+import { withAuth, Auth } from "authContext";
+import Store, { StoreContext } from "store";
 import { Redirect } from "react-router-dom";
-import { withAuth } from "authContext";
 import styled from "styled-components";
+import { observer } from "mobx-react";
 import BoardTile from "./BoardTile";
 import Board from "store/Board";
 import * as theme from "theme";
 import React from "react";
 import api from "api";
 
-@withAuth
-@inject("store")
-@observer
-class BoardList extends React.Component {
+const RedirectAny = Redirect as any;
+
+class BoardList extends React.Component<{ auth: Auth }> {
+    contextType = StoreContext;
+    declare context: Store;
+
     async componentDidMount() {
         if (!(await this.props.auth.authenticate())) return;
 
         const { boards } = await api.ownBoards();
 
-        this.props.store.setBoards(boards.map((b) => new Board(b)));
+        this.context.setBoards(boards.map((b) => new Board(b)));
     }
 
     render() {
-        if (this.props.auth.status === "failed")
-            return <Redirect to="/login" />;
+        if (this.props.auth.status === "failure")
+            return <RedirectAny to="/login" />;
         return (
             <Container>
                 <Header>
                     <Title>My boards</Title>
-                    <PlusButton onClick={this.props.store.startAddingBoard}>
+                    <PlusButton onClick={this.context.startAddingBoard}>
                         <span className="material-symbols-outlined">add</span>
                     </PlusButton>
                 </Header>
                 <Boards>
-                    {this.props.store.boards.map((board) => (
+                    {this.context.boards.map((board) => (
                         <BoardTile key={board.boardId} board={board} />
                     ))}
-                    {!this.props.store.boards.length && (
+                    {!this.context.boards.length && (
                         <div>You have no boards yet</div>
                     )}
                 </Boards>
@@ -44,7 +47,7 @@ class BoardList extends React.Component {
     }
 }
 
-export default BoardList;
+export default withAuth(observer(BoardList));
 
 const Container = styled.div`
     max-width: 960px;

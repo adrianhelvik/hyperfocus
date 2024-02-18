@@ -1,46 +1,54 @@
-import { inject, observer } from "mobx-react";
+import { WithAuthProps, withAuth } from "authContext";
+import withMenu, { WithMenuProps } from "withMenu";
 import { Redirect } from "react-router-dom";
 import AddBoardModal from "./AddBoardModal";
-import { withAuth } from "authContext";
+import Store, { StoreContext } from "store";
+import React, { MouseEvent } from "react";
 import styled from "styled-components";
+import { observer } from "mobx-react";
 import BoardList from "./BoardList";
-import withMenu from "withMenu";
 import Header from "ui/Header";
-import React from "react";
 
-@withMenu
-@withAuth
-@inject("store")
+const RedirectAny = Redirect as any;
+
+type Props = WithAuthProps &
+    WithMenuProps & {
+        children?: React.ReactNode;
+    };
+
 @observer
-class Overview extends React.Component {
+class Overview extends React.Component<Props> {
+    static contextType = StoreContext;
+    declare context: Store;
+
     componentDidMount() {
         this.props.auth.authenticate();
     }
 
-    onContextMenu = (event) => {
+    onContextMenu = (event: MouseEvent) => {
         event.preventDefault();
 
         this.props.showMenu(event, {
             "New board": () => {
-                this.props.store.isAddingBoard = true;
+                this.context.isAddingBoard = true;
             },
         });
     };
 
     render() {
-        if (this.props.auth.status === "failure") return <Redirect to="/" />;
+        if (this.props.auth.status === "failure") return <RedirectAny to="/" />;
 
         return (
             <Container onContextMenu={this.onContextMenu}>
                 <Header>My boards</Header>
-                {this.props.store.isAddingBoard && <AddBoardModal />}
+                {this.context.isAddingBoard && <AddBoardModal />}
                 <BoardList />
             </Container>
         );
     }
 }
 
-export default Overview;
+export default withMenu(withAuth(Overview));
 
 const Container = styled.div`
     background-color: #eee;

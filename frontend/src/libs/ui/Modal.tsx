@@ -2,19 +2,23 @@ import styled, { css } from "styled-components";
 import Backdrop from "./Backdrop";
 import { Coord } from "types";
 import * as theme from "theme";
-import assert from "assert";
 import React from "react";
 
 type Props = {
     placement?: Coord;
     hide: () => any;
+    width?: number;
+    children: React.ReactNode;
+    backdrop?: boolean;
 };
 
 class Modal extends React.Component<Props> {
     render() {
         if (this.props.placement) {
-            assert.equal(typeof this.props.placement.x, "number");
-            assert.equal(typeof this.props.placement.y, "number");
+            if (typeof this.props.placement.x !== "number")
+                throw Error("this.props.placement.x must be a number");
+            if (typeof this.props.placement.y !== "number")
+                throw Error("this.props.placement.y must be a number");
         }
 
         if (typeof this.props.hide !== "function")
@@ -22,7 +26,6 @@ class Modal extends React.Component<Props> {
 
         return (
             <Backdrop
-                is="dialog"
                 transparent={Boolean(this.props.placement)}
                 hide={this.props.hide}
             >
@@ -39,7 +42,10 @@ class Modal extends React.Component<Props> {
 
 export default Modal;
 
-const Container = styled.div`
+const Container = styled.div<{
+    $position?: Coord;
+    $width?: number;
+}>`
     background-color: white;
     padding: 20px;
     border-radius: 4px;
@@ -49,7 +55,7 @@ const Container = styled.div`
     ${(p) =>
         !p.$position &&
         css`
-            width: ${(p) => p.$width || 400}px;
+            width: ${p.$width || 400}px;
             margin-bottom: 100px;
         `}
 

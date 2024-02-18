@@ -1,11 +1,12 @@
 import isDetached from "util/isDetached";
+
 const outlines = new Map();
 
 setInterval(renderDebugged, 1000);
 
 function renderDebugged() {
     const matchingElements = Array.from(
-        document.querySelectorAll("[data-debug]")
+        document.querySelectorAll("[data-debug]"),
     );
 
     for (const element of matchingElements) {
@@ -39,7 +40,7 @@ function renderDebugged() {
     }
 }
 
-function createOutline(element) {
+function createOutline(element: Element) {
     const outline = document.createElement("div");
     document.body.appendChild(outline);
     outlines.set(element, outline);
@@ -47,6 +48,13 @@ function createOutline(element) {
 }
 
 let points = [];
+
+declare global {
+    interface Window {
+        point: (x: number, y?: number) => void;
+        removePoints: () => void;
+    }
+}
 
 window.point = function point(x, y = 200) {
     const div = document.createElement("div");

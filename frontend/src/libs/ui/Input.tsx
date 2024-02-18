@@ -51,7 +51,7 @@ export default function Input(props: Props) {
             }
             setElement(element);
         },
-        [props.innerRef]
+        [props.innerRef],
     );
 
     const show = useCallback(() => {

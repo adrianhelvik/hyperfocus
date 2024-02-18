@@ -1,17 +1,19 @@
-import { observer, inject } from "mobx-react";
+import React, { ChangeEvent, FormEvent } from "react";
+import Store, { StoreContext } from "store";
 import { observable, action } from "mobx";
 import ModalFooter from "ui/ModalFooter";
 import styled from "styled-components";
+import { observer } from "mobx-react";
 import Board from "store/Board";
 import Button from "ui/Button";
 import Input from "ui/Input";
 import Modal from "ui/Modal";
-import React, { ChangeEvent, FormEvent } from "react";
-import Store from "src/libs/store";
 
-@inject("store")
 @observer
-class AddBoardModal extends React.Component<{ store: Store }> {
+class AddBoardModal extends React.Component {
+    static contextType = StoreContext;
+    declare context: Store;
+
     @observable title = "";
 
     @action.bound setTitle(event: ChangeEvent<HTMLInputElement>) {
@@ -20,15 +22,15 @@ class AddBoardModal extends React.Component<{ store: Store }> {
 
     @action.bound onSubmit(event: FormEvent<HTMLFormElement>) {
         event.preventDefault();
-        this.props.store.addBoard(new Board(this.title));
+        this.context.addBoard(new Board(this.title));
         this.title = "";
-        this.props.store.stopAddingBoard();
+        this.context.stopAddingBoard();
     }
 
     render() {
         return (
             <form onSubmit={this.onSubmit}>
-                <Modal hide={this.props.store.stopAddingBoard}>
+                <Modal hide={this.context.stopAddingBoard}>
                     <Title>Name your board</Title>
                     <Input
                         placeholder="Enter a name"
@@ -40,7 +42,7 @@ class AddBoardModal extends React.Component<{ store: Store }> {
                         <Button
                             $gray
                             type="button"
-                            onClick={this.props.store.stopAddingBoard}
+                            onClick={this.context.stopAddingBoard}
                         >
                             Cancel
                         </Button>

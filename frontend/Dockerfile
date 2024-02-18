@@ -2,7 +2,7 @@ FROM node
 
 WORKDIR /frontend
 
-COPY ./frontend/vite.config.js ./
+COPY ./frontend/vite.config.ts ./
 COPY ./frontend/tsconfig.json ./
 COPY ./frontend/index.html ./index.html
 COPY ./frontend/scripts ./scripts

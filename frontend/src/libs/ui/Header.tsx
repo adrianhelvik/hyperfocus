@@ -1,15 +1,24 @@
-import { withRouter } from "react-router-dom";
+import { RouteComponentProps, withRouter } from "react-router-dom";
+import { WithAuthProps, withAuth } from "authContext";
 import * as zIndexes from "../zIndexes";
 import { Link } from "react-router-dom";
-import { withAuth } from "authContext";
 import styled from "styled-components";
 import * as theme from "../theme";
 import Color from "color";
 import React from "react";
 
-@withRouter
-@withAuth
-class Header extends React.Component {
+const withRouterAny = withRouter as any as <T extends React.ComponentType<any>>(
+    component: T,
+) => T;
+
+type OwnProps = {
+    color?: string;
+    children?: React.ReactNode;
+};
+
+type Props = RouteComponentProps & WithAuthProps & OwnProps;
+
+class Header extends React.Component<Props> {
     render() {
         const isInApp = /^\/(app|board)($|\/)/.test(this.props.match.path);
         const pageColor = this.props.color || theme.ui1;
@@ -36,13 +45,15 @@ class Header extends React.Component {
     }
 }
 
-export default Header;
+export default withRouterAny(
+    withAuth(Header),
+) as any as React.ComponentType<OwnProps>;
 
 const UndecoratedLink = styled(Link)`
     text-decoration: none;
 `;
 
-const Container = styled.div`
+const Container = styled.div<{ $color: string }>`
     background-color: ${(p) => p.$color};
     color: ${(p) => (Color(p.$color).isDark() ? "white" : "black")};
     position: sticky;
@@ -72,18 +83,18 @@ Logo.Container = styled.div`
     font-weight: bold;
 `;
 
-Logo.Text1 = styled.span`
+Logo.Text1 = styled.span<{ $pageColor: string }>`
     color: ${(p) =>
         Color(p.$pageColor).isDark() ? theme.logo1 : theme.logo1Dark};
     position: relative;
 `;
 
-Logo.Text2 = styled.span`
+Logo.Text2 = styled.span<{ $pageColor: string }>`
     color: ${(p) =>
         Color(p.$pageColor).isDark() ? theme.logo2 : theme.logo2Dark};
 `;
 
-const UnderLine = styled.div`
+const UnderLine = styled.div<{ $pageColor: string }>`
     height: 4px;
     background-color: ${(p) =>
         Color(p.$pageColor).isDark() ? theme.logo1 : theme.logo1Dark};

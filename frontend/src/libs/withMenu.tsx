@@ -1,6 +1,6 @@
+import withEvents, { WithEventsProps } from "util/withEvents";
 import styled, { keyframes } from "styled-components";
 import hoist from "hoist-non-react-statics";
-import withEvents from "util/withEvents";
 import { Portal } from "react-portal";
 import { observer } from "mobx-react";
 import onSelect from "util/onSelect";
@@ -9,22 +9,38 @@ import { observable } from "mobx";
 import * as theme from "theme";
 import React from "react";
 
-export default (WrappedComponent) => {
+const PortalAny = Portal as any;
+
+export type WithMenuProps = {
+    showMenu: (
+        event: React.MouseEvent,
+        options: Record<string, Function>,
+    ) => void;
+};
+
+export default function <Props>(
+    WrappedComponent: React.ComponentType<Props & WithMenuProps>,
+): React.ComponentType<Props> & {
+    WrappedComponent: React.ComponentType<Props>;
+} {
     const openMenus = [];
 
-    @withEvents
     @observer
-    class NewComponent extends React.Component {
+    class NewComponent extends React.Component<
+        WithEventsProps & WithMenuProps & Props
+    > {
         static displayName = `withMenu(${
             WrappedComponent.displayName || WrappedComponent.name
         })`;
         static WrappedComponent =
-            WrappedComponent.WrappedComponent || WrappedComponent;
+            (WrappedComponent as any).WrappedComponent || WrappedComponent;
 
         @observable.ref menu = null;
         @observable options = null;
         @observable x = null;
         @observable y = null;
+
+        showMenuTimeout?: ReturnType<typeof setTimeout>;
 
         componentDidMount() {
             this.props.on(document, "click", (event) => {
@@ -39,7 +55,10 @@ export default (WrappedComponent) => {
             clearTimeout(this.showMenuTimeout);
         }
 
-        showMenu = (event, options) => {
+        showMenu = (
+            event: { clientX: number; clientY: number },
+            options: Record<string, Function>,
+        ) => {
             clearTimeout(this.showMenuTimeout);
             this.showMenuTimeout = setTimeout(() => {
                 openMenus.forEach((menu) => {
@@ -61,7 +80,7 @@ export default (WrappedComponent) => {
             if (index > -1) openMenus.splice(index, 1);
         };
 
-        selectItem = (e) => {
+        selectItem = (e: { target: HTMLElement }) => {
             const key = e.target.getAttribute("data-key");
             this.options[key](e);
             this.closeMenu();
@@ -75,7 +94,7 @@ export default (WrappedComponent) => {
                         showMenu={this.showMenu}
                     />
                     {this.options && (
-                        <Portal>
+                        <PortalAny>
                             <MenuWrapper
                                 x={this.x}
                                 y={this.y}
@@ -94,19 +113,19 @@ export default (WrappedComponent) => {
                                     </MenuItem>
                                 ))}
                             </MenuWrapper>
-                        </Portal>
+                        </PortalAny>
                     )}
                 </React.Fragment>
             );
         }
     }
 
-    hoist(NewComponent, WrappedComponent);
+    hoist(NewComponent as any, withEvents(WrappedComponent as any) as any);
 
     return NewComponent;
-};
+}
 
-const MenuWrapper = styled.div`
+const MenuWrapper = styled.div<{ x: number; y: number }>`
     position: fixed;
     top: ${(p) => p.y}px;
     left: ${(p) => p.x}px;

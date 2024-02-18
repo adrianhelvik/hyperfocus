@@ -1,38 +1,59 @@
 import { runInAction, observable, computed, action } from "mobx";
-import { Redirect, withRouter } from "react-router-dom";
-import { inject, observer } from "mobx-react";
-import PortalModel from "store/Portal";
+import withConfirm, { WithConfirmProps } from "withConfirm";
+import PortalModel, { PortalParam } from "store/Portal";
+import withModal, { WithModalProps } from "withModal";
+import withMenu, { WithMenuProps } from "withMenu";
+import DeckModel, { DeckParam } from "store/Deck";
+import Store, { StoreContext } from "store";
+import React, { MouseEvent } from "react";
 import styled from "styled-components";
-import withConfirm from "withConfirm";
+import { observer } from "mobx-react";
 import BoardModel from "store/Board";
 import AddPortal from "./AddPortal";
 import AddCircle from "./AddCircle";
-import DeckModel from "store/Deck";
-import withModal from "withModal";
 import Loading from "ui/Loading";
 import AddDeck from "./AddDeck";
-import withMenu from "withMenu";
 import Header from "ui/Header";
 import * as theme from "theme";
 import Portal from "./Portal";
 import Deck from "./Deck";
-import React from "react";
 import api from "api";
 
-@withConfirm
-@withRouter
-@withModal
-@withMenu
-@inject("store")
+import {
+    RouteComponentProps,
+    RouteProps,
+    withRouter,
+    Redirect,
+} from "react-router-dom";
+
+const withRouterAny = withRouter as any as (<T>(Component: T) => T);
+
+// XXX: Broken 3rd party types
+const RedirectAny = Redirect as any;
+
+type Props = RouteProps &
+    RouteComponentProps &
+    WithModalProps &
+    WithMenuProps &
+    WithConfirmProps &
+    RouteComponentProps<{ boardId: string }> & {
+        board: BoardModel;
+    };
+
 @observer
-class Board extends React.Component {
+class Board extends React.Component<Props> {
+    static contextType = StoreContext;
+    declare context: Store;
+
     @observable fromIndex = null;
     @observable loading = true;
     @observable toIndex = null;
     @observable error = null;
 
+    childContainer: HTMLElement;
+
     @computed get board() {
-        return this.props.store.board;
+        return this.context.board;
     }
 
     async componentDidMount() {
@@ -49,11 +70,14 @@ class Board extends React.Component {
         runInAction(() => {
             const board = new BoardModel({
                 children: children.map((child) => {
-                    if (child.type === "deck") return new DeckModel(child);
+                    if (child.type === "deck")
+                        return new DeckModel(child as DeckParam);
                     if (child.type === "portal")
                         return new PortalModel({
-                            ...child,
-                            target: new DeckModel(child.target),
+                            ...(child as PortalParam),
+                            target: new DeckModel(
+                                (child as PortalModel).target as DeckParam,
+                            ),
                         });
                     throw Error("Invalid child type");
                 }),
@@ -62,13 +86,13 @@ class Board extends React.Component {
                 color,
             });
 
-            this.props.store.setActiveBoard(new BoardModel(board));
+            this.context.setActiveBoard(new BoardModel(board));
 
             this.loading = false;
         });
     }
 
-    componentDidCatch(error) {
+    componentDidCatch(error: Error) {
         this.error = error;
         setTimeout(() => {
             this.error = null;
@@ -81,7 +105,7 @@ class Board extends React.Component {
         ));
     };
 
-    addDeckFromContextMenu = async (event) => {
+    addDeckFromContextMenu = async (event: MouseEvent) => {
         const { clientX } = event;
 
         const index = this.insertionPointForChild(clientX);
@@ -91,7 +115,7 @@ class Board extends React.Component {
         ));
     };
 
-    addPortalFromContextMenu = async (event) => {
+    addPortalFromContextMenu = async (event: MouseEvent) => {
         const { clientX } = event;
 
         const index = this.insertionPointForChild(clientX);
@@ -100,11 +124,11 @@ class Board extends React.Component {
             (props) => (
                 <AddPortal {...props} board={this.board} index={index} />
             ),
-            { width: 700 }
+            { width: 700 },
         );
     };
 
-    insertionPointForChild(x) {
+    insertionPointForChild(x: number) {
         const deckElements = document.querySelectorAll("[data-board-child]");
 
         if (!deckElements.length) return 0;
@@ -120,14 +144,14 @@ class Board extends React.Component {
         return i;
     }
 
-    addPortal = async ({ resolve, reject }) => {
+    addPortal = async () => {
         await this.props.showModal(
             (props) => <AddPortal {...props} board={this.board} />,
-            { width: 700 }
+            { width: 700 },
         );
     };
 
-    @action.bound simulateMove(fromIndex, toIndex) {
+    @action.bound simulateMove(fromIndex: number, toIndex: number) {
         if (fromIndex === toIndex) {
             if (this.fromIndex != null || this.toIndex != null)
                 this.fromIndex = this.toIndex = null;
@@ -152,7 +176,7 @@ class Board extends React.Component {
         return moveLeft;
     }
 
-    shouldIndexMoveRight(index) {
+    shouldIndexMoveRight(index: number) {
         if (this.fromIndex == null || this.toIndex == null) return false;
         return (
             this.toIndex < this.fromIndex &&
@@ -161,7 +185,7 @@ class Board extends React.Component {
         );
     }
 
-    shouldIndexMoveLeft(index) {
+    shouldIndexMoveLeft(index: number) {
         if (this.fromIndex == null || this.toIndex == null) return false;
         return (
             this.toIndex > this.fromIndex &&
@@ -170,11 +194,11 @@ class Board extends React.Component {
         );
     }
 
-    shouldMoveLeft(index) {
+    shouldMoveLeft() {
         return false;
     }
 
-    @action.bound move(fromIndex, toIndex) {
+    @action.bound move(fromIndex: number, toIndex: number) {
         let item = this.board.children[fromIndex];
 
         if (item instanceof PortalModel)
@@ -195,7 +219,8 @@ class Board extends React.Component {
         });
     }
 
-    onContextMenu = (event) => {
+    onContextMenu = (event: MouseEvent) => {
+        if (!(event.target instanceof HTMLElement)) return;
         if (
             event.target.tagName === "INPUT" ||
             event.target.tagName === "TEXTAREA"
@@ -203,10 +228,10 @@ class Board extends React.Component {
             return;
         event.preventDefault();
         this.props.showMenu(event, {
-            "Add deck": (event) => {
+            "Add deck": (event: MouseEvent) => {
                 this.addDeckFromContextMenu(event);
             },
-            "Add portal": (event) => {
+            "Add portal": (event: MouseEvent) => {
                 this.addPortalFromContextMenu(event);
             },
         });
@@ -218,7 +243,7 @@ class Board extends React.Component {
         }
 
         if (!this.board) {
-            return <Redirect to="/" />;
+            return <RedirectAny to="/" />;
         }
 
         if (this.error) return null;
@@ -273,7 +298,7 @@ class Board extends React.Component {
                                                             Keep
                                                         </button>
                                                     </div>
-                                                )
+                                                ),
                                             );
                                         if (!confirmed) return;
                                         api.deletePortal({
@@ -307,7 +332,7 @@ class Board extends React.Component {
                                                     Keep
                                                 </button>
                                             </div>
-                                        )
+                                        ),
                                     );
                                     if (!confirmed) return;
                                     api.deleteDeck({ deckId: child.deckId });
@@ -333,7 +358,7 @@ class Board extends React.Component {
     }
 }
 
-export default Board;
+export default withConfirm(withRouterAny(withModal(withMenu(Board))));
 
 const Container = styled.main`
     background: #ddd;
@@ -382,14 +407,14 @@ const Decks = styled.div`
     align-items: flex-start;
 `;
 
-const ChildDeck = styled(Deck)`
+const ChildDeck = styled(Deck as any)`
     margin: 20px;
     :not(:last-child) {
         margin-right: 0;
     }
 `;
 
-const ChildPortal = styled(Portal)`
+const ChildPortal = styled(Portal as any)`
     margin: 20px;
     :not(:last-child) {
         margin-right: 0;

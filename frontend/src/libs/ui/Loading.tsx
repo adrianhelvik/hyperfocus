@@ -1,9 +1,13 @@
 import * as theme from "../theme";
 import React from "react";
 
-const style = (e, s) => Object.assign(e.style, s);
+const style = (e: HTMLElement, s: Partial<CSSStyleDeclaration>) =>
+    Object.assign(e.style, s);
 
 class Loading extends React.Component {
+    element: HTMLDivElement;
+    interval: ReturnType<typeof setInterval>;
+
     componentDidMount() {
         this.element = document.createElement("div");
         document.body.appendChild(this.element);
@@ -11,10 +15,10 @@ class Loading extends React.Component {
         style(this.element, {
             backgroundColor: theme.ui2,
             position: "fixed",
-            bottom: 0,
-            right: 0,
-            left: 0,
-            top: 0,
+            bottom: "0",
+            right: "0",
+            left: "0",
+            top: "0",
             display: "flex",
             alignItems: "center",
             justifyContent: "center",

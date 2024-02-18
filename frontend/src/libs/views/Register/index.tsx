@@ -1,9 +1,8 @@
 import { useHistory } from "react-router-dom";
 import styled from "styled-components";
-import { useState } from "react";
+import { FormEvent, useState } from "react";
 import Button from "ui/Button";
 import Input from "ui/Input";
-import React from "react";
 import api from "api";
 
 export default function Register() {
@@ -13,7 +12,7 @@ export default function Register() {
 
     const history = useHistory();
 
-    const onSubmit = async (event) => {
+    const onSubmit = async (event: FormEvent) => {
         event.preventDefault();
 
         if (password !== repeatedPassword)

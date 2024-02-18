@@ -1,10 +1,17 @@
 import hoist from "hoist-non-react-statics";
 import React from "react";
 
-export default <P extends {}>(
-    WrappedComponent: React.ComponentType<P>
-): React.ComponentType<P> => {
-    class NewComponent extends React.Component<P> {
+export type WithEventsProps = {
+    on: (
+        target: EventTarget,
+        eventName: string,
+        handler: (event: any) => void,
+    ) => void;
+    off: (target: EventTarget, eventName: string) => void;
+};
+
+export default <Props extends {}>(WrappedComponent: React.ComponentType<Props & WithEventsProps>): React.ComponentType<Props> => {
+    class NewComponent extends React.Component<Props & WithEventsProps> {
         static displayName =
             WrappedComponent.displayName || WrappedComponent.name;
 
@@ -19,11 +26,11 @@ export default <P extends {}>(
         on = (
             target: Node,
             eventName: string,
-            handler: (event: any) => void
+            handler: (event: any) => void,
         ) => {
             if (this.unmounted) {
                 console.error(
-                    "Attempted to add event listener after unmounting. This is a noop"
+                    "Attempted to add event listener after unmounting. This is a noop",
                 );
                 return;
             }
@@ -72,7 +79,7 @@ export default <P extends {}>(
         }
     }
 
-    hoist(NewComponent, WrappedComponent);
+    hoist(NewComponent as any, WrappedComponent as any);
 
     return NewComponent;
 };

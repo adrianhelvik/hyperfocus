@@ -1,19 +1,17 @@
-import assert from "assert";
-
 import { observable, action } from "mobx";
 
 class Card {
     @observable title = "";
     @observable cardId = null;
 
-    constructor(title, cardId) {
+    constructor(title: string, cardId: string) {
+        if (!title) throw Error("Card title is required");
+        if (!cardId) throw Error("Card id is required");
         this.title = title;
         this.cardId = cardId;
-        assert(title);
-        assert(cardId);
     }
 
-    @action setTitle(title) {
+    @action setTitle(title: string) {
         this.title = title;
     }
 }

@@ -1,5 +1,8 @@
-export default function someParent(element, fn) {
-    if (!element || element === document) return null;
+export default function someParent(
+    element: Element | null,
+    fn: (element: Element) => boolean,
+): Element | null {
+    if (!element) return null;
     if (fn(element)) return element;
-    return someParent(element.parentNode, fn);
+    return someParent(element.parentElement, fn);
 }

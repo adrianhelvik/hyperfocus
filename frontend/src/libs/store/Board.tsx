@@ -1,9 +1,16 @@
+import Deck, { DeckParam } from "./Deck";
 import arrayMove from "util/arrayMove";
 import { v4 as uuid } from "uuid";
 import Portal from "./Portal";
-import Deck from "./Deck";
 
 import { observable, computed, action } from "mobx";
+
+export type BoardParam = {
+    title: string;
+    children: (Deck | Portal)[];
+    boardId: string;
+    color: string;
+};
 
 class Board {
     @observable title = "";
@@ -11,19 +18,19 @@ class Board {
     @observable boardId = null;
     @observable color = null;
 
-    constructor(arg) {
-        if (typeof arg === "string") return this.fromTitle(arg);
-        else return this.fromBoard(arg);
+    constructor(arg: BoardParam | string) {
+        if (typeof arg === "string") this.fromTitle(arg);
+        else this.fromBoard(arg);
     }
 
-    fromBoard(board) {
+    fromBoard(board: BoardParam) {
         this.title = board.title;
         this.children = board.children.slice();
         this.boardId = board.boardId;
         this.color = board.color;
     }
 
-    fromTitle(title) {
+    fromTitle(title: string) {
         this.title = title;
         this.boardId = uuid();
     }
@@ -44,18 +51,25 @@ class Board {
         return decksById;
     }
 
-    @action addDeck(deck, index) {
+    @action addDeck(deck: DeckParam, index: number) {
         if (typeof index === "number") this.children.splice(index, 0, deck);
         else this.children.push(deck);
     }
 
-    @action addPortal(title, deck) {
-        const portal = new Portal(title, deck);
+    @action addPortal(options: {
+        boardId?: string;
+        deckId?: string;
+        index?: number;
+        portalId?: string;
+        title: string;
+        target: DeckParam;
+    }) {
+        const portal = new Portal(options);
         this.children.push(portal);
         return portal;
     }
 
-    @action move(fromIndex, toIndex) {
+    @action move(fromIndex: number, toIndex: number) {
         arrayMove(this.children, fromIndex, toIndex);
     }
 }

@@ -1,23 +1,24 @@
 import { observable } from "mobx";
+import Deck, { DeckParam } from "./Deck";
+
+export type PortalParam = {
+    boardId?: string;
+    portalId?: string;
+    type?: "portal";
+    target: Deck | DeckParam | null;
+};
 
 class Portal {
     @observable title = "";
-    @observable target = null;
+    @observable target: Deck | DeckParam | null = null;
+    portalId: string;
+    index: number;
 
-    constructor(...args) {
-        if (args[0] && typeof args[0] === "object")
-            return this.fromObject(args[0]);
-        return this.fromTitleAndTarget(args[0], args[1], args[2]);
-    }
+    type = "portal";
+    boardTitle: string;
 
-    fromTitleAndTarget(title, target, index) {
-        this.title = title;
-        this.target = target;
-        this.index = index;
-    }
-
-    fromObject(object) {
-        Object.assign(this, object);
+    constructor(param: PortalParam) {
+        Object.assign(this, param);
     }
 }
 

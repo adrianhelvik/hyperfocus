@@ -1,13 +1,15 @@
+import Deck, { DeckProps } from "./Deck";
 import { observer } from "mobx-react";
 import { observable } from "mobx";
-import Deck from "./Deck";
 import React from "react";
 
+type Props = DeckProps;
+
 @observer
-class Portal extends React.Component {
+class Portal extends React.Component<Props> {
     @observable error = null;
 
-    componentDidCatch(error) {
+    componentDidCatch(error: Error) {
         console.error(error);
         this.error = error;
     }

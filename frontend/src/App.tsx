@@ -1,8 +1,7 @@
 import { observer, Provider } from "mobx-react";
+import Store, { StoreContext } from "store";
 import { observable } from "mobx";
 import Routes from "./Routes";
-import * as mobx from "mobx";
-import Store from "store";
 import React from "react";
 
 const components = observable({
@@ -32,7 +31,11 @@ class App extends React.Component {
     render() {
         if (this.unhandledRejection)
             return <div>{this.unhandledRejection.stack}</div>;
-        return <Provider store={this.store} children={<components.Routes />} />;
+        return (
+            <StoreContext.Provider value={this.store}>
+                <Provider store={this.store} children={<components.Routes />} />
+            </StoreContext.Provider>
+        );
     }
 }
 

@@ -1,11 +1,11 @@
 import { action, observable, computed, runInAction } from "mobx";
+import withEvents, { WithEventsProps } from "util/withEvents";
+import withConfirm, { WithConfirmProps } from "withConfirm";
 import styled, { css } from "styled-components";
 import someParent from "util/someParent";
-import withEvents from "util/withEvents";
 import { elementToDeck } from "./Deck";
 import { Portal } from "react-portal";
 import { observer } from "mobx-react";
-import withConfirm from "withConfirm";
 import * as zIndexes from "zIndexes";
 import Button from "ui/Button";
 import * as theme from "theme";
@@ -14,10 +14,24 @@ import api from "api";
 
 export const elementToCard = observable.map();
 
-@withConfirm
-@withEvents
+export type OwnProps = {
+    setMoving: (moving: boolean) => void;
+    setHoverIndex: (index: number) => void;
+    getLastHoverIndex: () => number;
+    hoverIndex: number | null;
+    placeholderWidth: number;
+    placeholderHeight: number;
+    deck: any;
+    card: any;
+    index: number;
+    moving: boolean;
+    className: string;
+};
+
+export type CardProps = WithConfirmProps & WithEventsProps & OwnProps;
+
 @observer
-class Card extends React.Component {
+class Card extends React.Component<CardProps> {
     @observable initialClientX = null;
     @observable initialClientY = null;
     @observable noPointer = false;
@@ -27,6 +41,11 @@ class Card extends React.Component {
     @observable insetX = null;
     @observable insetY = null;
 
+    removeElement: HTMLElement;
+    element: HTMLElement;
+    width: number;
+    height: number;
+
     componentDidMount() {
         elementToCard.set(this.element, this);
     }
@@ -35,7 +54,14 @@ class Card extends React.Component {
         elementToCard.delete(this.element);
     }
 
-    @action.bound onMouseDown(event) {
+    @action.bound onMouseDown(event: {
+        stopPropagation: () => void;
+        target: EventTarget;
+        clientX: number;
+        clientY: number;
+    }) {
+        if (!(event.target instanceof Element)) return;
+
         event.stopPropagation();
         const { target, clientX, clientY } = event;
 
@@ -121,7 +147,7 @@ class Card extends React.Component {
         return this.clientY - this.initialClientY;
     }
 
-    remove = async (event) => {
+    remove = async (event: any) => {
         if (
             !(await this.props.confirmInPlace(event, (p) => (
                 <div>
@@ -182,7 +208,9 @@ class Card extends React.Component {
     }
 
     render() {
-        const Wrapper = this.moving ? Portal : React.Fragment;
+        const Wrapper = this.moving
+            ? /* incorrect types in library */ (Portal as any)
+            : React.Fragment;
 
         return (
             <React.Fragment>
@@ -194,9 +222,13 @@ class Card extends React.Component {
     }
 }
 
-export default Card;
+export default withConfirm(withEvents(Card));
 
-const Container = styled.div`
+const Container = styled.div<{
+    noPointer: boolean;
+    moving: boolean;
+    index: number;
+}>`
     display: flex;
     background: white;
     position: ${(p) => (p.moving ? "fixed" : "relative")};

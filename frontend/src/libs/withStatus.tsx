@@ -5,7 +5,22 @@ import { Portal } from "react-portal";
 import { observer } from "mobx-react";
 import React from "react";
 
-export default (Component) => {
+const PortalAny = Portal as any as React.ComponentType<any>;
+
+export type StatusTemplateProps = {
+    yes: () => void;
+    no: () => void;
+};
+
+export type WithStatusProps = {
+    showStatus: (
+        Template: React.ComponentType<StatusTemplateProps>,
+    ) => Promise<boolean>;
+};
+
+export default function withStatus<Props>(
+    Component: React.ComponentType<Props & WithStatusProps>,
+): React.ComponentType<Props> {
     @observer
     class WithConfirm extends React.Component {
         @observable Template = null;
@@ -13,7 +28,9 @@ export default (Component) => {
         @observable resolve = null;
         @observable reject = null;
 
-        @action.bound showStatus(Template) {
+        @action.bound showStatus(
+            Template: React.ComponentType<StatusTemplateProps>,
+        ) {
             this.Template = Template;
             this.promise = new Promise((resolve, reject) => {
                 this.resolve = resolve;
@@ -32,35 +49,36 @@ export default (Component) => {
             this.Template = null;
         }
 
-        stopPropagation = (e) => {
+        stopPropagation = (e: { stopPropagation: () => void }) => {
             e.stopPropagation();
         };
 
         render() {
+            const { Template } = this;
+
+            const ComponentAny = Component as any;
+
             return (
-                <React.Fragment>
-                    <Component {...this.props} showStatus={this.showStatus} />
-                    {this.Template && (
-                        <Portal>
+                <>
+                    <ComponentAny {...this.props} showStatus={this.showStatus} />
+                    {Template && (
+                        <PortalAny>
                             <Backdrop onClick={this.no}>
                                 <Wrapper onClick={this.stopPropagation}>
-                                    <this.Template
-                                        yes={this.yes}
-                                        no={this.no}
-                                    />
+                                    <Template yes={this.yes} no={this.no} />
                                 </Wrapper>
                             </Backdrop>
-                        </Portal>
+                        </PortalAny>
                     )}
-                </React.Fragment>
+                </>
             );
         }
     }
 
-    hoist(WithConfirm, Component);
+    hoist(WithConfirm as any, Component as any);
 
-    return WithConfirm;
-};
+    return WithConfirm as any as React.ComponentType<Props & WithStatusProps>
+}
 
 const Backdrop = styled.div`
     background-color: rgba(0, 0, 0, 0.3);

@@ -1,57 +1,70 @@
+import PortalModel, { PortalParam } from "store/Portal";
+import DeckModel, { DeckParam } from "store/Deck";
 import styled, { css } from "styled-components";
-import { observer, inject } from "mobx-react";
+import Store, { StoreContext } from "store";
 import { observable, action } from "mobx";
 import ModalFooter from "ui/ModalFooter";
-import PortalModel from "store/Portal";
+import React, { FormEvent } from "react";
+import { observer } from "mobx-react";
 import BoardModel from "store/Board";
 import onSelect from "util/onSelect";
-import DeckModel from "store/Deck";
+import BoardType from "store/Board";
 import ellipsify from "ellipsify";
+import Board from "store/Board";
 import Button from "ui/Button";
 import * as theme from "theme";
+import Deck from "store/Deck";
 import Input from "ui/Input";
 import Help from "ui/Help";
-import React from "react";
 import api from "api";
 
-@inject("store")
+type Props = {
+    board: BoardType;
+    index?: number;
+    resolve?: () => void;
+};
+
 @observer
-class AddPortal extends React.Component {
-    @observable board = null;
-    @observable deck = null;
+class AddPortal extends React.Component<Props> {
+    static contextType = StoreContext;
+    declare context: Store;
+
+    @observable board: Board | null = null;
+    @observable deck: Deck | null = null;
     @observable title = "";
 
     async componentDidMount() {
         const { boards } = await api.ownBoards();
-        this.props.store.setBoards(
+        this.context.setBoards(
             boards.map(({ children, ...board }) => {
                 return new BoardModel({
                     children: children.map((child) => {
-                        if (child.type === "deck") return new DeckModel(child);
+                        if (child.type === "deck")
+                            return new DeckModel(child as DeckParam);
                         if (child.type === "portal")
-                            return new PortalModel(child);
+                            return new PortalModel(child as PortalParam);
                         throw Error(`Invalid child type: ${child.type}`);
                     }),
                     ...board,
                 });
-            })
+            }),
         );
     }
 
-    @action setBoard(board) {
+    @action setBoard(board: BoardType) {
         this.board = board;
         this.deck = null;
     }
 
-    @action setDeck(deck) {
+    @action setDeck(deck: Deck) {
         this.deck = deck;
     }
 
-    @action setTitle(title) {
+    @action setTitle(title: string) {
         this.title = title;
     }
 
-    onSubmit = async (event) => {
+    onSubmit = async (event: FormEvent) => {
         event.preventDefault();
         if (!this.board || !this.deck || !this.title) return;
         const { portalId } = await api.addPortal({
@@ -68,17 +81,15 @@ class AddPortal extends React.Component {
             title: this.title,
             portalId,
         });
-        this.props.resolve();
+        this.props.resolve?.();
     };
 
     render() {
-        const { store } = this.props;
-
         return (
             <form onSubmit={this.onSubmit}>
                 <MainTitle>
                     Create portal{" "}
-                    <Help iconStyle={{ fontSize: "25px" }}>
+                    <Help>
                         A portal is a link to a deck from another board. With
                         portals it becomes easier to move cards from one board
                         to another.
@@ -95,7 +106,7 @@ class AddPortal extends React.Component {
                 <Sections>
                     <Section>
                         <Title>Select board</Title>
-                        {store.boards.map((board) => (
+                        {this.context.boards.map((board) => (
                             <Tile
                                 key={board.boardId}
                                 $selected={this.board === board}
@@ -143,7 +154,7 @@ const Sections = styled.div`
 
 const Tile = styled.button.attrs({
     type: "button",
-})`
+})<{ $selected?: boolean; $empty?: boolean }>`
     width: 100%;
     border: 1px solid transparent;
     font-size: 0.8rem;

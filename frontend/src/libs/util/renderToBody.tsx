@@ -1,16 +1,17 @@
-import ReactDOM from "react-dom";
+import { createRoot } from "react-dom/client";
 
-export default (template) => {
-    const root = document.createElement("div");
-    document.body.appendChild(root);
-    ReactDOM.render(template, root);
+export default (template: any) => {
+    const rootElement = document.createElement("div");
+    document.body.appendChild(rootElement);
+    const root = createRoot(rootElement);
+    root.render(template);
     return {
         remove: () => {
-            ReactDOM.unmountComponentAtNode(root);
-            root.parentNode.removeChild(root);
+            root.unmount();
+            rootElement.parentNode.removeChild(rootElement);
         },
-        rerender: (template) => {
-            ReactDOM.render(template, root);
+        rerender: (template: any) => {
+            root.render(template);
         },
     };
 };

@@ -2,22 +2,29 @@ import { observable, action } from "mobx";
 import ModalFooter from "ui/ModalFooter";
 import styled from "styled-components";
 import { observer } from "mobx-react";
+import Board from "store/Board";
 import Button from "ui/Button";
 import Deck from "store/Deck";
 import Input from "ui/Input";
 import React from "react";
 import api from "api";
 
+type Props = {
+    board: Board;
+    index?: number;
+    resolve: () => void;
+};
+
 @observer
-class AddDeck extends React.Component {
+class AddDeck extends React.Component<Props> {
     @observable loading = false;
     @observable title = "";
 
-    @action.bound setTitle(event) {
+    @action.bound setTitle(event: { target: { value: string } }) {
         this.title = event.target.value;
     }
 
-    onSubmit = async (event) => {
+    onSubmit = async (event: { preventDefault: () => void }) => {
         if (this.loading) return;
         this.loading = true;
         event.preventDefault();

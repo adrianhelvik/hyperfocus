@@ -1,38 +1,33 @@
-import { inject, observer } from "mobx-react";
+import { observer } from "mobx-react";
 import { reaction } from "mobx";
 import React from "react";
-import Store from "store";
+import Store, { StoreContext } from "store";
 import api from "api";
 
-@inject("store")
 @observer
 class Reactions extends React.Component<{
-    store: Store;
     children?: React.ReactNode;
 }> {
+    static contextType = StoreContext;
+    declare context: Store;
+
     componentDidMount() {
         this.dispose = reaction(
-            () => this.props.store.uncomittedBoards.length,
+            () => this.context.uncomittedBoards.length,
             (pendingBoards) => {
                 if (!pendingBoards) return;
 
-                const uncomittedBoards =
-                    this.props.store.uncomittedBoards.slice();
-                this.props.store.uncomittedBoards.replace([]);
+                const uncomittedBoards = this.context.uncomittedBoards.slice();
+                this.context.uncomittedBoards.replace([]);
 
                 for (const board of uncomittedBoards) {
                     api.createBoard(board).catch((e: Error) => {
                         console.error("Failed to create board:", board);
-                        for (
-                            let i = 0;
-                            i < this.props.store.boards.length;
-                            i++
-                        ) {
+                        for (let i = 0; i < this.context.boards.length; i++) {
                             if (
-                                this.props.store.boards[i].boardId ===
-                                board.boardId
+                                this.context.boards[i].boardId === board.boardId
                             ) {
-                                this.props.store.boards.splice(i, 1);
+                                this.context.boards.splice(i, 1);
                                 break;
                             }
                         }
@@ -41,7 +36,7 @@ class Reactions extends React.Component<{
                         }, 100);
                     });
                 }
-            }
+            },
         );
     }
 

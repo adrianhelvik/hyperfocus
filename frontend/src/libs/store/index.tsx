@@ -1,5 +1,8 @@
 import { observable, computed, action } from "mobx";
+import { createContext } from "react";
 import Board from "./Board";
+
+export const StoreContext = createContext<Store | null>(null);
 
 class Store {
     @observable uncomittedBoards = observable.array<Board>();

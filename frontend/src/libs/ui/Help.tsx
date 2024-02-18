@@ -1,13 +1,21 @@
+import { Portal as _Portal } from "react-portal";
 import styled from "styled-components";
-import { Portal } from "react-portal";
 import * as zIndexes from "zIndexes";
 import { useState } from "react";
 import * as theme from "theme";
 import React from "react";
 
-export default function Help({ children, style }) {
-    const [tooltipElement, setTooltipElement] = useState();
-    const [iconElement, setIconElement] = useState();
+// XXX: Incorrect typings
+const Portal = _Portal as any;
+
+type Props = {
+    children: React.ReactNode;
+    style?: React.CSSProperties;
+};
+
+export default function Help({ children, style }: Props) {
+    const [tooltipElement, setTooltipElement] = useState<HTMLElement>();
+    const [iconElement, setIconElement] = useState<HTMLElement>();
     const [open, setOpen] = useState(false);
     const [[x, y], setPos] = useState([0, 0]);
 
@@ -20,7 +28,7 @@ export default function Help({ children, style }) {
         const x = iconRect.right + 10;
         const y = Math.max(
             iconRect.top + iconRect.height / 2 - tooltipRect.height / 2,
-            0
+            0,
         );
 
         setPos([x, y]);

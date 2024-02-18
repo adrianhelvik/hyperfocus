@@ -1,15 +1,19 @@
+import withEvents, { WithEventsProps } from "util/withEvents";
 import styled, { keyframes, css } from "styled-components";
-import withEvents from "util/withEvents";
 import { observer } from "mobx-react";
 import { observable } from "mobx";
 import * as theme from "theme";
 import React from "react";
 
-@withEvents
+type Props = WithEventsProps & {
+    children: React.ReactNode;
+};
+
 @observer
-class AddCircle extends React.Component {
+class AddCircle extends React.Component<Props> {
     @observable mounted = false;
     @observable open = false;
+    container: HTMLElement;
 
     componentDidMount() {
         setTimeout(() => {
@@ -22,7 +26,10 @@ class AddCircle extends React.Component {
         document.removeEventListener("click", this.onDocumentClick);
     }
 
-    onDocumentClick = (event) => {
+    onDocumentClick = (event: MouseEvent) => {
+        if (!(event.target instanceof Element)) {
+            return;
+        }
         if (this.container.contains(event.target)) {
             return;
         }
@@ -52,13 +59,13 @@ class AddCircle extends React.Component {
     }
 }
 
-export default AddCircle;
+export default withEvents(AddCircle);
 
 const diameter = 60;
 const height = 110;
 const width = 200;
 
-const Container = styled.div`
+const Container = styled.div<{ open: boolean; mounted: boolean }>`
     background-color: ${theme.ui1};
     position: fixed;
     bottom: 20px;
@@ -124,7 +131,7 @@ const closeAnimation = keyframes`
 const lineHeight = 20;
 const lineWidth = 3;
 
-const Line = styled.div`
+const Line = styled.div<{ open: boolean; mounted: boolean }>`
     background: white;
     position: absolute;
     top: 50%;
@@ -164,8 +171,8 @@ const HorizontalLine = styled(Line)`
     height: ${lineWidth}px;
 `;
 
-const Content = styled.div`
+const Content = styled.div<{ open: boolean; mounted: boolean }>`
     transition: 0.3s;
-    opacity: ${(p) => 0 | p.open};
+    opacity: ${(p) => (p.open ? 1 : 0)};
     pointer-events: ${(p) => !p.open && "none"};
 `;

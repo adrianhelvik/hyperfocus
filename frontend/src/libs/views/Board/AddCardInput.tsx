@@ -1,23 +1,32 @@
-import TextArea from "react-textarea-autosize";
-import renderToBody from "util/renderToBody";
+import renderToBody from "src/libs/util/renderToBody";
 import { observable, action } from "mobx";
 import styled from "styled-components";
 import { observer } from "mobx-react";
 import * as theme from "theme";
+import Deck from "store/Deck";
 import Card from "store/Card";
 import Color from "color";
 import React from "react";
 import api from "api";
 
-@observer
-class AddCardInput extends React.Component {
-    @observable title = "";
+type Props = {
+    deck: Deck;
+    innerRef: (input: HTMLInputElement) => void;
+    isPortal?: boolean;
+    referencedByPortal?: boolean;
+};
 
-    @action.bound setTitle(event) {
+@observer
+class AddCardInput extends React.Component<Props> {
+    @observable title = "";
+    input: HTMLInputElement;
+    warningOpen: boolean;
+
+    @action.bound setTitle(event: { target: { value: string } }) {
         this.title = event.target.value;
     }
 
-    onSubmit = async (event) => {
+    onSubmit = async (event: { preventDefault: () => void }) => {
         event.preventDefault();
 
         await this.save();
@@ -39,23 +48,21 @@ class AddCardInput extends React.Component {
         this.title = "";
     };
 
-    inputRef = (input) => {
+    inputRef = (input: HTMLInputElement) => {
         this.input = input;
-        if (typeof this.props.innerRef === "function") {
-            this.props.innerRef(input);
-        }
+        this.props.innerRef(input);
     };
 
-    warn(warning) {
+    warn(warning: string) {
         if (this.warningOpen) return;
         this.warningOpen = true;
         const { left, top, height } = this.input.getBoundingClientRect();
         const duration = 3000;
         let style = {
-            position: "fixed",
+            position: "fixed" as const,
             top: top + height + 4,
             left,
-            width: this.input.parentNode.clientWidth,
+            width: this.input.parentElement.clientWidth,
             backgroundColor: "#eee",
             zIndex: 1000,
             fontSize: "0.8rem",
@@ -67,7 +74,7 @@ class AddCardInput extends React.Component {
         };
 
         const { remove, rerender } = renderToBody(
-            <div style={style}>{warning}</div>
+            <div style={style}>{warning}</div>,
         );
 
         setTimeout(() => {
@@ -84,7 +91,10 @@ class AddCardInput extends React.Component {
         }, duration);
     }
 
-    submitIfEnter = async (event) => {
+    submitIfEnter = async (event: {
+        which: number;
+        preventDefault: () => void;
+    }) => {
         if (event.which !== 13) return;
 
         event.preventDefault();
@@ -126,7 +136,7 @@ const Container = styled.form`
     display: flex;
 `;
 
-const Input = styled(TextArea)`
+const Input = styled.input`
     flex-grow: 1;
     resize: none;
     border: none;
@@ -139,7 +149,11 @@ const Input = styled(TextArea)`
     }
 `;
 
-const Button = styled.button`
+const Button = styled.button<{
+    $color: string;
+    isPortal?: boolean;
+    referencedByPortal?: boolean;
+}>`
     background: ${(p) => p.$color};
     border: none;
     color: ${(p) =>

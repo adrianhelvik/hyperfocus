@@ -1,8 +1,14 @@
+import { MouseEventHandler } from "react";
 import styled, { css } from "styled-components";
 import * as theme from "theme";
-import React from "react";
 
-const MenuIcon = ({ onClick, $dark }) => (
+const MenuIcon = ({
+    onClick,
+    $dark,
+}: {
+    onClick: MouseEventHandler<HTMLDivElement>;
+    $dark?: boolean;
+}) => (
     <Container>
         <Icon
             data-disable-drag
@@ -17,7 +23,7 @@ const MenuIcon = ({ onClick, $dark }) => (
 
 const Container = styled.div``;
 
-const Icon = styled.i`
+const Icon = styled.i<{ $dark?: boolean }>`
     transition: background-color 0.3s;
     font-size: 15px;
     background-color: white;
