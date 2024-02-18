@@ -2,7 +2,31 @@ import react from "@vitejs/plugin-react";
 import { defineConfig } from "vite";
 
 export default defineConfig({
-    plugins: [react()],
+    plugins: [
+        react({
+            babel: {
+                plugins: [
+                    [
+                        "@babel/plugin-transform-typescript",
+                        {
+                            allowDeclareFields: true,
+                            isTSX: true,
+                        },
+                    ],
+                    [
+                        "@babel/plugin-proposal-decorators",
+                        {
+                            version: "legacy",
+                        },
+                    ],
+                    [
+                        "@babel/plugin-proposal-class-properties",
+                        { loose: true },
+                    ],
+                ],
+            },
+        }),
+    ],
     resolve: {
         alias: {
             authContext: "/src/libs/authContext",

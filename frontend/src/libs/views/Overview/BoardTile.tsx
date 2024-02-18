@@ -1,18 +1,18 @@
-import { CirclePicker as ColorPicker } from "react-color";
-import Store, { StoreContext } from "src/libs/store";
-import { withRouter } from "react-router-dom";
-import styled from "styled-components";
-import { observer } from "mobx-react";
 import withConfirm, { WithConfirmProps } from "withConfirm";
-import onSelect from "util/onSelect";
+import { CirclePicker as ColorPicker } from "react-color";
 import withStatus, { WithStatusProps } from "withStatus";
-import MenuIcon from "ui/MenuIcon";
 import withModal, { WithModalProps } from "withModal";
 import withMenu, { WithMenuProps } from "withMenu";
+import { withRouter } from "react-router-dom";
+import Store, { StoreContext } from "store";
+import React, { MouseEvent } from "react";
+import styled from "styled-components";
+import { observer } from "mobx-react";
+import onSelect from "util/onSelect";
+import MenuIcon from "ui/MenuIcon";
 import * as theme from "theme";
 import Board from "store/Board";
 import Color from "color";
-import React, { MouseEvent } from "react";
 import api from "api";
 
 const ColorPickerAny = ColorPicker as any as React.ComponentType<any>;

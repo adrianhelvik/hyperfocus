@@ -6,6 +6,7 @@ import { Portal } from "react-portal";
 import Modal from "ui/Modal";
 import React from "react";
 
+const withRouterAny = withRouter as any as <T>(c: T) => T;
 const PortalAny = Portal as any as React.ComponentType<any>;
 
 export type ModalTemplateProps = {
@@ -26,7 +27,6 @@ export type WithModalProps = {
 export default function withModal<Props>(
     WrappedComponent: React.ComponentType<Props & WithModalProps>,
 ): React.ComponentType<Props> {
-    @(withRouter as any)
     @observer
     class NewComponent extends React.Component<WithModalProps & Props> {
         static displayName =
@@ -102,7 +102,7 @@ export default function withModal<Props>(
         }
     }
 
-    hoist(NewComponent as any, WrappedComponent as any);
+    hoist(withRouterAny(NewComponent) as any, WrappedComponent as any);
 
     return NewComponent;
 }

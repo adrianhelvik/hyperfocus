@@ -5,7 +5,7 @@ import Store, { StoreContext } from "store";
 import api from "api";
 
 @observer
-class Reactions extends React.Component<{
+export class Reactions extends React.Component<{
     children?: React.ReactNode;
 }> {
     static contextType = StoreContext;
@@ -54,5 +54,3 @@ class Reactions extends React.Component<{
         return this.props.children;
     }
 }
-
-export default Reactions;

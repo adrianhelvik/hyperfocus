@@ -1,4 +1,4 @@
-import renderToBody from "src/libs/util/renderToBody";
+import renderToBody from "util/renderToBody";
 import { observable, action } from "mobx";
 import styled from "styled-components";
 import { observer } from "mobx-react";

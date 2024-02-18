@@ -18,7 +18,7 @@ if (import.meta.hot) {
 }
 
 @observer
-class App extends React.Component {
+export default class App extends React.Component {
     @observable unhandledRejection = null;
     store = new Store();
 
@@ -38,5 +38,3 @@ class App extends React.Component {
         );
     }
 }
-
-export default App;

@@ -1,91 +1,112 @@
 {
-  "name": "frontend",
-  "version": "0.1.0",
-  "private": true,
-  "dependencies": {
-    "@types/react-router-dom": "5",
-    "color": "^4.2.3",
-    "hoist-non-react-statics": "^3.3.2",
-    "mobx": "^5.9.0",
-    "mobx-react": "^6.*.*",
-    "react": "^18.2.0",
-    "react-color": "^2.19.3",
-    "react-dom": "^18.2.0",
-    "react-portal": "^4.2.2",
-    "react-router-dom": "^5.*.*",
-    "react-textarea-autosize": "^8.5.3",
-    "styled-components": "^5.3.5",
-    "uuid": "^8.3.2"
-  },
-  "scripts": {
-    "start": "vite",
-    "build": "node scripts/build.js",
-    "test": "node scripts/test.js --env=jsdom",
-    "format": "prettier --write 'src/**/*.{js,ts,tsx,css,md}'"
-  },
-  "jest": {
-    "collectCoverageFrom": [
-      "src/**/*.{js,jsx,mjs}"
-    ],
-    "setupFiles": [
-      "<rootDir>/config/polyfills.js"
-    ],
-    "testMatch": [
-      "<rootDir>/src/**/__tests__/**/*.{js,jsx,mjs}",
-      "<rootDir>/src/**/?(*.)(spec|test).{js,jsx,mjs}"
-    ],
-    "testEnvironment": "node",
-    "testURL": "http://localhost",
-    "transform": {
-      "^.+\\.(js|jsx|mjs)$": "<rootDir>/node_modules/babel-jest",
-      "^.+\\.css$": "<rootDir>/config/jest/cssTransform.js",
-      "^(?!.*\\.(js|jsx|mjs|css|json)$)": "<rootDir>/config/jest/fileTransform.js"
+    "name": "frontend",
+    "version": "0.1.0",
+    "private": true,
+    "dependencies": {
+        "@types/react-router-dom": "5",
+        "color": "^4.2.3",
+        "hoist-non-react-statics": "^3.3.2",
+        "mobx": "^5.9.0",
+        "mobx-react": "^6.*.*",
+        "react": "^18.2.0",
+        "react-color": "^2.19.3",
+        "react-dom": "^18.2.0",
+        "react-portal": "^4.2.2",
+        "react-router-dom": "^5.*.*",
+        "react-textarea-autosize": "^8.5.3",
+        "styled-components": "^5.3.5",
+        "uuid": "^8.3.2"
     },
-    "transformIgnorePatterns": [
-      "[/\\\\]node_modules[/\\\\].+\\.(js|jsx|mjs)$"
-    ],
-    "moduleNameMapper": {
-      "^react-native$": "react-native-web"
+    "scripts": {
+        "start": "vite",
+        "build": "node scripts/build.js",
+        "test": "node scripts/test.js --env=jsdom",
+        "format": "prettier --write 'src/**/*.{js,ts,tsx,css,md}'"
     },
-    "moduleFileExtensions": [
-      "web.js",
-      "js",
-      "json",
-      "web.jsx",
-      "jsx",
-      "node",
-      "mjs"
-    ]
-  },
-  "babel": {
-    "presets": [
-      [
-        "react-app",
-        {
-          "runtime": "automatic"
-        }
-      ]
-    ],
-    "plugins": [
-      "transform-decorators-legacy",
-      "styled-components"
-    ]
-  },
-  "eslintConfig": {
-    "extends": "react-app"
-  },
-  "devDependencies": {
-    "@types/color": "^3.0.6",
-    "@types/hoist-non-react-statics": "^3.3.1",
-    "@types/react": "^18.2.56",
-    "@types/react-color": "^3.0.10",
-    "@types/react-dom": "^18.2.19",
-    "@types/react-portal": "^4.0.4",
-    "@types/styled-components": "^5.1.25",
-    "@types/uuid": "^9.0.8",
-    "@vitejs/plugin-react": "^4.2.1",
-    "prettier": "^2.7.1",
-    "typescript": "^5.3.3",
-    "vite": "^5.1.3"
-  }
+    "jest": {
+        "collectCoverageFrom": [
+            "src/**/*.{js,jsx,mjs}"
+        ],
+        "setupFiles": [
+            "<rootDir>/config/polyfills.js"
+        ],
+        "testMatch": [
+            "<rootDir>/src/**/__tests__/**/*.{js,jsx,mjs}",
+            "<rootDir>/src/**/?(*.)(spec|test).{js,jsx,mjs}"
+        ],
+        "testEnvironment": "node",
+        "testURL": "http://localhost",
+        "transform": {
+            "^.+\\.(js|jsx|mjs)$": "<rootDir>/node_modules/babel-jest",
+            "^.+\\.css$": "<rootDir>/config/jest/cssTransform.js",
+            "^(?!.*\\.(js|jsx|mjs|css|json)$)": "<rootDir>/config/jest/fileTransform.js"
+        },
+        "transformIgnorePatterns": [
+            "[/\\\\]node_modules[/\\\\].+\\.(js|jsx|mjs)$"
+        ],
+        "moduleNameMapper": {
+            "^react-native$": "react-native-web"
+        },
+        "moduleFileExtensions": [
+            "web.js",
+            "js",
+            "json",
+            "web.jsx",
+            "jsx",
+            "node",
+            "mjs"
+        ]
+    },
+    "babel": {
+        "presets": [
+            [
+                "react-app",
+                {
+                    "runtime": "automatic"
+                }
+            ]
+        ],
+        "plugins": [
+            "styled-components",
+            [
+                "@babel/plugin-transform-typescript",
+                {
+                    "allowDeclareFields": true
+                }
+            ],
+            [
+                "@babel/plugin-proposal-decorators",
+                {
+                    "version": "legacy"
+                }
+            ],
+            [
+                "@babel/plugin-proposal-class-properties",
+                {
+                    "loose": true
+                }
+            ]
+        ]
+    },
+    "eslintConfig": {
+        "extends": "react-app"
+    },
+    "devDependencies": {
+        "@babel/plugin-proposal-class-properties": "^7.18.6",
+        "@babel/plugin-proposal-decorators": "^7.23.9",
+        "@babel/plugin-transform-class-properties": "^7.23.3",
+        "@babel/plugin-transform-typescript": "^7.23.6",
+        "@types/color": "^3.0.6",
+        "@types/hoist-non-react-statics": "^3.3.1",
+        "@types/react": "^18.2.56",
+        "@types/react-color": "^3.0.10",
+        "@types/react-dom": "^18.2.19",
+        "@types/react-portal": "^4.0.4",
+        "@types/styled-components": "^5.1.25",
+        "@types/uuid": "^9.0.8",
+        "@vitejs/plugin-react": "^4.2.1",
+        "prettier": "^2.7.1",
+        "typescript": "^5.3.3",
+        "vite": "^5.1.3"
+    }
 }
