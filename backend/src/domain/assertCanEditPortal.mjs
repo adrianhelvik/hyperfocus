@@ -1,8 +1,14 @@
+// @ts-check
+
 import assertCanEditBoard from './assertCanEditBoard.mjs'
 import assertCanEditDeck from './assertCanEditDeck.mjs'
 import Boom from '@hapi/boom'
 import knex from '../db.mjs'
 
+/**
+ * @param {any} request
+ * @param {string} portalId
+ */
 export default async function assertCanEditPortal(request, portalId) {
   const portal = await knex('portals').where({ portalId }).first()
 

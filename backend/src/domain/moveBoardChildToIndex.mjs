@@ -1,7 +1,16 @@
+// @ts-check
+
 import getDenormalizedBoard from './getDenormalizedBoard.mjs'
 import arrayMove from '../utils/arrayMove.mjs'
 import knex from '../db.mjs'
 
+/**
+ * @param {object} args
+ * @param {string} args.boardId
+ * @param {number} args.index
+ * @param {import("../types").BoardChild} args.item
+ * @returns {Promise<void>}
+ */
 export default async function moveBoardChildToIndex({ boardId, index, item }) {
   const board = await getDenormalizedBoard(boardId)
   let fromIndex = -1

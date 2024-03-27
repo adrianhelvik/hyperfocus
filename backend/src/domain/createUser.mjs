@@ -1,9 +1,19 @@
+// @ts-check
+
 import requireString from '../utils/requireString.mjs'
 import createHash from '../utils/createHash.mjs'
 import uuid from '../utils/uuid.mjs'
 import Boom from '@hapi/boom'
 import knex from '../db.mjs'
 
+/**
+ * @param {object} options
+ * @param {string} [options.username]
+ * @param {string} options.password
+ * @param {string} [options.userId]
+ * @param {string} options.email
+ * @returns {Promise<string>}
+ */
 export default async function createUser({
   username,
   password,

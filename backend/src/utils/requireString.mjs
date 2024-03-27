@@ -1,6 +1,11 @@
+// @ts-check
+
 import Boom from '@hapi/boom'
 
-export default values => {
+/**
+ * @param {Record<string, any>} values
+ */
+export default function requireString(values) {
   for (const name of Object.keys(values)) {
     const value = values[name]
 

@@ -15,8 +15,6 @@ async function main() {
     )
   }
 
-  const knex = await import('./db.mjs').then(module => module.default)
-
   const { default: createTestUserUnlessExists } = await import(
     './domain/createTestUserUnlessExists.mjs'
   )
@@ -32,22 +30,23 @@ async function main() {
     routes: {
       cors: true,
     },
-    debug: {
-      request: ['read', 'error'],
-    },
   })
+
+  server.events.on('response', function(request) {
+    console.log(request.info.remoteAddress + ': ' + request.method.toUpperCase() + ' ' + request.path + ' --> ' + request.response.statusCode);
+  });
 
   const routes = await import('./routes.mjs')
 
-  for (const [name, route] of Object.entries(routes)) {
-    server.route(routes[name])
+  for (const route of Object.values(routes)) {
+    server.route(route)
   }
 
   server.route({
     method: '*',
     path: '/{any*}',
-    handler(request, h) {
-      return h
+    handler(_request, reply) {
+      return reply
         .response({
           statusCode: 500,
           error: 'Not Found',

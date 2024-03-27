@@ -1,7 +1,8 @@
 import Board, { BoardParam } from "store/Board";
-import local from "local";
 import Portal from "store/Portal";
+import { Project } from "./types";
 import Deck from "store/Deck";
+import local from "local";
 
 let persistentHeaders = local.get("persistentHeaders", {});
 
@@ -10,6 +11,7 @@ type PortalParam = {
 };
 
 type Api = {
+    ownProjects(): Promise<{ projects: Project }>;
     createBoard(board: Board): Promise<void>;
     registerUser(payload: { password: string; email: string }): Promise<void>;
     deleteDeck(payload: { deckId: string }): Promise<void>;
@@ -55,6 +57,35 @@ type Api = {
     }): PromiseLike<PortalParam>;
     ownBoards: () => PromiseLike<{ boards: BoardParam[] }>;
 };
+
+export async function addCardImages(cardId: string, images: File[]) {
+    console.log("persistentHeaders:", persistentHeaders);
+
+    const formData = new FormData();
+
+    formData.append("cardId", cardId);
+    for (const image of images) {
+        formData.append("image", image);
+    }
+
+    console.log(formData);
+
+    const response = await fetch(`${import.meta.env.VITE_API_URL}/addCardImages`, {
+        method: "POST",
+        mode: "cors",
+        cache: "no-cache",
+        credentials: "same-origin",
+        headers: {
+            ...persistentHeaders,
+            "Accept": "application/json",
+        },
+        redirect: "follow",
+        referrer: "no-referrer",
+        body: formData
+    });
+
+    return response.json();
+}
 
 export default new Proxy({} as any, {
     get(_: any, name: string) {

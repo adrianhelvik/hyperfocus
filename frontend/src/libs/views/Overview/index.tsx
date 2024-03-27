@@ -1,11 +1,11 @@
-import { WithAuthProps, withAuth } from "authContext";
+import { AuthContext, WithAuthProps } from "authContext";
 import withMenu, { WithMenuProps } from "withMenu";
 import { Redirect } from "react-router-dom";
 import AddBoardModal from "./AddBoardModal";
-import Store, { StoreContext } from "store";
 import React, { MouseEvent } from "react";
 import styled from "styled-components";
-import { observer } from "mobx-react";
+import { Observer, observer } from "mobx-react";
+import { StoreContext } from "store";
 import BoardList from "./BoardList";
 import Header from "ui/Header";
 
@@ -16,39 +16,43 @@ type Props = WithAuthProps &
         children?: React.ReactNode;
     };
 
-@observer
-class Overview extends React.Component<Props> {
-    static contextType = StoreContext;
-    declare context: Store;
+export default withMenu(function Overview(props: Props) {
+    const store = React.useContext(StoreContext);
+    const auth = React.useContext(AuthContext);
 
-    componentDidMount() {
-        this.props.auth.authenticate();
-    }
-
-    onContextMenu = (event: MouseEvent) => {
+    const onContextMenu = (event: MouseEvent) => {
         event.preventDefault();
 
-        this.props.showMenu(event, {
+        props.showMenu(event, {
             "New board": () => {
-                this.context.isAddingBoard = true;
+                store.isAddingBoard = true;
             },
         });
     };
 
-    render() {
-        if (this.props.auth.status === "failure") return <RedirectAny to="/" />;
+    React.useEffect(() => {
+        auth.authenticate();
+    }, []);
 
-        return (
-            <Container onContextMenu={this.onContextMenu}>
-                <Header>My boards</Header>
-                {this.context.isAddingBoard && <AddBoardModal />}
-                <BoardList />
-            </Container>
-        );
+    if (auth.status === "failure") {
+        return <RedirectAny to="/" />;
     }
-}
 
-export default withMenu(withAuth(Overview));
+    return (
+        <Observer>
+            {() => {
+                if (auth.status === "failure") return <RedirectAny to="/" />;
+                return (
+                    <Container onContextMenu={onContextMenu}>
+                        <Header>My boards</Header>
+                        {store.isAddingBoard && <AddBoardModal />}
+                        <BoardList />
+                    </Container>
+                );
+            }}
+        </Observer>
+    );
+});
 
 const Container = styled.div`
     background-color: #eee;

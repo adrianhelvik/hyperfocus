@@ -1,6 +1,6 @@
+// @ts-check
+
 import chalk from 'chalk'
-import path from 'path'
-import fs from 'fs'
 
 export default async function checkRouteLengths() {
   header('heuristic: Keep route definitions short')
@@ -62,8 +62,10 @@ export default async function checkRouteLengths() {
   console.log()
 }
 
+/**
+ * @param {string} text
+ */
 function header(text) {
-  header.text = text
   console.log()
   console.log(chalk.bold.inverse(` ${text} `))
   console.log()

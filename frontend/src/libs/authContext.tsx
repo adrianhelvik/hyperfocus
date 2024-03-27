@@ -15,7 +15,7 @@ export type Auth = {
 
 export type WithAuthProps = { auth: Auth };
 
-const AuthContext = React.createContext<Auth | null>(null);
+export const AuthContext = React.createContext<Auth | null>(null);
 
 export function withAuth<Props>(
     WrappedComponent: React.ComponentType<Props & WithAuthProps>,

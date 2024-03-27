@@ -68,10 +68,10 @@ const Container = styled.div<{ $color: string }>`
 const Logo = ({ pageColor }) => (
     <Logo.Container>
         <Logo.Text1 $pageColor={pageColor}>
-            sub
+            task
             <UnderLine $pageColor={pageColor} />
         </Logo.Text1>
-        <Logo.Text2 $pageColor={pageColor}>task</Logo.Text2>
+        <Logo.Text2 $pageColor={pageColor}>link</Logo.Text2>
     </Logo.Container>
 );
 
@@ -98,7 +98,7 @@ const UnderLine = styled.div<{ $pageColor: string }>`
     height: 4px;
     background-color: ${(p) =>
         Color(p.$pageColor).isDark() ? theme.logo1 : theme.logo1Dark};
-    width: 61px;
+    width: 100%;
     position: absolute;
     top: 100%;
     left: 0;

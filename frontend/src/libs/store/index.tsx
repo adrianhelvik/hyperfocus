@@ -1,14 +1,17 @@
 import { observable, computed, action } from "mobx";
 import { createContext } from "react";
 import Board from "./Board";
+import { Project } from "../types";
 
 export const StoreContext = createContext<Store | null>(null);
 
 class Store {
     @observable uncomittedBoards = observable.array<Board>();
+    @observable isAddingProject = false;
     @observable isAddingBoard = false;
     @observable board: Board | null = null;
     @observable boards = observable.array<Board>();
+    @observable projects = observable.array<Project>();
 
     @computed get boardsById() {
         const boardsById = observable.map();
@@ -16,6 +19,14 @@ class Store {
         for (const board of this.boards) boardsById.set(board.boardId, board);
 
         return boardsById;
+    }
+
+    @action.bound setProjects(projects: Project[]) {
+        this.projects.replace(projects);
+    }
+
+    @action.bound startAddingProject() {
+        this.isAddingProject = true;
     }
 
     @action.bound startAddingBoard() {

@@ -3,7 +3,7 @@
 ## Running in Docker
 1. Install Docker and Docker Compose (usually bundled with Docker)
 2. Run `./start` in the root folder.
-3. Open http://localhost:8080 in your web browser
+3. Open http://localhost:9341 in your web browser
 
 ## Demo usage
 1. Click login and enter test / secret

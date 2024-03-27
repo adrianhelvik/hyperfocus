@@ -1,8 +1,15 @@
+// @ts-check
+
 import isPasswordCorrect from '../utils/isPasswordCorrect.mjs'
 import createSession from './createSession.mjs'
 import getUser from './getUser.mjs'
 import Boom from '@hapi/boom'
 
+/**
+ * @param {string} username
+ * @param {string} password
+ * @returns {Promise<string>}
+ */
 export default async function login(username, password) {
   if (typeof username !== 'string')
     throw Boom.badRequest('Please provide a username')

@@ -1,8 +1,9 @@
-import { withAuth, Auth } from "authContext";
-import Store, { StoreContext } from "store";
 import { Redirect } from "react-router-dom";
+import { AuthContext } from "authContext";
+import ProjectTile from "./ProjectTile";
 import styled from "styled-components";
-import { observer } from "mobx-react";
+import { Observer } from "mobx-react";
+import { StoreContext } from "store";
 import BoardTile from "./BoardTile";
 import Board from "store/Board";
 import * as theme from "theme";
@@ -11,43 +12,66 @@ import api from "api";
 
 const RedirectAny = Redirect as any;
 
-class BoardList extends React.Component<{ auth: Auth }> {
-    static contextType = StoreContext;
-    declare context: Store;
+export default function BoardList() {
+    const store = React.useContext(StoreContext);
+    const auth = React.useContext(AuthContext);
 
-    async componentDidMount() {
-        if (!(await this.props.auth.authenticate())) return;
+    React.useEffect(() => {
+        api.ownBoards().then(({ boards }) => {
+            store.setBoards(boards.map((b) => new Board(b)));
+        });
+    }, []);
 
-        const { boards } = await api.ownBoards();
+    React.useEffect(() => {
+        api.ownProjects().then(({ projects }) => {
+            store.setProjects(projects);
+        });
+    }, []);
 
-        this.context.setBoards(boards.map((b) => new Board(b)));
-    }
+    if (!store) return null;
 
-    render() {
-        if (this.props.auth.status === "failure")
-            return <RedirectAny to="/login" />;
-        return (
-            <Container>
-                <Header>
-                    <Title>My boards</Title>
-                    <PlusButton onClick={this.context.startAddingBoard}>
-                        <span className="material-symbols-outlined">add</span>
-                    </PlusButton>
-                </Header>
-                <Boards>
-                    {this.context.boards.map((board) => (
-                        <BoardTile key={board.boardId} board={board} />
-                    ))}
-                    {!this.context.boards.length && (
-                        <div>You have no boards yet</div>
-                    )}
-                </Boards>
-            </Container>
-        );
-    }
+    return (
+        <Observer>
+            {() => {
+                if (auth.status === "failure") {
+                    return <RedirectAny to="/login" />;
+                }
+
+                return (
+                    <Container>
+                        <Header>
+                            <Title>Projects</Title>
+                            <PlusButton onClick={store.startAddingProject}>
+                                <span className="material-symbols-outlined">
+                                    add
+                                </span>
+                            </PlusButton>
+                        </Header>
+                        <Grid>
+                            <ProjectTile project={{ title: "Personal project" }} isSelected={true} />
+                        </Grid>
+                        <Header>
+                            <Title>My boards</Title>
+                            <PlusButton onClick={store.startAddingBoard}>
+                                <span className="material-symbols-outlined">
+                                    add
+                                </span>
+                            </PlusButton>
+                        </Header>
+                        <Grid>
+                            {store.boards.map((board) => (
+                                <BoardTile key={board.boardId} board={board} />
+                            ))}
+                            {!store.boards.length && (
+                                <div>You have no boards yet</div>
+                            )}
+                        </Grid>
+                    </Container>
+                );
+            }}
+        </Observer>
+    );
 }
-
-export default withAuth(observer(BoardList));
 
 const Container = styled.div`
     max-width: 960px;
@@ -55,7 +79,7 @@ const Container = styled.div`
     margin-top: 40px;
 `;
 
-const Boards = styled.div`
+const Grid = styled.div`
     padding: 20px;
     display: grid;
     grid-template-columns: repeat(4, 1fr);
@@ -80,7 +104,9 @@ const PlusButton = styled.button`
     display: flex;
     justify-content: center;
     align-items: center;
-    transition: background-color 0.3s, box-shadow 0.3s;
+    transition:
+        background-color 0.3s,
+        box-shadow 0.3s;
     box-shadow: ${theme.shadows[0]};
     cursor: pointer;
 

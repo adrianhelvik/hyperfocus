@@ -1,11 +1,15 @@
+// @ts-check
+
 import requireString from '../utils/requireString.mjs'
 import assertIsVerified from './assertIsVerified.mjs'
 import authenticate from './authenticate.mjs'
-import getUser from './getUser.mjs'
 import Boom from '@hapi/boom'
 import knex from '../db.mjs'
-import assert from 'assert'
 
+/**
+ * @param {{ headers: { authorization: string } }} request
+ * @param {string} boardId
+ */
 export default async function assertCanEditBoard(request, boardId) {
   requireString({ boardId })
 

@@ -1,5 +1,14 @@
+// @ts-check
+
 import knex from '../db.mjs'
 
+/**
+ * @param {object} options
+ * @param {string} options.cardId
+ * @param {string} options.source
+ * @param {string} options.target
+ * @param {number} options.index
+ */
 export default async function moveCard({ cardId, source, target, index }) {
   if (source === target) {
     const cards = await knex('cards')

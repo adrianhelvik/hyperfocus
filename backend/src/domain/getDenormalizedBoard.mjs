@@ -2,6 +2,13 @@ import getDeck from './getDeck.mjs'
 import assert from 'assert'
 import knex from '../db.mjs'
 
+/**
+ * @typedef {import("../types").Board} Board
+ * @typedef {import("../types").DbBoard} DbBoard
+ *
+ * @param {string} boardId
+ * @returns {Board>}
+ */
 export default async function getDenormalizedBoard(boardId) {
   assert(typeof boardId === 'string')
 
@@ -21,6 +28,14 @@ export default async function getDenormalizedBoard(boardId) {
       deck.cards = await knex('cards')
         .where('deckId', deck.deckId)
         .orderBy('index', 'asc')
+
+      await Promise.all(deck.cards.map(async card => {
+        card.images = await knex("cardImages")
+          .where({ cardId: card.cardId })
+          .orderBy("index", "asc")
+          .select("url")
+          .then(it => it.map(item => item.url))
+      }));
 
       deck.portals = await knex('portals')
         .where('portals.deckId', deck.deckId)

@@ -8,8 +8,7 @@
   "private": true,
   "dependencies": {
     "@hapi/boom": "^10.0.0",
-    "@hapi/hapi": "^20.2.2",
-    "bcrypt": "^5.0.1",
+    "@hapi/hapi": "^21.3.3",
     "chalk": "^2.4.2",
     "clear": "^0.1.0",
     "dotenv": "^7.0.0",

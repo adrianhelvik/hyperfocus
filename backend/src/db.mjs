@@ -1,3 +1,5 @@
+// @ts-check
+
 import knexfile from '../knexfile.js'
 import Knex from 'knex'
 

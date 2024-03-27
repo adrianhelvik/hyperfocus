@@ -4,6 +4,7 @@ import { CirclePicker as ColorPicker } from "react-color";
 import AbstractTextArea from "react-textarea-autosize";
 import withModal, { WithModalProps } from "withModal";
 import withMenu, { WithMenuProps } from "withMenu";
+import RenderImageFile from "ui/RenderImageFile";
 import styled, { css } from "styled-components";
 import { observable, computed } from "mobx";
 import React, { ChangeEvent } from "react";
@@ -355,40 +356,42 @@ class Deck extends React.Component<Props> {
                 </TopBar>
                 <Body>
                     {this.props.deck.cards.map((card, index) => (
-                        <StyledCard
-                            moving={Boolean(
-                                this.moving ||
+                        <CardWrapper key={card.cardId}>
+                            <StyledCard
+                                moving={Boolean(
+                                    this.moving ||
                                     this.movingChild ||
                                     sharedState.moving.length,
-                            )}
-                            placeholderWidth={this.placeholderWidth}
-                            placeholderHeight={this.placeholderHeight}
-                            getLastHoverIndex={this.getLastHoverIndex}
-                            setHoverIndex={this.setHoverIndex}
-                            hoverIndex={this.hoverIndex}
-                            setMoving={this.setMoving}
-                            deck={this.props.deck}
-                            key={card.cardId}
-                            index={index}
-                            card={card}
-                        />
+                                )}
+                                placeholderWidth={this.placeholderWidth}
+                                placeholderHeight={this.placeholderHeight}
+                                getLastHoverIndex={this.getLastHoverIndex}
+                                setHoverIndex={this.setHoverIndex}
+                                hoverIndex={this.hoverIndex}
+                                setMoving={this.setMoving}
+                                deck={this.props.deck}
+                                index={index}
+                                card={card}
+                            />
+                            {card.images?.map((image, i) => <img key={i} src={image} />)}
+                        </CardWrapper>
                     ))}
                     {Boolean(
                         sharedState.moving.length &&
-                            this.hoverIndex === this.props.deck.cards.length,
+                        this.hoverIndex === this.props.deck.cards.length,
                     ) && (
-                        <div
-                            data-card-placeholder={this.props.deck.cards.length}
-                            style={{
-                                width:
-                                    this.placeholderWidth ||
-                                    sharedState.moving[0].placeholderWidth,
-                                height:
-                                    this.placeholderHeight ||
-                                    sharedState.moving[0].placeholderHeight,
-                            }}
-                        />
-                    )}
+                            <div
+                                data-card-placeholder={this.props.deck.cards.length}
+                                style={{
+                                    width:
+                                        this.placeholderWidth ||
+                                        sharedState.moving[0].placeholderWidth,
+                                    height:
+                                        this.placeholderHeight ||
+                                        sharedState.moving[0].placeholderHeight,
+                                }}
+                            />
+                        )}
                 </Body>
                 <AddCardInput
                     deck={this.props.deck}
@@ -553,3 +556,10 @@ class EditDeckTitle extends React.Component<{ deck: DeckModel }> {
         );
     }
 }
+
+const CardWrapper = styled.div`
+    img {
+        max-width: 100%;
+        pointer-events: none;
+    }
+`

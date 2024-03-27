@@ -1,5 +1,8 @@
 import knex from '../db.mjs'
 
+/**
+ * @param {string} userId
+ */
 export default async function getBoardsForUser(userId) {
   const boards = await knex('boards')
     .leftJoin('teamBoards', 'boards.boardId', 'teamBoards.boardId')

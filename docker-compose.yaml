@@ -13,7 +13,7 @@ services:
       - ./frontend/src:/frontend/src
       - ./frontend/public:/frontend/public
     ports:
-      - 8080:8080
+      - 9341:9341
     environment:
       NODE_ENV: 'development'
       VITE_API_URL: http://localhost:1234
@@ -28,6 +28,7 @@ services:
       dockerfile: ./backend/Dockerfile
     environment:
       NODE_ENV: 'development'
+      UPLOADS_BASE_URL: "http://localhost:1234"
       PGPASSWORD: 'SomeRandomDevelopmentPasswordAAGDDNDGEA'
       PGDATABASE: 'subtask'
       PGUSER: 'subtask'

@@ -11,5 +11,13 @@ export default async function getDeck(deckId) {
 
   deck.cards = await knex('cards').where({ deckId }).orderBy('index', 'asc')
 
+  await Promise.all(deck.cards.map(async card => {
+    card.images = await knex("cardImages")
+      .where({ cardId: card.cardId })
+      .orderBy("index", "asc")
+      .select("url")
+      .then(it => it.map(item => item.url))
+  }));
+
   return deck
 }

@@ -1,3 +1,5 @@
+// @ts-check
+
 import Boom from '@hapi/boom'
 import knex from '../db.mjs'
 
@@ -9,6 +11,8 @@ export const cache = new WeakMap()
 
 /**
  * Authenticates a request and returns the session.
+ *
+ * @param {{ headers: { authorization: string } }} request
  */
 export default async function authenticate(request) {
   if (cache.has(request)) return cache.get(request)

@@ -1,5 +1,5 @@
 import renderToBody from "util/renderToBody";
-import { observable, action } from "mobx";
+import { observable, action, reaction } from "mobx";
 import styled from "styled-components";
 import { observer } from "mobx-react";
 import * as theme from "theme";
@@ -7,7 +7,7 @@ import Deck from "store/Deck";
 import Card from "store/Card";
 import Color from "color";
 import React from "react";
-import api from "api";
+import api, { addCardImages } from "api";
 
 type Props = {
     deck: Deck;
@@ -19,11 +19,41 @@ type Props = {
 @observer
 class AddCardInput extends React.Component<Props> {
     @observable title = "";
+    @observable.ref images: File[] | null = null;
+    @observable.ref imagesContainer: HTMLDivElement | null = null;
+
     input: HTMLInputElement;
     warningOpen: boolean;
 
     @action.bound setTitle(event: { target: { value: string } }) {
         this.title = event.target.value;
+    }
+
+    disposers: Array<() => void> = [];
+
+    componentDidMount() {
+        this.disposers.push(reaction(() => this.images, () => {
+            this.imagesContainer.innerHTML = "";
+            if (!this.images) return;
+            for (const file of this.images) {
+                const reader = new FileReader();
+                const img = document.createElement("img");
+                reader.onload = event => {
+                    img.src = event.target.result.toString();
+                };
+                reader.readAsDataURL(file);
+                this.imagesContainer.append(img);
+            }
+            this.imagesContainer.dataset.count = String(this.images.length);
+        }));
+    }
+
+    componentWillUnmount() {
+        this.disposers.forEach(fn => fn());
+    }
+
+    @action.bound setImages(images: File[]) {
+        this.images = images;
     }
 
     onSubmit = async (event: { preventDefault: () => void }) => {
@@ -33,7 +63,7 @@ class AddCardInput extends React.Component<Props> {
     };
 
     save = async () => {
-        if (!this.title) {
+        if (!this.title && !this.images?.length) {
             this.warn("The input field can not be empty");
             return;
         }
@@ -43,9 +73,15 @@ class AddCardInput extends React.Component<Props> {
             deckId: this.props.deck.deckId,
         });
 
-        const card = new Card(this.title, cardId);
+        const images = this.images
+            ? await addCardImages(cardId, this.images)
+            : [];
+
+        const card = new Card(this.title, cardId, images);
+
         this.props.deck.addCard(card);
         this.title = "";
+        this.images = null;
     };
 
     inputRef = (input: HTMLInputElement) => {
@@ -104,28 +140,60 @@ class AddCardInput extends React.Component<Props> {
 
     render() {
         return (
-            <Container onSubmit={this.onSubmit} data-add-card-input>
-                <Input
-                    onKeyDown={this.submitIfEnter}
-                    value={this.title}
-                    onChange={this.setTitle}
-                    placeholder="Add card"
-                    ref={this.inputRef}
-                />
-                <Button
-                    isPortal={this.props.isPortal}
-                    referencedByPortal={this.props.referencedByPortal}
-                    $color={
-                        this.props.isPortal
-                            ? theme.secondary1
-                            : this.props.referencedByPortal
-                            ? theme.tertiary1
-                            : this.props.deck.color || theme.defaultDeckColor
+            <>
+                <Container onSubmit={this.onSubmit} data-add-card-input onDrop={e => {
+                    const files = [];
+                    for (const item of Array.from(e.dataTransfer.items)) {
+                        if (item.kind === "file" && item.type.split("/")[0] === "image") {
+                            files.push(item.getAsFile());
+                        }
                     }
-                >
-                    Add
-                </Button>
-            </Container>
+                    if (files.length) {
+                        e.preventDefault();
+                        this.setImages(files);
+                    }
+                }}>
+                    <Input
+                        onKeyDown={this.submitIfEnter}
+                        value={this.title}
+                        onChange={this.setTitle}
+                        placeholder="Add card"
+                        ref={this.inputRef}
+                    />
+                    <input type="file" hidden={true} name="image" onChange={e => this.setImages(Array.from(e.target.files))} multiple={true} />
+                    <IconButton
+                        type="button"
+                        onClick={(e: any) => {
+                            console.log(e.target.previousSibling);
+                            e.target.previousSibling.click()
+                            this.input.focus();
+                        }}
+                        $color={
+                            this.props.isPortal
+                                ? theme.secondary1
+                                : this.props.referencedByPortal
+                                    ? theme.tertiary1
+                                    : this.props.deck.color || theme.defaultDeckColor
+                        }
+                    >
+                        <Icon className="material-icons">image</Icon>
+                    </IconButton>
+                    <Button
+                        isPortal={this.props.isPortal}
+                        referencedByPortal={this.props.referencedByPortal}
+                        $color={
+                            this.props.isPortal
+                                ? theme.secondary1
+                                : this.props.referencedByPortal
+                                    ? theme.tertiary1
+                                    : this.props.deck.color || theme.defaultDeckColor
+                        }
+                    >
+                        Add
+                    </Button>
+                </Container>
+                <ImagesContainer ref={e => this.imagesContainer = e} />
+            </>
         );
     }
 }
@@ -163,3 +231,36 @@ const Button = styled.button<{
     padding: 8px 12px;
     align-self: end;
 `;
+
+
+const IconButton = styled.button<{ $color: string }>`
+    border: none;
+    height: 30px;
+    display: block;
+    margin: auto;
+    border-radius: 4px;
+
+    background: ${(p) => p.$color};
+    color: ${(p) =>
+        Color(p.$color).blacken(0.7).isDark() ? "white" : "black"};
+`
+
+const Icon = styled.i`
+    margin: 3px;
+    pointer-events: none;
+`
+
+const ImagesContainer = styled.div`
+    display: flex;
+    flex-wrap: wrap;
+    flex-direction: row;
+    & img {
+        width: 50%;
+        max-height: 200px;
+        object-fit: contain;
+    }
+
+    &[data-count="1"] img {
+        width: 100%;
+    }
+`
