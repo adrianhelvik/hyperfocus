@@ -8,6 +8,7 @@ import Card from "store/Card";
 import Color from "color";
 import React from "react";
 import api, { addCardImages } from "api";
+import RenderImageFile from "ui/RenderImageFile";
 
 type Props = {
     deck: Deck;
@@ -19,7 +20,7 @@ type Props = {
 @observer
 class AddCardInput extends React.Component<Props> {
     @observable title = "";
-    @observable.ref images: File[] | null = null;
+    @observable.ref images: File[] = [];
     @observable.ref imagesContainer: HTMLDivElement | null = null;
 
     input: HTMLInputElement;
@@ -31,29 +32,12 @@ class AddCardInput extends React.Component<Props> {
 
     disposers: Array<() => void> = [];
 
-    componentDidMount() {
-        this.disposers.push(reaction(() => this.images, () => {
-            this.imagesContainer.innerHTML = "";
-            if (!this.images) return;
-            for (const file of this.images) {
-                const reader = new FileReader();
-                const img = document.createElement("img");
-                reader.onload = event => {
-                    img.src = event.target.result.toString();
-                };
-                reader.readAsDataURL(file);
-                this.imagesContainer.append(img);
-            }
-            this.imagesContainer.dataset.count = String(this.images.length);
-        }));
-    }
-
     componentWillUnmount() {
         this.disposers.forEach(fn => fn());
     }
 
     @action.bound setImages(images: File[]) {
-        this.images = images;
+        this.images = [...this.images, ...images];
     }
 
     onSubmit = async (event: { preventDefault: () => void }) => {
@@ -81,7 +65,7 @@ class AddCardInput extends React.Component<Props> {
 
         this.props.deck.addCard(card);
         this.title = "";
-        this.images = null;
+        this.images = [];
     };
 
     inputRef = (input: HTMLInputElement) => {
@@ -141,7 +125,7 @@ class AddCardInput extends React.Component<Props> {
     render() {
         return (
             <>
-                <Container onSubmit={this.onSubmit} data-add-card-input onDrop={e => {
+                <InputsAndButtons onSubmit={this.onSubmit} data-add-card-input onDrop={e => {
                     const files = [];
                     for (const item of Array.from(e.dataTransfer.items)) {
                         if (item.kind === "file" && item.type.split("/")[0] === "image") {
@@ -191,8 +175,14 @@ class AddCardInput extends React.Component<Props> {
                     >
                         Add
                     </Button>
-                </Container>
-                <ImagesContainer ref={e => this.imagesContainer = e} />
+                </InputsAndButtons>
+                {this.images.length > 0 && (
+                    <ImagesOuterContainer>
+                        <ImagesContainer data-count={this.images.length}>
+                            {this.images.map((file, i) => <RenderImageFile file={file} key={i} />)}
+                        </ImagesContainer>
+                    </ImagesOuterContainer>
+                )}
             </>
         );
     }
@@ -200,7 +190,7 @@ class AddCardInput extends React.Component<Props> {
 
 export default AddCardInput;
 
-const Container = styled.form`
+const InputsAndButtons = styled.form`
     display: flex;
     padding: 5px;
     background-color: ${theme.bg2};
@@ -261,15 +251,24 @@ const Icon = styled.i`
 
 const ImagesContainer = styled.div`
     display: flex;
+    gap: 5px;
     flex-wrap: wrap;
     flex-direction: row;
-    & img {
-        width: 50%;
-        max-height: 200px;
-        object-fit: contain;
+
+    &[data-count="0"] {
+        display: none;
     }
 
-    &[data-count="1"] img {
-        width: 100%;
+    & img {
+        box-shadow: ${theme.shadows[1]};
+        width: 50px;
+        height: 50px;
+        border-radius: 1000px;
+        max-height: 200px;
+        object-fit: cover;
     }
+`
+
+const ImagesOuterContainer = styled.div`
+    padding: 5px;
 `

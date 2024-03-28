@@ -195,9 +195,11 @@ class Card extends React.Component<CardProps> {
                         <style>{`body { user-select: none }`}</style>
                     )}
                     <Title>{this.props.card.title}</Title>
-                    <Images>
-                        {this.props.card.images?.map((image, i) => <img key={i} src={image} />)}
-                    </Images>
+                    {this.props.card.images?.length > 0 && (
+                        <Images data-count={this.props.card.images?.length ?? 0}>
+                            {this.props.card.images?.map((image: string, i: number) => <img key={i} src={image} />)}
+                        </Images>
+                    )}
                 </Container>
             </div>
         );
@@ -236,9 +238,7 @@ export default withMenu(withConfirm(withEvents(Card)));
 
 const OuterSpacing = styled.div`
     padding: 5px;
-    :not(:last-child) {
-        padding-bottom: 0;
-    }
+    padding-bottom: 0;
 `
 
 const Container = styled.div<{
@@ -270,8 +270,15 @@ const Container = styled.div<{
 
 const Images = styled.div`
     img {
-        max-width: 100%;
+        vertical-align: top;
+        max-width: 50%;
         pointer-events: none;
+        max-height: 300px;
+        box-shadow: ${theme.shadows[0]};
+    }
+
+    &[data-count="1"] img {
+        max-width: 100%;
     }
 `
 

@@ -15,21 +15,21 @@ assert(UPLOADS_BASE_URL, "UPLOADS_BASE_URL is required");
  * @returns void
  */
 export default async function addCardImages(cardId, images) {
-  const fileNames = [];
+  const entries = [];
 
-  await Promise.all(images.map(stream => {
+  await Promise.all(images.map((stream, index) => {
     const fileName = `${cardId}_${randomUUID()}`;
-    fileNames.push(fileName);
+    const url = UPLOADS_BASE_URL + `/uploads/${fileName}`;
+    entries.push({
+      fileName,
+      cardId,
+      url,
+      index,
+    });
     return fs.promises.writeFile(`/tmp/${fileName}`, stream);
   }));
 
-  const urls = fileNames.map(fileName => UPLOADS_BASE_URL + `/uploads/${fileName}`);
+  await knex('cardImages').insert(entries);
 
-  await knex('cardImages').insert(urls.map((url, index) => ({
-    cardId,
-    url,
-    index,
-  })));
-
-  return urls;
+  return entries.map(entry => entry.url);
 }

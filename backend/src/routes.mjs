@@ -490,7 +490,6 @@ export const uploadsRoute = {
   method: 'GET',
   path: '/uploads/{fileName}',
   async handler(request) {
-    console.log("RETRIEVING UPLOAD:", request);
     return fs.createReadStream(`/tmp/${request.params.fileName}`)
   }
 }
