@@ -4,7 +4,6 @@ import { CirclePicker as ColorPicker } from "react-color";
 import AbstractTextArea from "react-textarea-autosize";
 import withModal, { WithModalProps } from "withModal";
 import withMenu, { WithMenuProps } from "withMenu";
-import RenderImageFile from "ui/RenderImageFile";
 import styled, { css } from "styled-components";
 import { observable, computed } from "mobx";
 import React, { ChangeEvent } from "react";
@@ -356,25 +355,23 @@ class Deck extends React.Component<Props> {
                 </TopBar>
                 <Body>
                     {this.props.deck.cards.map((card, index) => (
-                        <CardWrapper key={card.cardId}>
-                            <StyledCard
-                                moving={Boolean(
-                                    this.moving ||
-                                    this.movingChild ||
-                                    sharedState.moving.length,
-                                )}
-                                placeholderWidth={this.placeholderWidth}
-                                placeholderHeight={this.placeholderHeight}
-                                getLastHoverIndex={this.getLastHoverIndex}
-                                setHoverIndex={this.setHoverIndex}
-                                hoverIndex={this.hoverIndex}
-                                setMoving={this.setMoving}
-                                deck={this.props.deck}
-                                index={index}
-                                card={card}
-                            />
-                            {card.images?.map((image, i) => <img key={i} src={image} />)}
-                        </CardWrapper>
+                        <StyledCard
+                            key={card.cardId}
+                            moving={Boolean(
+                                this.moving ||
+                                this.movingChild ||
+                                sharedState.moving.length,
+                            )}
+                            placeholderWidth={this.placeholderWidth}
+                            placeholderHeight={this.placeholderHeight}
+                            getLastHoverIndex={this.getLastHoverIndex}
+                            setHoverIndex={this.setHoverIndex}
+                            hoverIndex={this.hoverIndex}
+                            setMoving={this.setMoving}
+                            deck={this.props.deck}
+                            index={index}
+                            card={card}
+                        />
                     ))}
                     {Boolean(
                         sharedState.moving.length &&
@@ -417,7 +414,7 @@ const Container = styled.div<{
     flex-grow: 0;
     background: white;
     border-radius: 4px;
-    width: 250px;
+    width: 300px;
     box-shadow: ${theme.shadows[0]};
     ${(p) =>
         p.lifted &&
@@ -432,7 +429,7 @@ const Title = styled.div`
 `;
 
 const Body = styled.div`
-    background: #eee;
+    background: ${theme.bg2};
 `;
 
 const StyledCard = styled(Card as any)`
@@ -487,7 +484,6 @@ const TopBar = styled.div<{
             return "black";
         }
     }};
-    border-bottom: 1px solid #ddd;
     padding: 10px;
     cursor: move;
     border-top-left-radius: 4px;
@@ -556,10 +552,3 @@ class EditDeckTitle extends React.Component<{ deck: DeckModel }> {
         );
     }
 }
-
-const CardWrapper = styled.div`
-    img {
-        max-width: 100%;
-        pointer-events: none;
-    }
-`

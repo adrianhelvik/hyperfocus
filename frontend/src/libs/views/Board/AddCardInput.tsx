@@ -202,6 +202,8 @@ export default AddCardInput;
 
 const Container = styled.form`
     display: flex;
+    padding: 5px;
+    background-color: ${theme.bg2};
 `;
 
 const Input = styled.input`
@@ -212,6 +214,7 @@ const Input = styled.input`
     display: block;
     border-radius: 4px;
     width: 100%;
+    box-shadow: ${theme.shadows[0]};
     :focus {
         outline: none;
     }
@@ -230,19 +233,25 @@ const Button = styled.button<{
     border-radius: 4px;
     padding: 8px 12px;
     align-self: end;
+    cursor: pointer;
 `;
 
 
 const IconButton = styled.button<{ $color: string }>`
+    background-color: transparent;
     border: none;
-    height: 30px;
-    display: block;
-    margin: auto;
-    border-radius: 4px;
+    padding: 0;
+    color: ${(p) => p.$color};
+    transition: color 300ms;
+    cursor: pointer;
 
-    background: ${(p) => p.$color};
-    color: ${(p) =>
-        Color(p.$color).blacken(0.7).isDark() ? "white" : "black"};
+    :hover {
+        color: ${(p) => Color(p.$color).darken(0.1).toString()};
+    }
+
+    :active:hover {
+        color: ${(p) => Color(p.$color).darken(0.25).toString()};
+    }
 `
 
 const Icon = styled.i`

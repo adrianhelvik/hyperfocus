@@ -7,6 +7,7 @@ import { elementToDeck } from "./Deck";
 import { Portal } from "react-portal";
 import { observer } from "mobx-react";
 import * as zIndexes from "zIndexes";
+import withMenu, { WithMenuProps } from "withMenu";
 import Button from "ui/Button";
 import * as theme from "theme";
 import React from "react";
@@ -28,7 +29,7 @@ export type OwnProps = {
     className: string;
 };
 
-export type CardProps = WithConfirmProps & WithEventsProps & OwnProps;
+export type CardProps = WithConfirmProps & WithEventsProps & WithMenuProps & OwnProps;
 
 @observer
 class Card extends React.Component<CardProps> {
@@ -123,7 +124,7 @@ class Card extends React.Component<CardProps> {
                 this.clientY =
                 this.initialClientX =
                 this.initialClientY =
-                    0;
+                0;
         });
     }
 
@@ -172,24 +173,33 @@ class Card extends React.Component<CardProps> {
 
     template() {
         return (
-            <Container
-                data-card={this.props.index}
-                ref={(e) => (this.element = e)}
-                className={this.props.className}
-                onMouseDown={this.onMouseDown}
-                noPointer={this.noPointer}
-                index={this.props.index}
-                moving={this.moving}
-                style={this.style}
-            >
-                {Boolean(this.moving) && (
-                    <style>{`body { user-select: none }`}</style>
-                )}
-                <Title>{this.props.card.title}</Title>
-                <Remove ref={(e) => (this.removeElement = e)}>
-                    <span className="material-symbols-outlined">delete</span>
-                </Remove>
-            </Container>
+            <div style={{ position: "relative" }}>
+                <MenuIcon ref={(e) => (this.removeElement = e)} onClick={e => {
+                    this.props.showMenu(e, {
+                        Delete: e => this.remove(e),
+                    });
+                }}>
+                    <span className="material-symbols-outlined">menu</span>
+                </MenuIcon>
+                <Container
+                    data-card={this.props.index}
+                    ref={(e) => (this.element = e)}
+                    className={this.props.className}
+                    onMouseDown={this.onMouseDown}
+                    noPointer={this.noPointer}
+                    index={this.props.index}
+                    moving={this.moving}
+                    style={this.style}
+                >
+                    {Boolean(this.moving) && (
+                        <style>{`body { user-select: none }`}</style>
+                    )}
+                    <Title>{this.props.card.title}</Title>
+                    <Images>
+                        {this.props.card.images?.map((image, i) => <img key={i} src={image} />)}
+                    </Images>
+                </Container>
+            </div>
         );
     }
 
@@ -213,27 +223,35 @@ class Card extends React.Component<CardProps> {
             : React.Fragment;
 
         return (
-            <React.Fragment>
+            <OuterSpacing>
                 {this.props.hoverIndex === this.props.index &&
                     this.placeholder()}
                 <Wrapper>{this.template()}</Wrapper>
-            </React.Fragment>
+            </OuterSpacing>
         );
     }
 }
 
-export default withConfirm(withEvents(Card));
+export default withMenu(withConfirm(withEvents(Card)));
+
+const OuterSpacing = styled.div`
+    padding: 5px;
+    :not(:last-child) {
+        padding-bottom: 0;
+    }
+`
 
 const Container = styled.div<{
     noPointer: boolean;
     moving: boolean;
     index: number;
 }>`
-    display: flex;
     background: white;
     position: ${(p) => (p.moving ? "fixed" : "relative")};
     transition: box-shadow 0.3s;
     z-index: ${(p) => (p.moving ? zIndexes.moving : zIndexes.movable)};
+    border-radius: 4px;
+    box-shadow: ${theme.shadows[0]};
     ${(p) =>
         p.moving &&
         css`
@@ -250,17 +268,31 @@ const Container = styled.div<{
     }
 `;
 
+const Images = styled.div`
+    img {
+        max-width: 100%;
+        pointer-events: none;
+    }
+`
+
 const Title = styled.div`
     white-space: pre-line;
     flex-grow: 1;
 `;
 
-const Remove = styled.div`
-    background: ${theme.red};
-    width: 20px;
-    height: 20px;
+const MenuIcon = styled.button`
+    border: none;
+    position: absolute;
+    top: 5px;
+    right: 5px;
+    z-index: 10;
+
+    background: ${theme.bg2};
+    box-shadow: ${theme.shadows[0]};
+    width: 25px;
+    height: 25px;
     text-align: center;
-    color: white;
+    color: black;
     border-radius: 4px;
     cursor: pointer;
     flex-shrink: 0;
@@ -269,14 +301,11 @@ const Remove = styled.div`
     display: flex;
     align-items: center;
     justify-content: center;
+
     & > span {
-        font-size: 14px;
+        font-size: 18px;
+        pointer-events: none;
     }
 
     transition: opacity 0.3s;
-    opacity: 0;
-
-    ${Container}:hover & {
-        opacity: 1;
-    }
 `;

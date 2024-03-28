@@ -361,7 +361,7 @@ class Board extends React.Component<Props> {
 export default withConfirm(withRouterAny(withModal(withMenu(Board))));
 
 const Container = styled.main`
-    background: #ddd;
+    background: ${theme.bg1};
     min-height: 100vh;
     display: flex;
     flex-direction: column;

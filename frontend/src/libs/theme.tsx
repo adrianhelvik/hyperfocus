@@ -31,3 +31,7 @@ export const logo2Dark = `rgb(0, 0, 0)`;
 export const red = `rgb(255, 0, 0)`;
 
 export const defaultDeckColor = "rgb(200, 200, 200)";
+
+
+export const bg1 = `rgb(26, 20, 33)`;
+export const bg2 = `rgb(227, 226, 229)`;

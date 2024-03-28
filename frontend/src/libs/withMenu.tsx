@@ -37,6 +37,7 @@ export default function withMenu<Props>(
         componentDidMount() {
             console.log("withMenu.componentDidMount props:", this.props);
             this.props.on(document, "click", (event) => {
+                if (this.menu) { console.log("menu:", this.menu, "target:", event.target) }
                 if (this.menu && !this.menu.contains(event.target))
                     this.closeMenu();
             });
@@ -74,6 +75,7 @@ export default function withMenu<Props>(
         };
 
         selectItem = (e: { target: HTMLElement }) => {
+            console.log("SELECT ITEM");
             const key = e.target.getAttribute("data-key");
             this.options[key](e);
             this.closeMenu();
@@ -99,6 +101,7 @@ export default function withMenu<Props>(
                                             index === 0 && e && e.focus()
                                         }
                                         {...onSelect(this.selectItem)}
+                                        data-disable-drag
                                         data-key={key}
                                         key={key}
                                     >
