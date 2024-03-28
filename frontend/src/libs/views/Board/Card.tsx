@@ -64,9 +64,7 @@ class Card extends React.Component<CardProps> {
         if (!(event.target instanceof Element)) return;
 
         event.stopPropagation();
-        const { target, clientX, clientY } = event;
-
-        if (this.removeElement.contains(target)) return this.remove(event);
+        const { clientX, clientY } = event;
 
         // extract values
         const rect = this.element.getBoundingClientRect();
