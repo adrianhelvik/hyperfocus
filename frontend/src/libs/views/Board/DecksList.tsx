@@ -1,8 +1,8 @@
-import { useContext, useMemo, useState } from "react";
+import { useContext, useState } from "react";
+import { Observer, observer } from "mobx-react";
 import PortalModel from "store/Portal";
 import styled from "styled-components";
 import withConfirm from "withConfirm";
-import { Observer, observer } from "mobx-react";
 import { StoreContext } from "store";
 import DeckModel from "store/Deck";
 import * as theme from "theme";
