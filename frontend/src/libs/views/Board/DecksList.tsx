@@ -14,8 +14,6 @@ export default withConfirm(observer(function DecksList({ confirm }) {
     const [indeces, setIndeces] = useState<{ from: number, to: number }>({ from: null, to: null });
     const store = useContext(StoreContext);
 
-    console.log("indeces", indeces);
-
     const shouldIndexMoveRight = (index: number) => {
         if (indeces.from == null || indeces.to == null) return false;
         return (
@@ -35,7 +33,6 @@ export default withConfirm(observer(function DecksList({ confirm }) {
     }
 
     const simulateMove = (from: number, to: number) => {
-        console.log("simulateMove:", from, to);
         setIndeces(prev => {
             const next = { ...prev };
 
