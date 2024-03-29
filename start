@@ -12,4 +12,8 @@ port=9341
     done
 ) &
 
+pid=$?
+
+trap "kill $pid" EXIT
+
 docker-compose up --build

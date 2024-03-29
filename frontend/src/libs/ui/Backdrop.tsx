@@ -13,7 +13,7 @@ const Backdrop: React.FC<Props> = ({ hide, transparent, children }) => {
 
     useEffect(() => {
         const onKeyDown = (event: KeyboardEvent) => {
-            if (event.which === 27) hide(event);
+            if (event.key === "Enter") hide(event);
         };
         document.addEventListener("keydown", onKeyDown);
         return () => {
