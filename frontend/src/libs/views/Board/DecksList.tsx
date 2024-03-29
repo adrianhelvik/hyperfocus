@@ -14,45 +14,35 @@ export default withConfirm(observer(function DecksList({ confirm }) {
     const [indeces, setIndeces] = useState<{ from: number, to: number }>({ from: null, to: null });
     const store = useContext(StoreContext);
 
-    const moveRight = useMemo(() => {
-        const shouldIndexMoveRight = (index: number) => {
-            if (indeces.from == null || indeces.to == null) return false;
-            return (
-                indeces.to < indeces.from &&
-                index >= indeces.to &&
-                index < indeces.from
-            );
-        }
+    console.log("indeces", indeces);
 
-        const moveRight = [];
-        for (let i = 0; i < store.board.children.length; i++)
-            if (shouldIndexMoveRight(i)) moveRight.push(i);
-        return moveRight;
-    }, [store.board.children.length, indeces.from, indeces.to]);
+    const shouldIndexMoveRight = (index: number) => {
+        if (indeces.from == null || indeces.to == null) return false;
+        return (
+            indeces.to < indeces.from &&
+            index >= indeces.to &&
+            index < indeces.from
+        );
+    }
 
-    const moveLeft = useMemo(() => {
-        const shouldIndexMoveLeft = (index: number) => {
-            if (indeces.from == null || indeces.to == null) return false;
-            return (
-                indeces.to > indeces.from &&
-                index > indeces.from &&
-                index <= indeces.to
-            );
-        }
-
-        const moveLeft = [];
-        for (let i = 0; i < store.board.children.length; i++)
-            if (shouldIndexMoveLeft(i)) moveLeft.push(i);
-        return moveLeft;
-    }, [store.board.children.length, indeces.from, indeces.to]);
+    const shouldIndexMoveLeft = (index: number) => {
+        if (indeces.from == null || indeces.to == null) return false;
+        return (
+            indeces.to > indeces.from &&
+            index > indeces.from &&
+            index <= indeces.to
+        );
+    }
 
     const simulateMove = (from: number, to: number) => {
+        console.log("simulateMove:", from, to);
         setIndeces(prev => {
             const next = { ...prev };
+
             if (from === to) {
                 if (next.from != null || next.to != null)
                     next.from = next.to = null;
-                return;
+                return next;
             }
 
             if (next.from !== from) next.from = from;
@@ -101,8 +91,8 @@ export default withConfirm(observer(function DecksList({ confirm }) {
                     {store.board.children.map((child, index) => {
                         const props = {
                             simulateMove: simulateMove,
-                            moveRight: moveRight.includes(index),
-                            moveLeft: moveLeft.includes(index),
+                            moveRight: shouldIndexMoveRight(index),
+                            moveLeft: shouldIndexMoveLeft(index),
                             move: move,
                             index: index,
                             board: store.board,
