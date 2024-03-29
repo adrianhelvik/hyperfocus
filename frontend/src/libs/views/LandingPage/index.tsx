@@ -1,5 +1,5 @@
-import { WithAuthProps, withAuth } from "authContext";
-import Header from "ui/Header";
+import { WithAuthProps, withAuth } from "src/libs/authContext";
+import Header from "src/libs/ui/Header";
 import React from "react";
 
 import {

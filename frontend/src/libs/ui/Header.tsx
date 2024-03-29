@@ -1,14 +1,14 @@
 import { RouteComponentProps, withRouter } from "react-router-dom";
-import { WithAuthProps, withAuth } from "authContext";
-import * as zIndexes from "../zIndexes";
+import { WithAuthProps, withAuth } from "src/libs/authContext";
+import * as zIndexes from "src/libs/zIndexes";
+import * as theme from "src/libs/theme";
 import { Link } from "react-router-dom";
 import styled from "styled-components";
-import * as theme from "../theme";
 import Color from "color";
 import React from "react";
 
 const withRouterAny = withRouter as any as <T extends React.ComponentType<any>>(
-    component: T,
+    component: T
 ) => T;
 
 type OwnProps = {
@@ -46,7 +46,7 @@ class Header extends React.Component<Props> {
 }
 
 export default withRouterAny(
-    withAuth(Header),
+    withAuth(Header)
 ) as any as React.ComponentType<OwnProps>;
 
 const UndecoratedLink = styled(Link)`

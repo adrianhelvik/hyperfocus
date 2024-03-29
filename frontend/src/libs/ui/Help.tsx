@@ -1,8 +1,8 @@
 import { Portal as _Portal } from "react-portal";
+import * as zIndexes from "src/libs/zIndexes";
+import * as theme from "src/libs/theme";
 import styled from "styled-components";
-import * as zIndexes from "zIndexes";
 import { useState } from "react";
-import * as theme from "theme";
 import React from "react";
 
 // XXX: Incorrect typings
@@ -28,7 +28,7 @@ export default function Help({ children, style }: Props) {
         const x = iconRect.right + 10;
         const y = Math.max(
             iconRect.top + iconRect.height / 2 - tooltipRect.height / 2,
-            0,
+            0
         );
 
         setPos([x, y]);

@@ -2,9 +2,9 @@ import hoist from "hoist-non-react-statics";
 import { observable, action } from "mobx";
 import { Portal } from "react-portal";
 import { observer } from "mobx-react";
-import Backdrop from "ui/Backdrop";
+import Backdrop from "src/libs/ui/Backdrop";
 import { Coord } from "./types";
-import Modal from "ui/Modal";
+import Modal from "src/libs/ui/Modal";
 import React from "react";
 
 // Broken types in the library
@@ -17,16 +17,16 @@ export type ConfirmTemplateProps = {
 
 export type WithConfirmProps = {
     confirm: (
-        Template: React.ComponentType<ConfirmTemplateProps>,
+        Template: React.ComponentType<ConfirmTemplateProps>
     ) => Promise<boolean>;
     confirmInPlace: (
         event: MouseEvent,
-        Template: React.ComponentType<ConfirmTemplateProps>,
+        Template: React.ComponentType<ConfirmTemplateProps>
     ) => Promise<boolean>;
 };
 
 export default function withConfirm<Props>(
-    Component: React.ComponentType<Props & WithConfirmProps>,
+    Component: React.ComponentType<Props & WithConfirmProps>
 ): React.ComponentType<Props> {
     @observer
     class WithConfirm extends React.Component<WithConfirmProps & Props> {
@@ -38,7 +38,7 @@ export default function withConfirm<Props>(
         @observable reject: ((error: Error) => void) | null = null;
 
         @action.bound confirm(
-            Template: React.ComponentType<ConfirmTemplateProps>,
+            Template: React.ComponentType<ConfirmTemplateProps>
         ) {
             this.Template = Template;
             this.promise = new Promise((resolve, reject) => {
@@ -50,7 +50,7 @@ export default function withConfirm<Props>(
 
         @action.bound confirmInPlace(
             event: MouseEvent,
-            Template: React.ComponentType<ConfirmTemplateProps>,
+            Template: React.ComponentType<ConfirmTemplateProps>
         ) {
             if (typeof event.clientX !== "number")
                 throw Error("event.clientX was not a number");

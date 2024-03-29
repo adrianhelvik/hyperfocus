@@ -1,6 +1,6 @@
-import { MouseEventHandler } from "react";
 import styled, { css } from "styled-components";
-import * as theme from "theme";
+import { MouseEventHandler } from "react";
+import * as theme from "src/libs/theme";
 
 const MenuIcon = ({
     onClick,

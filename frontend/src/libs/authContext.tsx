@@ -1,8 +1,8 @@
+import api, { setPersistentHeader } from "src/libs/api";
 import { observable, computed, action } from "mobx";
-import api, { setPersistentHeader } from "api";
 import hoist from "hoist-non-react-statics";
-import { observer } from "mobx-react";
 import React, { useContext } from "react";
+import { observer } from "mobx-react";
 
 type Status = "pending" | "success" | "failure";
 
@@ -18,7 +18,7 @@ export type WithAuthProps = { auth: Auth };
 export const AuthContext = React.createContext<Auth | null>(null);
 
 export function withAuth<Props>(
-    WrappedComponent: React.ComponentType<Props & WithAuthProps>,
+    WrappedComponent: React.ComponentType<Props & WithAuthProps>
 ): React.ComponentType<Props> {
     const name =
         WrappedComponent.displayName || WrappedComponent.name || "<component>";
@@ -65,7 +65,7 @@ export class ProvideAuth extends React.Component<{
         } catch (e) {
             console.log(
                 "%cauthentication failed",
-                "background:red;padding:4px",
+                "background:red;padding:4px"
             );
             this.setStatus("failure");
             return false;

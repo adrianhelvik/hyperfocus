@@ -1,12 +1,12 @@
-import withEvents, { WithEventsProps } from "util/withEvents";
+import withEvents, { WithEventsProps } from "src/libs/util/withEvents";
 import styled, { keyframes } from "styled-components";
 import hoist from "hoist-non-react-statics";
 import { Portal } from "react-portal";
 import { observer } from "mobx-react";
-import onSelect from "util/onSelect";
-import * as zIndexes from "zIndexes";
+import onSelect from "src/libs/util/onSelect";
+import * as zIndexes from "src/libs/zIndexes";
 import { observable } from "mobx";
-import * as theme from "theme";
+import * as theme from "src/libs/theme";
 import React from "react";
 
 const PortalAny = Portal as any;
@@ -14,12 +14,12 @@ const PortalAny = Portal as any;
 export type WithMenuProps = {
     showMenu: (
         event: React.MouseEvent,
-        options: Record<string, Function>,
+        options: Record<string, Function>
     ) => void;
 };
 
 export default function withMenu<Props>(
-    WrappedComponent: React.ComponentType<Props & WithMenuProps>,
+    WrappedComponent: React.ComponentType<Props & WithMenuProps>
 ): React.ComponentType<Props> {
     const openMenus = [];
 
@@ -37,7 +37,9 @@ export default function withMenu<Props>(
         componentDidMount() {
             console.log("withMenu.componentDidMount props:", this.props);
             this.props.on(document, "click", (event) => {
-                if (this.menu) { console.log("menu:", this.menu, "target:", event.target) }
+                if (this.menu) {
+                    console.log("menu:", this.menu, "target:", event.target);
+                }
                 if (this.menu && !this.menu.contains(event.target))
                     this.closeMenu();
             });
@@ -51,7 +53,7 @@ export default function withMenu<Props>(
 
         showMenu = (
             event: { clientX: number; clientY: number },
-            options: Record<string, Function>,
+            options: Record<string, Function>
         ) => {
             clearTimeout(this.showMenuTimeout);
             this.showMenuTimeout = setTimeout(() => {

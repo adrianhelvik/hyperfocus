@@ -1,24 +1,24 @@
-import withConfirm, { WithConfirmProps } from "withConfirm";
+import withConfirm, { WithConfirmProps } from "src/libs/withConfirm";
+import withStatus, { WithStatusProps } from "src/libs/withStatus";
+import withModal, { WithModalProps } from "src/libs/withModal";
+import withMenu, { WithMenuProps } from "src/libs/withMenu";
 import { CirclePicker as ColorPicker } from "react-color";
-import withStatus, { WithStatusProps } from "withStatus";
-import withModal, { WithModalProps } from "withModal";
-import withMenu, { WithMenuProps } from "withMenu";
+import Store, { StoreContext } from "src/libs/store";
 import { withRouter } from "react-router-dom";
-import Store, { StoreContext } from "store";
+import onSelect from "src/libs/util/onSelect";
+import MenuIcon from "src/libs/ui/MenuIcon";
 import React, { MouseEvent } from "react";
+import Board from "src/libs/store/Board";
+import * as theme from "src/libs/theme";
 import styled from "styled-components";
 import { observer } from "mobx-react";
-import onSelect from "util/onSelect";
-import MenuIcon from "ui/MenuIcon";
-import * as theme from "theme";
-import Board from "store/Board";
+import api from "src/libs/api";
 import Color from "color";
-import api from "api";
 
 const ColorPickerAny = ColorPicker as any as React.ComponentType<any>;
 
 const withRouterAny = withRouter as any as <T extends React.ComponentType<any>>(
-    component: T,
+    component: T
 ) => T;
 
 type Props = WithConfirmProps &
@@ -115,7 +115,7 @@ class BoardTile extends React.Component<Props> {
 }
 
 export default withModal(
-    withConfirm(withStatus(withMenu(withRouterAny(BoardTile)))),
+    withConfirm(withStatus(withMenu(withRouterAny(BoardTile))))
 );
 
 const Container = styled.div<{ $color: string }>`

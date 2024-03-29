@@ -1,12 +1,12 @@
 import { BrowserRouter as Router, Switch, Route } from "react-router-dom";
-import LandingPage from "views/LandingPage";
-import { ProvideAuth } from "authContext";
-import Register from "views/Register";
-import Overview from "views/Overview";
-import NotFound from "views/NotFound";
+import LandingPage from "src/libs/views/LandingPage";
+import { ProvideAuth } from "src/libs/authContext";
+import Register from "src/libs/views/Register";
+import Overview from "src/libs/views/Overview";
+import NotFound from "src/libs/views/NotFound";
+import Board from "src/libs/views/Board";
+import Login from "src/libs/views/Login";
 import Reactions from "./Reactions";
-import Board from "views/Board";
-import Login from "views/Login";
 
 const RouterAny = Router as any;
 const SwitchAny = Switch as any;

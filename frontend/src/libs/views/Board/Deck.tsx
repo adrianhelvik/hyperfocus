@@ -1,24 +1,25 @@
-import requestAnimationFrameAsync from "util/requestAnimationFrameAsync";
-import withEvents, { WithEventsProps } from "util/withEvents";
+import requestAnimationFrameAsync from "src/libs/util/requestAnimationFrameAsync";
+import withEvents, { WithEventsProps } from "src/libs/util/withEvents";
+import withModal, { WithModalProps } from "src/libs/withModal";
+import withMenu, { WithMenuProps } from "src/libs/withMenu";
 import { CirclePicker as ColorPicker } from "react-color";
 import AbstractTextArea from "react-textarea-autosize";
-import withModal, { WithModalProps } from "withModal";
-import withMenu, { WithMenuProps } from "withMenu";
+import someParent from "src/libs/util/someParent";
+import type DeckModel from "src/libs/store/Deck";
 import styled, { css } from "styled-components";
+import * as zIndexes from "src/libs/zIndexes";
+import MenuIcon from "src/libs/ui/MenuIcon";
 import { observable, computed } from "mobx";
 import React, { ChangeEvent } from "react";
+import Portal from "src/libs/store/Portal";
 import AddCardInput from "./AddCardInput";
-import someParent from "util/someParent";
-import type DeckModel from "store/Deck";
+import sleep from "src/libs/util/sleep";
+import * as theme from "src/libs/theme";
 import { observer } from "mobx-react";
-import * as zIndexes from "zIndexes";
-import MenuIcon from "ui/MenuIcon";
-import Portal from "store/Portal";
-import sleep from "util/sleep";
-import * as theme from "theme";
+import api from "src/libs/api";
 import Color from "color";
 import Card from "./Card";
-import api from "api";
+import EditDeckTitle from "./EditDeckTitle";
 
 // XXX: The library uses a different version of @types/react
 const ColorPickerAny = ColorPicker as any;
@@ -233,7 +234,7 @@ class Deck extends React.Component<Props> {
 
         for (const attribute of ["data-card", "data-card-placeholder"]) {
             const element = someParent(event.target, (e) =>
-                e.hasAttribute(attribute),
+                e.hasAttribute(attribute)
             );
             if (element instanceof HTMLElement) {
                 this.setHoverIndex(Number(element.getAttribute(attribute)));
@@ -243,7 +244,7 @@ class Deck extends React.Component<Props> {
             }
         }
         const element = someParent(event.target, (e) =>
-            e.hasAttribute("data-add-card-input"),
+            e.hasAttribute("data-add-card-input")
         );
         if (element) {
             const max = this.props.deck.cards.length;
@@ -359,8 +360,8 @@ class Deck extends React.Component<Props> {
                             key={card.cardId}
                             moving={Boolean(
                                 this.moving ||
-                                this.movingChild ||
-                                sharedState.moving.length,
+                                    this.movingChild ||
+                                    sharedState.moving.length
                             )}
                             placeholderWidth={this.placeholderWidth}
                             placeholderHeight={this.placeholderHeight}
@@ -375,20 +376,20 @@ class Deck extends React.Component<Props> {
                     ))}
                     {Boolean(
                         sharedState.moving.length &&
-                        this.hoverIndex === this.props.deck.cards.length,
+                            this.hoverIndex === this.props.deck.cards.length
                     ) && (
-                            <div
-                                data-card-placeholder={this.props.deck.cards.length}
-                                style={{
-                                    width:
-                                        this.placeholderWidth ||
-                                        sharedState.moving[0].placeholderWidth,
-                                    height:
-                                        this.placeholderHeight ||
-                                        sharedState.moving[0].placeholderHeight,
-                                }}
-                            />
-                        )}
+                        <div
+                            data-card-placeholder={this.props.deck.cards.length}
+                            style={{
+                                width:
+                                    this.placeholderWidth ||
+                                    sharedState.moving[0].placeholderWidth,
+                                height:
+                                    this.placeholderHeight ||
+                                    sharedState.moving[0].placeholderHeight,
+                            }}
+                        />
+                    )}
                 </Body>
                 <AddCardInput
                     deck={this.props.deck}
@@ -526,29 +527,6 @@ class EditPortalTitle extends React.Component<EditPortalProps> {
                 value={this.props.portal.title}
                 onChange={this.onChange}
             />
-        );
-    }
-}
-
-@observer
-class EditDeckTitle extends React.Component<{ deck: DeckModel }> {
-    saveTimeout: ReturnType<typeof setTimeout>;
-
-    onChange = (event: ChangeEvent) => {
-        if (!(event.target instanceof HTMLInputElement)) return;
-        this.props.deck.title = event.target.value;
-        clearTimeout(this.saveTimeout);
-        this.saveTimeout = setTimeout(() => {
-            api.setDeckTitle({
-                deckId: this.props.deck.deckId,
-                title: this.props.deck.title,
-            });
-        }, 300);
-    };
-
-    render() {
-        return (
-            <TextArea onChange={this.onChange} value={this.props.deck.title} />
         );
     }
 }

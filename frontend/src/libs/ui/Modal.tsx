@@ -1,7 +1,7 @@
 import styled, { css } from "styled-components";
+import { Coord } from "src/libs/types";
+import * as theme from "src/libs/theme";
 import Backdrop from "./Backdrop";
-import { Coord } from "types";
-import * as theme from "theme";
 import React from "react";
 
 type Props = {

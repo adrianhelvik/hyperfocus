@@ -1,9 +1,9 @@
 import { useHistory } from "react-router-dom";
 import styled from "styled-components";
 import { FormEvent, useState } from "react";
-import Button from "ui/Button";
-import Input from "ui/Input";
-import api from "api";
+import Button from "src/libs/ui/Button";
+import Input from "src/libs/ui/Input";
+import api from "src/libs/api";
 
 export default function Register() {
     const [repeatedPassword, setRepeatedPassword] = useState("");

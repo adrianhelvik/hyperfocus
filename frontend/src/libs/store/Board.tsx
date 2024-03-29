@@ -1,5 +1,5 @@
+import arrayMove from "src/libs/util/arrayMove";
 import Deck, { DeckParam } from "./Deck";
-import arrayMove from "util/arrayMove";
 import { v4 as uuid } from "uuid";
 import Portal from "./Portal";
 

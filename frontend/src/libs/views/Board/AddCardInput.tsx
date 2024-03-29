@@ -1,14 +1,14 @@
-import renderToBody from "util/renderToBody";
-import { observable, action, reaction } from "mobx";
+import RenderImageFile from "src/libs/ui/RenderImageFile";
+import renderToBody from "src/libs/util/renderToBody";
+import api, { addCardImages } from "src/libs/api";
+import { observable, action } from "mobx";
+import * as theme from "src/libs/theme";
+import Deck from "src/libs/store/Deck";
+import Card from "src/libs/store/Card";
 import styled from "styled-components";
 import { observer } from "mobx-react";
-import * as theme from "theme";
-import Deck from "store/Deck";
-import Card from "store/Card";
 import Color from "color";
 import React from "react";
-import api, { addCardImages } from "api";
-import RenderImageFile from "ui/RenderImageFile";
 
 type Props = {
     deck: Deck;
@@ -33,7 +33,7 @@ class AddCardInput extends React.Component<Props> {
     disposers: Array<() => void> = [];
 
     componentWillUnmount() {
-        this.disposers.forEach(fn => fn());
+        this.disposers.forEach((fn) => fn());
     }
 
     @action.bound setImages(images: File[]) {
@@ -42,8 +42,8 @@ class AddCardInput extends React.Component<Props> {
 
     onSubmit = async (event: { preventDefault: () => void }) => {
         event.preventDefault();
-
-        await this.save();
+        this.save();
+        this.input.focus();
     };
 
     save = async () => {
@@ -52,20 +52,23 @@ class AddCardInput extends React.Component<Props> {
             return;
         }
 
-        const { cardId } = await api.addCard({
-            title: this.title,
-            deckId: this.props.deck.deckId,
-        });
+        const { title, props: { deck: { deckId } }, images } = this;
 
-        const images = this.images
-            ? await addCardImages(cardId, this.images)
-            : [];
-
-        const card = new Card(this.title, cardId, images);
-
-        this.props.deck.addCard(card);
         this.title = "";
         this.images = [];
+
+        const { cardId } = await api.addCard({
+            title,
+            deckId,
+        });
+
+        const imageUrls = images
+            ? await addCardImages(cardId, images)
+            : [];
+
+        const card = new Card(title, cardId, imageUrls);
+
+        this.props.deck.addCard(card);
     };
 
     inputRef = (input: HTMLInputElement) => {
@@ -94,7 +97,7 @@ class AddCardInput extends React.Component<Props> {
         };
 
         const { remove, rerender } = renderToBody(
-            <div style={style}>{warning}</div>,
+            <div style={style}>{warning}</div>
         );
 
         setTimeout(() => {
@@ -125,18 +128,25 @@ class AddCardInput extends React.Component<Props> {
     render() {
         return (
             <>
-                <InputsAndButtons onSubmit={this.onSubmit} data-add-card-input onDrop={e => {
-                    const files = [];
-                    for (const item of Array.from(e.dataTransfer.items)) {
-                        if (item.kind === "file" && item.type.split("/")[0] === "image") {
-                            files.push(item.getAsFile());
+                <InputsAndButtons
+                    onSubmit={this.onSubmit}
+                    data-add-card-input
+                    onDrop={(e) => {
+                        const files = [];
+                        for (const item of Array.from(e.dataTransfer.items)) {
+                            if (
+                                item.kind === "file" &&
+                                item.type.split("/")[0] === "image"
+                            ) {
+                                files.push(item.getAsFile());
+                            }
                         }
-                    }
-                    if (files.length) {
-                        e.preventDefault();
-                        this.setImages(files);
-                    }
-                }}>
+                        if (files.length) {
+                            e.preventDefault();
+                            this.setImages(files);
+                        }
+                    }}
+                >
                     <Input
                         onKeyDown={this.submitIfEnter}
                         value={this.title}
@@ -144,12 +154,20 @@ class AddCardInput extends React.Component<Props> {
                         placeholder="Add card"
                         ref={this.inputRef}
                     />
-                    <input type="file" hidden={true} name="image" onChange={e => this.setImages(Array.from(e.target.files))} multiple={true} />
+                    <input
+                        type="file"
+                        hidden={true}
+                        name="image"
+                        onChange={(e) =>
+                            this.setImages(Array.from(e.target.files))
+                        }
+                        multiple={true}
+                    />
                     <IconButton
                         type="button"
                         onClick={(e: any) => {
                             console.log(e.target.previousSibling);
-                            e.target.previousSibling.click()
+                            e.target.previousSibling.click();
                             this.input.focus();
                         }}
                         $color={
@@ -157,7 +175,8 @@ class AddCardInput extends React.Component<Props> {
                                 ? theme.secondary1
                                 : this.props.referencedByPortal
                                     ? theme.tertiary1
-                                    : this.props.deck.color || theme.defaultDeckColor
+                                    : this.props.deck.color ||
+                                    theme.defaultDeckColor
                         }
                     >
                         <Icon className="material-icons">image</Icon>
@@ -170,7 +189,8 @@ class AddCardInput extends React.Component<Props> {
                                 ? theme.secondary1
                                 : this.props.referencedByPortal
                                     ? theme.tertiary1
-                                    : this.props.deck.color || theme.defaultDeckColor
+                                    : this.props.deck.color ||
+                                    theme.defaultDeckColor
                         }
                     >
                         Add
@@ -179,7 +199,9 @@ class AddCardInput extends React.Component<Props> {
                 {this.images.length > 0 && (
                     <ImagesOuterContainer>
                         <ImagesContainer data-count={this.images.length}>
-                            {this.images.map((file, i) => <RenderImageFile file={file} key={i} />)}
+                            {this.images.map((file, i) => (
+                                <RenderImageFile file={file} key={i} />
+                            ))}
                         </ImagesContainer>
                     </ImagesOuterContainer>
                 )}
@@ -226,7 +248,6 @@ const Button = styled.button<{
     cursor: pointer;
 `;
 
-
 const IconButton = styled.button<{ $color: string }>`
     background-color: transparent;
     border: none;
@@ -242,12 +263,12 @@ const IconButton = styled.button<{ $color: string }>`
     :active:hover {
         color: ${(p) => Color(p.$color).darken(0.25).toString()};
     }
-`
+`;
 
 const Icon = styled.i`
     margin: 3px;
     pointer-events: none;
-`
+`;
 
 const ImagesContainer = styled.div`
     display: flex;
@@ -267,8 +288,8 @@ const ImagesContainer = styled.div`
         max-height: 200px;
         object-fit: cover;
     }
-`
+`;
 
 const ImagesOuterContainer = styled.div`
     padding: 5px;
-`
+`;

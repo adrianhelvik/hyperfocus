@@ -1,106 +1,109 @@
-import { useContext, useState } from "react";
 import { Observer, observer } from "mobx-react";
-import PortalModel from "store/Portal";
+import PortalModel from "src/libs/store/Portal";
+import withConfirm from "src/libs/withConfirm";
+import { StoreContext } from "src/libs/store";
+import { useContext, useState } from "react";
+import DeckModel from "src/libs/store/Deck";
+import * as theme from "src/libs/theme";
 import styled from "styled-components";
-import withConfirm from "withConfirm";
-import { StoreContext } from "store";
-import DeckModel from "store/Deck";
-import * as theme from "theme";
+import api from "src/libs/api";
 import Portal from "./Portal";
 import Deck from "./Deck";
-import api from "api";
 
-export default withConfirm(observer(function DecksList({ confirm }) {
-    const [indeces, setIndeces] = useState<{ from: number, to: number }>({ from: null, to: null });
-    const store = useContext(StoreContext);
+export default withConfirm(
+    observer(function DecksList({ confirm }) {
+        const [indeces, setIndeces] = useState<{ from: number; to: number }>({
+            from: null,
+            to: null,
+        });
+        const store = useContext(StoreContext);
 
-    const shouldIndexMoveRight = (index: number) => {
-        if (indeces.from == null || indeces.to == null) return false;
-        return (
-            indeces.to < indeces.from &&
-            index >= indeces.to &&
-            index < indeces.from
-        );
-    }
+        const shouldIndexMoveRight = (index: number) => {
+            if (indeces.from == null || indeces.to == null) return false;
+            return (
+                indeces.to < indeces.from &&
+                index >= indeces.to &&
+                index < indeces.from
+            );
+        };
 
-    const shouldIndexMoveLeft = (index: number) => {
-        if (indeces.from == null || indeces.to == null) return false;
-        return (
-            indeces.to > indeces.from &&
-            index > indeces.from &&
-            index <= indeces.to
-        );
-    }
+        const shouldIndexMoveLeft = (index: number) => {
+            if (indeces.from == null || indeces.to == null) return false;
+            return (
+                indeces.to > indeces.from &&
+                index > indeces.from &&
+                index <= indeces.to
+            );
+        };
 
-    const simulateMove = (from: number, to: number) => {
-        setIndeces(prev => {
-            const next = { ...prev };
+        const simulateMove = (from: number, to: number) => {
+            setIndeces((prev) => {
+                const next = { ...prev };
 
-            if (from === to) {
-                if (next.from != null || next.to != null)
-                    next.from = next.to = null;
+                if (from === to) {
+                    if (next.from != null || next.to != null)
+                        next.from = next.to = null;
+                    return next;
+                }
+
+                if (next.from !== from) next.from = from;
+                if (next.to !== to) next.to = to;
+
                 return next;
+            });
+        };
+
+        const move = (fromIndex: number, toIndex: number) => {
+            let item = store.board.children[fromIndex];
+
+            if (item instanceof PortalModel)
+                item = { type: "portal", portalId: item.portalId };
+            else if (item instanceof DeckModel)
+                item = { type: "deck", deckId: item.deckId };
+            else {
+                console.error("Invalid type:", item);
+                throw Error("Invalid type. Check log");
             }
 
-            if (next.from !== from) next.from = from;
-            if (next.to !== to) next.to = to;
+            store.board.move(fromIndex, toIndex);
 
-            return next;
-        });
-    }
+            api.moveBoardChildToIndex({
+                boardId: store.board.boardId,
+                index: toIndex,
+                item,
+            });
+        };
 
-    const move = (fromIndex: number, toIndex: number) => {
-        let item = store.board.children[fromIndex];
+        return (
+            <Observer>
+                {() => (
+                    <Decks className="board-decks">
+                        {store.board.children.length === 0 && (
+                            <Empty>
+                                There are no decks here yet.
+                                <br />
+                                Click{" "}
+                                <span className="material-symbols-outlined">
+                                    add_circle
+                                </span>{" "}
+                                to create your first deck!
+                            </Empty>
+                        )}
+                        {store.board.children.map((child, index) => {
+                            const props = {
+                                simulateMove: simulateMove,
+                                moveRight: shouldIndexMoveRight(index),
+                                moveLeft: shouldIndexMoveLeft(index),
+                                move: move,
+                                index: index,
+                                board: store.board,
+                            };
 
-        if (item instanceof PortalModel)
-            item = { type: "portal", portalId: item.portalId };
-        else if (item instanceof DeckModel)
-            item = { type: "deck", deckId: item.deckId };
-        else {
-            console.error("Invalid type:", item);
-            throw Error("Invalid type. Check log");
-        }
-
-        store.board.move(fromIndex, toIndex);
-
-        api.moveBoardChildToIndex({
-            boardId: store.board.boardId,
-            index: toIndex,
-            item,
-        });
-    }
-
-    return (
-        <Observer>
-            {() => (
-                <Decks className="board-decks">
-                    {store.board.children.length === 0 && (
-                        <Empty>
-                            There are no decks here yet.
-                            <br />
-                            Click{" "}
-                            <span className="material-symbols-outlined">
-                                add_circle
-                            </span>{" "}
-                            to create your first deck!
-                        </Empty>
-                    )}
-                    {store.board.children.map((child, index) => {
-                        const props = {
-                            simulateMove: simulateMove,
-                            moveRight: shouldIndexMoveRight(index),
-                            moveLeft: shouldIndexMoveLeft(index),
-                            move: move,
-                            index: index,
-                            board: store.board,
-                        };
-
-                        if (child instanceof PortalModel) {
-                            return (
-                                <ChildPortal
-                                    delete={async () => {
-                                        const confirmed =
-                                            await confirm(
+                            if (child instanceof PortalModel) {
+                                return (
+                                    <ChildPortal
+                                        delete={async () => {
+                                            const confirmed = await confirm(
                                                 ({ yes, no }) => (
                                                     <div>
                                                         <div>Delete portal</div>
@@ -111,57 +114,63 @@ export default withConfirm(observer(function DecksList({ confirm }) {
                                                             Keep
                                                         </button>
                                                     </div>
-                                                ),
+                                                )
                                             );
+                                            if (!confirmed) return;
+                                            api.deletePortal({
+                                                portalId: child.portalId,
+                                            });
+                                            store.board.children.splice(
+                                                index,
+                                                1
+                                            );
+                                        }}
+                                        key={child.portalId}
+                                        portal={child}
+                                        deck={child.target}
+                                        {...props}
+                                    />
+                                );
+                            }
+
+                            return (
+                                <ChildDeck
+                                    delete={async () => {
+                                        const confirmed = await confirm(
+                                            ({ yes, no }) => (
+                                                <div>
+                                                    <div>Delete deck</div>
+                                                    <div>
+                                                        All cards in the deck
+                                                        will be deleted as well.
+                                                    </div>
+                                                    <button onClick={yes}>
+                                                        Delete
+                                                    </button>
+                                                    <button onClick={no}>
+                                                        Keep
+                                                    </button>
+                                                </div>
+                                            )
+                                        );
                                         if (!confirmed) return;
-                                        api.deletePortal({
-                                            portalId: child.portalId,
+                                        api.deleteDeck({
+                                            deckId: child.deckId,
                                         });
                                         store.board.children.splice(index, 1);
                                     }}
-                                    key={child.portalId}
-                                    portal={child}
-                                    deck={child.target}
+                                    key={child.deckId}
+                                    deck={child}
                                     {...props}
                                 />
                             );
-                        }
-
-                        return (
-                            <ChildDeck
-                                delete={async () => {
-                                    const confirmed = await confirm(
-                                        ({ yes, no }) => (
-                                            <div>
-                                                <div>Delete deck</div>
-                                                <div>
-                                                    All cards in the deck will
-                                                    be deleted as well.
-                                                </div>
-                                                <button onClick={yes}>
-                                                    Delete
-                                                </button>
-                                                <button onClick={no}>
-                                                    Keep
-                                                </button>
-                                            </div>
-                                        ),
-                                    );
-                                    if (!confirmed) return;
-                                    api.deleteDeck({ deckId: child.deckId });
-                                    store.board.children.splice(index, 1);
-                                }}
-                                key={child.deckId}
-                                deck={child}
-                                {...props}
-                            />
-                        );
-                    })}
-                </Decks>
-            )}
-        </Observer>
-    )
-}));
+                        })}
+                    </Decks>
+                )}
+            </Observer>
+        );
+    })
+);
 
 const Decks = styled.div`
     display: flex;

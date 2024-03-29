@@ -1,12 +1,17 @@
 {
   "compilerOptions": {
+    "baseUrl": ".",
     "target": "esnext",
     "module": "esnext",
     "experimentalDecorators": true,
     "jsx": "react-jsx",
-    "baseUrl": ".",
-    "lib": ["es2022", "dom"],
-    "types": ["vite/client"],
+    "lib": [
+      "es2022",
+      "dom"
+    ],
+    "types": [
+      "vite/client"
+    ],
     "moduleResolution": "node",
     "allowJs": true,
     "strict": false,
@@ -16,8 +21,18 @@
     "skipLibCheck": true,
     "forceConsistentCasingInFileNames": true,
     "esModuleInterop": true,
-    "resolveJsonModule": true
+    "resolveJsonModule": true,
+    "paths": {
+      "src/*": [
+        "./src/*"
+      ]
+    }
   },
-  "include": ["./src/**/*"],
-  "exclude": ["node_modules", "dist"]
+  "include": [
+    "./src/**/*"
+  ],
+  "exclude": [
+    "node_modules",
+    "dist"
+  ]
 }

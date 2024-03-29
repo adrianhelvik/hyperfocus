@@ -1,8 +1,8 @@
-import Board, { BoardParam } from "store/Board";
-import Portal from "store/Portal";
+import Board, { BoardParam } from "src/libs/store/Board";
+import Portal from "src/libs/store/Portal";
+import Deck from "src/libs/store/Deck";
+import local from "src/libs/local";
 import { Project } from "./types";
-import Deck from "store/Deck";
-import local from "local";
 
 let persistentHeaders = local.get("persistentHeaders", {});
 
@@ -11,7 +11,7 @@ type PortalParam = {
 };
 
 type Api = {
-    ownProjects(): Promise<{ projects: Project }>;
+    ownProjects(): Promise<{ projects: Project[] }>;
     createBoard(board: Board): Promise<void>;
     registerUser(payload: { password: string; email: string }): Promise<void>;
     deleteDeck(payload: { deckId: string }): Promise<void>;
@@ -70,19 +70,22 @@ export async function addCardImages(cardId: string, images: File[]) {
 
     console.log(formData);
 
-    const response = await fetch(`${import.meta.env.VITE_API_URL}/addCardImages`, {
-        method: "POST",
-        mode: "cors",
-        cache: "no-cache",
-        credentials: "same-origin",
-        headers: {
-            ...persistentHeaders,
-            "Accept": "application/json",
-        },
-        redirect: "follow",
-        referrer: "no-referrer",
-        body: formData
-    });
+    const response = await fetch(
+        `${import.meta.env.VITE_API_URL}/addCardImages`,
+        {
+            method: "POST",
+            mode: "cors",
+            cache: "no-cache",
+            credentials: "same-origin",
+            headers: {
+                ...persistentHeaders,
+                Accept: "application/json",
+            },
+            redirect: "follow",
+            referrer: "no-referrer",
+            body: formData,
+        }
+    );
 
     return response.json();
 }

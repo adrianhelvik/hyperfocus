@@ -1,8 +1,8 @@
+import Store, { StoreContext } from "src/libs/store";
 import { observer } from "mobx-react";
 import { reaction } from "mobx";
+import api from "src/libs/api";
 import React from "react";
-import Store, { StoreContext } from "store";
-import api from "api";
 
 @observer
 export default class Reactions extends React.Component<{
@@ -36,7 +36,7 @@ export default class Reactions extends React.Component<{
                         }, 100);
                     });
                 }
-            },
+            }
         );
     }
 

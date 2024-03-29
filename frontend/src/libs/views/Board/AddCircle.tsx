@@ -1,8 +1,8 @@
-import withEvents, { WithEventsProps } from "util/withEvents";
+import withEvents, { WithEventsProps } from "src/libs/util/withEvents";
 import styled, { keyframes, css } from "styled-components";
+import * as theme from "src/libs/theme";
 import { observer } from "mobx-react";
 import { observable } from "mobx";
-import * as theme from "theme";
 import React from "react";
 
 type Props = WithEventsProps & {

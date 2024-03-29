@@ -1,17 +1,17 @@
-import PortalModel, { PortalParam } from "store/Portal";
-import DeckModel, { DeckParam } from "store/Deck";
-import { observable, runInAction } from "mobx";
+import PortalModel, { PortalParam } from "src/libs/store/Portal";
+import DeckModel, { DeckParam } from "src/libs/store/Deck";
 import { useHistory } from "react-router-dom";
-import BoardModel from "store/Board";
-import Store from "store";
-import api from "api";
+import BoardModel from "src/libs/store/Board";
+import { runInAction } from "mobx";
+import Store from "src/libs/store";
+import api from "src/libs/api";
 
 type Options = {
-    store: Store,
-    boardId: string,
-    history: ReturnType<typeof useHistory>,
-    setLoading: (loading: boolean) => void,
-}
+    store: Store;
+    boardId: string;
+    history: ReturnType<typeof useHistory>;
+    setLoading: (loading: boolean) => void;
+};
 
 export default async function loadBoard(options: Options) {
     try {
@@ -33,7 +33,7 @@ export default async function loadBoard(options: Options) {
                     return new PortalModel({
                         ...(child as PortalParam),
                         target: new DeckModel(
-                            (child as PortalModel).target as DeckParam,
+                            (child as PortalModel).target as DeckParam
                         ),
                     });
                 throw Error("Invalid child type");

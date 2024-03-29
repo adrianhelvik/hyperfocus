@@ -1,14 +1,14 @@
 import { Redirect } from "react-router-dom";
-import { AuthContext } from "authContext";
+import { AuthContext } from "src/libs/authContext";
 import ProjectTile from "./ProjectTile";
 import styled from "styled-components";
 import { Observer } from "mobx-react";
-import { StoreContext } from "store";
+import { StoreContext } from "src/libs/store";
 import BoardTile from "./BoardTile";
-import Board from "store/Board";
-import * as theme from "theme";
+import Board from "src/libs/store/Board";
+import * as theme from "src/libs/theme";
 import React from "react";
-import api from "api";
+import api from "src/libs/api";
 
 const RedirectAny = Redirect as any;
 
@@ -48,7 +48,10 @@ export default function BoardList() {
                             </PlusButton>
                         </Header>
                         <Grid>
-                            <ProjectTile project={{ title: "Personal project" }} isSelected={true} />
+                            <ProjectTile
+                                project={{ title: "Personal project" }}
+                                isSelected={true}
+                            />
                         </Grid>
                         <Header>
                             <Title>My boards</Title>
@@ -104,9 +107,7 @@ const PlusButton = styled.button`
     display: flex;
     justify-content: center;
     align-items: center;
-    transition:
-        background-color 0.3s,
-        box-shadow 0.3s;
+    transition: background-color 0.3s, box-shadow 0.3s;
     box-shadow: ${theme.shadows[0]};
     cursor: pointer;
 

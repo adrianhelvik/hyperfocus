@@ -1,13 +1,13 @@
-import { AuthContext, WithAuthProps } from "authContext";
-import withMenu, { WithMenuProps } from "withMenu";
+import { AuthContext, WithAuthProps } from "src/libs/authContext";
+import withMenu, { WithMenuProps } from "src/libs/withMenu";
+import { StoreContext } from "src/libs/store";
 import { Redirect } from "react-router-dom";
 import AddBoardModal from "./AddBoardModal";
 import React, { MouseEvent } from "react";
+import Header from "src/libs/ui/Header";
 import styled from "styled-components";
-import { Observer, observer } from "mobx-react";
-import { StoreContext } from "store";
+import { Observer } from "mobx-react";
 import BoardList from "./BoardList";
-import Header from "ui/Header";
 
 const RedirectAny = Redirect as any;
 

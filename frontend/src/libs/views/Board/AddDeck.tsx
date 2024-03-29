@@ -1,13 +1,13 @@
+import ModalFooter from "src/libs/ui/ModalFooter";
 import { observable, action } from "mobx";
-import ModalFooter from "ui/ModalFooter";
+import Board from "src/libs/store/Board";
+import Button from "src/libs/ui/Button";
+import Deck from "src/libs/store/Deck";
 import styled from "styled-components";
 import { observer } from "mobx-react";
-import Board from "store/Board";
-import Button from "ui/Button";
-import Deck from "store/Deck";
-import Input from "ui/Input";
+import Input from "src/libs/ui/Input";
+import api from "src/libs/api";
 import React from "react";
-import api from "api";
 
 type Props = {
     board: Board;

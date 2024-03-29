@@ -5,13 +5,13 @@ export type WithEventsProps = {
     on: (
         target: EventTarget,
         eventName: string,
-        handler: (event: any) => void,
+        handler: (event: any) => void
     ) => void;
     off: (target: EventTarget, eventName: string) => void;
 };
 
 export default function withEvents<Props>(
-    WrappedComponent: React.ComponentType<Props & WithEventsProps>,
+    WrappedComponent: React.ComponentType<Props & WithEventsProps>
 ): React.ComponentType<Props> {
     class NewComponent extends React.Component<Props & WithEventsProps> {
         unmounted = false;
@@ -25,11 +25,11 @@ export default function withEvents<Props>(
         on = (
             target: Node,
             eventName: string,
-            handler: (event: any) => void,
+            handler: (event: any) => void
         ) => {
             if (this.unmounted) {
                 console.error(
-                    "Attempted to add event listener after unmounting. This is a noop",
+                    "Attempted to add event listener after unmounting. This is a noop"
                 );
                 return;
             }

@@ -1,8 +1,8 @@
 import styled, { css } from "styled-components";
-import MenuIcon from "ui/MenuIcon";
-import * as theme from "theme";
-import Color from "color";
+import MenuIcon from "src/libs/ui/MenuIcon";
 import { Project } from "src/libs/types";
+import * as theme from "src/libs/theme";
+import Color from "color";
 
 type Props = {
     isSelected: boolean;

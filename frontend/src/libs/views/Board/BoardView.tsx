@@ -1,34 +1,40 @@
-import { Redirect, useHistory, useParams } from "react-router-dom";
+import {
+    Redirect as RedirectOriginal,
+    useHistory,
+    useParams,
+} from "react-router-dom";
 import { useContext, useEffect, useState } from "react";
-import { Observer, observer } from "mobx-react";
+import { StoreContext } from "src/libs/store";
+import Loading from "src/libs/ui/Loading";
+import * as theme from "src/libs/theme";
+import Header from "src/libs/ui/Header";
 import styled from "styled-components";
-import { StoreContext } from "store";
+import { observer } from "mobx-react";
+import DecksList from "./DecksList";
 import AddPortal from "./AddPortal";
 import AddCircle from "./AddCircle";
 import loadBoard from "./loadBoard";
-import withModal from "withModal";
-import Loading from "ui/Loading";
 import AddDeck from "./AddDeck";
-import * as theme from "theme";
-import Header from "ui/Header";
-import DecksList from "./DecksList";
+import useModal from "src/libs/useModal";
 
-export default withModal(observer(function BoardView({ showModal }) {
+// TODO: Fix typings
+const Redirect = RedirectOriginal as any;
+
+export default observer(function BoardView() {
     const [loading, setLoading] = useState<boolean>(true);
     const { boardId } = useParams<{ boardId: string }>();
+    const { showModal, renderModal } = useModal();
     const store = useContext(StoreContext);
     const history = useHistory();
 
     const addDeck = async () => {
-        await showModal((props) => (
-            <AddDeck {...props} board={store.board} />
-        ));
+        await showModal((props) => <AddDeck {...props} board={store.board} />);
     };
 
     const addPortal = async () => {
         await showModal(
             (props) => <AddPortal {...props} board={store.board} />,
-            { width: 700 },
+            { width: 700 }
         );
     };
 
@@ -45,34 +51,31 @@ export default withModal(observer(function BoardView({ showModal }) {
     }
 
     return (
-        <Observer>
-            {() =>
-                <>
-                    <Container>
-                        <Header color={store.board.color}>
-                            <Breadcrumbs>
-                                <GoBack onClick={() => history.goBack()}>
-                                    My boards
-                                </GoBack>
-                                <div>›</div>
-                                <Title>{store.board.title}</Title>
-                            </Breadcrumbs>
-                        </Header>
-                        <DecksList />
-                        <AddCircle>
-                            <AddItem onClick={addDeck}>
-                                <AddItemText>Add Deck</AddItemText>
-                            </AddItem>
-                            <AddItem onClick={addPortal}>
-                                <AddItemText>Add portal</AddItemText>
-                            </AddItem>
-                        </AddCircle>
-                    </Container>
-                </>
-            }
-        </Observer>
-    )
-}));
+        <>
+            <Container>
+                <Header color={store.board.color}>
+                    <Breadcrumbs>
+                        <GoBack onClick={() => history.goBack()}>
+                            My boards
+                        </GoBack>
+                        <div>›</div>
+                        <Title>{store.board.title}</Title>
+                    </Breadcrumbs>
+                </Header>
+                <DecksList />
+                <AddCircle>
+                    <AddItem onClick={addDeck}>
+                        <AddItemText>Add Deck</AddItemText>
+                    </AddItem>
+                    <AddItem onClick={addPortal}>
+                        <AddItemText>Add portal</AddItemText>
+                    </AddItem>
+                </AddCircle>
+            </Container>
+            {renderModal()}
+        </>
+    );
+});
 
 const Container = styled.main`
     background: ${theme.bg1};

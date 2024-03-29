@@ -3,7 +3,7 @@ import hoist from "hoist-non-react-statics";
 import { observable, action } from "mobx";
 import { observer } from "mobx-react";
 import { Portal } from "react-portal";
-import Modal from "ui/Modal";
+import Modal from "src/libs/ui/Modal";
 import React from "react";
 
 const withRouterAny = withRouter as any as <T>(c: T) => T;
@@ -16,16 +16,16 @@ export type ModalTemplateProps = {
 export type WithModalProps = {
     showModal: (
         Template: React.ComponentType<ModalTemplateProps>,
-        options?: { width?: number },
+        options?: { width?: number }
     ) => Promise<void>;
     showModalInPlace: (
         event: React.MouseEvent,
-        Template: React.ComponentType<ModalTemplateProps>,
+        Template: React.ComponentType<ModalTemplateProps>
     ) => void;
 };
 
 export default function withModal<Props>(
-    WrappedComponent: React.ComponentType<Props & WithModalProps>,
+    WrappedComponent: React.ComponentType<Props & WithModalProps>
 ): React.ComponentType<Props> {
     @observer
     class NewComponent extends React.Component<WithModalProps & Props> {
@@ -44,7 +44,7 @@ export default function withModal<Props>(
 
         @action.bound showModal(
             Template: React.ComponentType,
-            options: { width?: number } = {},
+            options: { width?: number } = {}
         ) {
             this.promise = new Promise((resolve, reject) => {
                 this.resolve = resolve;

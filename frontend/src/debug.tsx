@@ -1,4 +1,4 @@
-import isDetached from "util/isDetached";
+import isDetached from "src/libs/util/isDetached";
 
 const outlines = new Map();
 
@@ -6,7 +6,7 @@ setInterval(renderDebugged, 1000);
 
 function renderDebugged() {
     const matchingElements = Array.from(
-        document.querySelectorAll("[data-debug]"),
+        document.querySelectorAll("[data-debug]")
     );
 
     for (const element of matchingElements) {

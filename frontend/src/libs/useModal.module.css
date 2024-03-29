@@ -1,0 +1,5 @@
+.dialog {
+    border: none;
+    position: fixed;
+    inset: 0;
+}

@@ -1,5 +1,5 @@
 import styled, { css } from "styled-components";
-import * as theme from "theme";
+import * as theme from "src/libs/theme";
 
 export default styled.button<{ $danger?: boolean; $gray?: boolean }>`
     background-color: ${theme.ui1};
@@ -31,9 +31,7 @@ export default styled.button<{ $danger?: boolean; $gray?: boolean }>`
                 color: black;
             `;
         return css`
-            transition:
-                background-color 0.3s,
-                box-shadow 0.3s;
+            transition: background-color 0.3s, box-shadow 0.3s;
 
             :hover {
                 background-color: ${theme.ui2};

@@ -1,17 +1,17 @@
+import withEvents, { WithEventsProps } from "src/libs/util/withEvents";
+import withConfirm, { WithConfirmProps } from "src/libs/withConfirm";
 import { action, observable, computed, runInAction } from "mobx";
-import withEvents, { WithEventsProps } from "util/withEvents";
-import withConfirm, { WithConfirmProps } from "withConfirm";
+import withMenu, { WithMenuProps } from "src/libs/withMenu";
+import someParent from "src/libs/util/someParent";
 import styled, { css } from "styled-components";
-import someParent from "util/someParent";
+import * as zIndexes from "src/libs/zIndexes";
+import Button from "src/libs/ui/Button";
+import * as theme from "src/libs/theme";
 import { elementToDeck } from "./Deck";
 import { Portal } from "react-portal";
 import { observer } from "mobx-react";
-import * as zIndexes from "zIndexes";
-import withMenu, { WithMenuProps } from "withMenu";
-import Button from "ui/Button";
-import * as theme from "theme";
+import api from "src/libs/api";
 import React from "react";
-import api from "api";
 
 export const elementToCard = observable.map();
 
@@ -29,7 +29,10 @@ export type OwnProps = {
     className: string;
 };
 
-export type CardProps = WithConfirmProps & WithEventsProps & WithMenuProps & OwnProps;
+export type CardProps = WithConfirmProps &
+    WithEventsProps &
+    WithMenuProps &
+    OwnProps;
 
 @observer
 class Card extends React.Component<CardProps> {
@@ -122,7 +125,7 @@ class Card extends React.Component<CardProps> {
                 this.clientY =
                 this.initialClientX =
                 this.initialClientY =
-                0;
+                    0;
         });
     }
 
@@ -172,11 +175,14 @@ class Card extends React.Component<CardProps> {
     template() {
         return (
             <div style={{ position: "relative" }}>
-                <MenuIcon ref={(e) => (this.removeElement = e)} onClick={e => {
-                    this.props.showMenu(e, {
-                        Delete: e => this.remove(e),
-                    });
-                }}>
+                <MenuIcon
+                    ref={(e) => (this.removeElement = e)}
+                    onClick={(e) => {
+                        this.props.showMenu(e, {
+                            Delete: (e) => this.remove(e),
+                        });
+                    }}
+                >
                     <span className="material-symbols-outlined">menu</span>
                 </MenuIcon>
                 <Container
@@ -194,8 +200,14 @@ class Card extends React.Component<CardProps> {
                     )}
                     <Title>{this.props.card.title}</Title>
                     {this.props.card.images?.length > 0 && (
-                        <Images data-count={this.props.card.images?.length ?? 0}>
-                            {this.props.card.images?.map((image: string, i: number) => <img key={i} src={image} />)}
+                        <Images
+                            data-count={this.props.card.images?.length ?? 0}
+                        >
+                            {this.props.card.images?.map(
+                                (image: string, i: number) => (
+                                    <img key={i} src={image} />
+                                )
+                            )}
                         </Images>
                     )}
                 </Container>
@@ -237,7 +249,7 @@ export default withMenu(withConfirm(withEvents(Card)));
 const OuterSpacing = styled.div`
     padding: 5px;
     padding-bottom: 0;
-`
+`;
 
 const Container = styled.div<{
     noPointer: boolean;
@@ -278,7 +290,7 @@ const Images = styled.div`
     &[data-count="1"] img {
         max-width: 100%;
     }
-`
+`;
 
 const Title = styled.div`
     white-space: pre-line;

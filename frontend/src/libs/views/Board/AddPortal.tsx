@@ -1,22 +1,22 @@
-import PortalModel, { PortalParam } from "store/Portal";
-import DeckModel, { DeckParam } from "store/Deck";
+import PortalModel, { PortalParam } from "src/libs/store/Portal";
+import DeckModel, { DeckParam } from "src/libs/store/Deck";
+import Store, { StoreContext } from "src/libs/store";
+import ModalFooter from "src/libs/ui/ModalFooter";
 import styled, { css } from "styled-components";
-import Store, { StoreContext } from "store";
+import BoardModel from "src/libs/store/Board";
+import onSelect from "src/libs/util/onSelect";
+import BoardType from "src/libs/store/Board";
+import ellipsify from "src/libs/ellipsify";
 import { observable, action } from "mobx";
-import ModalFooter from "ui/ModalFooter";
+import Board from "src/libs/store/Board";
 import React, { FormEvent } from "react";
+import Button from "src/libs/ui/Button";
+import * as theme from "src/libs/theme";
+import Deck from "src/libs/store/Deck";
 import { observer } from "mobx-react";
-import BoardModel from "store/Board";
-import onSelect from "util/onSelect";
-import BoardType from "store/Board";
-import ellipsify from "ellipsify";
-import Board from "store/Board";
-import Button from "ui/Button";
-import * as theme from "theme";
-import Deck from "store/Deck";
-import Input from "ui/Input";
-import Help from "ui/Help";
-import api from "api";
+import Input from "src/libs/ui/Input";
+import Help from "src/libs/ui/Help";
+import api from "src/libs/api";
 
 type Props = {
     board: BoardType;
@@ -47,7 +47,7 @@ class AddPortal extends React.Component<Props> {
                     }),
                     ...board,
                 });
-            }),
+            })
         );
     }
 

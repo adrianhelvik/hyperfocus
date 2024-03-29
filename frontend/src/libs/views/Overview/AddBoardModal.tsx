@@ -1,13 +1,13 @@
 import React, { ChangeEvent, FormEvent } from "react";
-import Store, { StoreContext } from "store";
+import Store, { StoreContext } from "src/libs/store";
+import ModalFooter from "src/libs/ui/ModalFooter";
 import { observable, action } from "mobx";
-import ModalFooter from "ui/ModalFooter";
+import Board from "src/libs/store/Board";
+import Button from "src/libs/ui/Button";
 import styled from "styled-components";
 import { observer } from "mobx-react";
-import Board from "store/Board";
-import Button from "ui/Button";
-import Input from "ui/Input";
-import Modal from "ui/Modal";
+import Input from "src/libs/ui/Input";
+import Modal from "src/libs/ui/Modal";
 
 @observer
 class AddBoardModal extends React.Component {

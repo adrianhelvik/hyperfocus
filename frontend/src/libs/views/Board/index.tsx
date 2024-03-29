@@ -1,3 +1,3 @@
 import BoardView from "./BoardView";
 
-export default BoardView
+export default BoardView;

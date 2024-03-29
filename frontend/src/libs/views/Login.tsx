@@ -1,13 +1,13 @@
 import { FormEvent, useEffect, useState } from "react";
 import { Redirect } from "react-router-dom";
 import { useAuth } from "../authContext";
+import * as theme from "src/libs/theme";
+import Button from "src/libs/ui/Button";
 import styled from "styled-components";
 import { observer } from "mobx-react";
-import * as theme from "theme";
-import Button from "ui/Button";
-import Input from "ui/Input";
+import Input from "src/libs/ui/Input";
+import sleep from "src/libs/sleep";
 import React from "react";
-import sleep from "sleep";
 
 const RedirectAny = Redirect as any as React.FC<{ to: string }>;
 

@@ -1,5 +1,5 @@
+import Store, { StoreContext } from "src/libs/store";
 import { observer, Provider } from "mobx-react";
-import Store, { StoreContext } from "store";
 import { observable } from "mobx";
 import Routes from "./Routes";
 import React from "react";
