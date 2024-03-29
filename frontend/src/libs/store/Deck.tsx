@@ -23,7 +23,7 @@ class Deck {
     deckId: string;
     initialFocus?: boolean;
 
-    type?: "deck" = "deck";
+    type? = "deck" as const;
     referencedByPortal: boolean;
     boardTitle: string;
     portals: Portal[];

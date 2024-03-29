@@ -1,6 +1,6 @@
 import styled, { keyframes, css } from "styled-components";
+import React, { useEffect, useState } from "react";
 import * as zIndexes from "../zIndexes";
-import React from "react";
 
 type Props = {
     transparent?: boolean;
@@ -9,9 +9,9 @@ type Props = {
 };
 
 const Backdrop: React.FC<Props> = ({ hide, transparent, children }) => {
-    const [container, setContainer] = React.useState<Element>();
+    const [container, setContainer] = useState<Element>();
 
-    React.useEffect(() => {
+    useEffect(() => {
         const onKeyDown = (event: KeyboardEvent) => {
             if (event.which === 27) hide(event);
         };
@@ -19,7 +19,7 @@ const Backdrop: React.FC<Props> = ({ hide, transparent, children }) => {
         return () => {
             document.removeEventListener("keydown", onKeyDown);
         };
-    }, []);
+    }, [hide]);
 
     const onContainerClick = (event: MouseEvent) => {
         if (event.target === container && typeof hide === "function")

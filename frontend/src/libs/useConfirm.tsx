@@ -21,7 +21,7 @@ export type Confirm = {
     ) => Promise<boolean>;
 };
 
-export default function withConfirm(): Confirm {
+export default function useConfirm(): Confirm {
     const confirm = useCallback(() => {
         return Promise.resolve(false);
     }, []);

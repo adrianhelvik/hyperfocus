@@ -40,7 +40,7 @@ export default observer(function BoardView() {
 
     useEffect(() => {
         loadBoard({ store, boardId, history, setLoading });
-    }, [store, boardId]);
+    }, [store, boardId, history]);
 
     if (loading) {
         return <Loading />;

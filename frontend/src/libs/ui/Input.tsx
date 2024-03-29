@@ -24,7 +24,7 @@ export default function Input(props: Props) {
     const type = useMemo(() => {
         if (showPassword) return "text";
         return props.type;
-    }, [props.type]);
+    }, [showPassword, props.type]);
 
     useEffect(() => {
         if (!props.autoFocus) return;
@@ -44,14 +44,15 @@ export default function Input(props: Props) {
         };
     }, [showPassword]);
 
+    const _innerRef = props.innerRef;
     const innerRef = useCallback(
         (element: HTMLInputElement) => {
-            if (typeof props.innerRef === "function") {
-                props.innerRef(element);
+            if (typeof _innerRef === "function") {
+                _innerRef(element);
             }
             setElement(element);
         },
-        [props.innerRef]
+        [_innerRef]
     );
 
     const show = useCallback(() => {

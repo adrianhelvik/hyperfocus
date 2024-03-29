@@ -32,7 +32,7 @@ export default withMenu(function Overview(props: Props) {
 
     React.useEffect(() => {
         auth.authenticate();
-    }, []);
+    }, [auth]);
 
     if (auth.status === "failure") {
         return <RedirectAny to="/" />;

@@ -20,13 +20,13 @@ export default function BoardList() {
         api.ownBoards().then(({ boards }) => {
             store.setBoards(boards.map((b) => new Board(b)));
         });
-    }, []);
+    }, [store]);
 
     React.useEffect(() => {
         api.ownProjects().then(({ projects }) => {
             store.setProjects(projects);
         });
-    }, []);
+    }, [store]);
 
     if (!store) return null;
 

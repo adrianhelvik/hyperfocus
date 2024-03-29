@@ -33,7 +33,9 @@ export default class App extends React.Component {
             return <div>{this.unhandledRejection.stack}</div>;
         return (
             <StoreContext.Provider value={this.store}>
-                <Provider store={this.store} children={<components.Routes />} />
+                <Provider store={this.store}>
+                    <components.Routes />
+                </Provider>
             </StoreContext.Provider>
         );
     }

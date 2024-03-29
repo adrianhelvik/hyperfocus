@@ -65,7 +65,7 @@ const Container = styled.div<{ $color: string }>`
     z-index: ${zIndexes.header};
 `;
 
-const Logo = ({ pageColor }) => (
+const Logo = ({ pageColor }: { pageColor: string }) => (
     <Logo.Container>
         <Logo.Text1 $pageColor={pageColor}>
             task

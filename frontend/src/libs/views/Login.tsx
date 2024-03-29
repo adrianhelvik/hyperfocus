@@ -38,7 +38,7 @@ export default observer(function Login() {
 
     useEffect(() => {
         auth.authenticate();
-    }, []);
+    }, [auth]);
 
     if (auth.status === "success") return <RedirectAny to="/app" />;
 

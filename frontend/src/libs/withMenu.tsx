@@ -14,7 +14,7 @@ const PortalAny = Portal as any;
 export type WithMenuProps = {
     showMenu: (
         event: React.MouseEvent,
-        options: Record<string, Function>
+        options: Record<string, (e: { target: HTMLElement }) => void>
     ) => void;
 };
 
@@ -53,7 +53,7 @@ export default function withMenu<Props>(
 
         showMenu = (
             event: { clientX: number; clientY: number },
-            options: Record<string, Function>
+            options: Record<string, (e: { target: HTMLElement }) => void>
         ) => {
             clearTimeout(this.showMenuTimeout);
             this.showMenuTimeout = setTimeout(() => {
