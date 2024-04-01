@@ -35,7 +35,6 @@ export default function withMenu<Props>(
         showMenuTimeout?: ReturnType<typeof setTimeout>;
 
         componentDidMount() {
-            console.log("withMenu.componentDidMount props:", this.props);
             this.props.on(document, "click", (event) => {
                 if (this.menu) {
                     console.log("menu:", this.menu, "target:", event.target);

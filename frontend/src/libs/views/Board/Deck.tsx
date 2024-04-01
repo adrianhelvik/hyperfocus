@@ -20,6 +20,7 @@ import api from "src/libs/api";
 import Color from "color";
 import Card from "./Card";
 import EditDeckTitle from "./EditDeckTitle";
+import DragItems from "./DragItems";
 
 // XXX: The library uses a different version of @types/react
 const ColorPickerAny = ColorPicker as any;
@@ -110,7 +111,7 @@ class Deck extends React.Component<Props> {
         if (
             event.target.tagName === "INPUT" ||
             event.target.tagName === "BUTTON" ||
-            event.target.dataset.disableDrag ||
+            someParent(event.target, (e) => e.dataset.disableDrag) ||
             event.button === 2
         )
             return;
@@ -280,7 +281,6 @@ class Deck extends React.Component<Props> {
     };
 
     openMenu = (event: any) => {
-        console.log("Opening menu...");
         this.props.showMenu(event, {
             Delete: () => {
                 this.props.delete();
@@ -355,41 +355,27 @@ class Deck extends React.Component<Props> {
                     <MenuIcon onClick={this.openMenu} />
                 </TopBar>
                 <Body>
-                    {this.props.deck.cards.map((card, index) => (
-                        <StyledCard
-                            key={card.cardId}
-                            moving={Boolean(
-                                this.moving ||
-                                    this.movingChild ||
-                                    sharedState.moving.length
-                            )}
-                            placeholderWidth={this.placeholderWidth}
-                            placeholderHeight={this.placeholderHeight}
-                            getLastHoverIndex={this.getLastHoverIndex}
-                            setHoverIndex={this.setHoverIndex}
-                            hoverIndex={this.hoverIndex}
-                            setMoving={this.setMoving}
-                            deck={this.props.deck}
-                            index={index}
-                            card={card}
-                        />
-                    ))}
-                    {Boolean(
-                        sharedState.moving.length &&
-                            this.hoverIndex === this.props.deck.cards.length
-                    ) && (
-                        <div
-                            data-card-placeholder={this.props.deck.cards.length}
-                            style={{
-                                width:
-                                    this.placeholderWidth ||
-                                    sharedState.moving[0].placeholderWidth,
-                                height:
-                                    this.placeholderHeight ||
-                                    sharedState.moving[0].placeholderHeight,
-                            }}
-                        />
-                    )}
+                    <DragItems>
+                        {this.props.deck.cards.map((card, index) => (
+                            <StyledCard
+                                key={card.cardId}
+                                moving={Boolean(
+                                    this.moving ||
+                                        this.movingChild ||
+                                        sharedState.moving.length
+                                )}
+                                placeholderWidth={this.placeholderWidth}
+                                placeholderHeight={this.placeholderHeight}
+                                getLastHoverIndex={this.getLastHoverIndex}
+                                setHoverIndex={this.setHoverIndex}
+                                hoverIndex={this.hoverIndex}
+                                setMoving={this.setMoving}
+                                deck={this.props.deck}
+                                index={index}
+                                card={card}
+                            />
+                        ))}
+                    </DragItems>
                 </Body>
                 <AddCardInput
                     deck={this.props.deck}

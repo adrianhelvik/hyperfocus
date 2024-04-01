@@ -35,7 +35,9 @@ module.exports = {
     ],
     "rules": {
         "@typescript-eslint/no-explicit-any": "off",
-        "no-var": "off"
+        "no-var": "off",
+        "@typescript-eslint/no-unused-vars": "off",
+        "@typescript-eslint/ban-types": "warn"
     },
     "settings": {
         "react": {

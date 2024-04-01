@@ -16,6 +16,7 @@ import AddCircle from "./AddCircle";
 import loadBoard from "./loadBoard";
 import AddDeck from "./AddDeck";
 import useModal from "src/libs/useModal";
+import DragContainer from "./DragContainer";
 
 // TODO: Fix typings
 const Redirect = RedirectOriginal as any;
@@ -62,7 +63,9 @@ export default observer(function BoardView() {
                         <Title>{store.board.title}</Title>
                     </Breadcrumbs>
                 </Header>
-                <DecksList />
+                <DragContainer>
+                    <DecksList />
+                </DragContainer>
                 <AddCircle>
                     <AddItem onClick={addDeck}>
                         <AddItemText>Add Deck</AddItemText>
