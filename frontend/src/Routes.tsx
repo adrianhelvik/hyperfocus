@@ -7,6 +7,7 @@ import NotFound from "src/libs/views/NotFound";
 import Board from "src/libs/views/Board";
 import Login from "src/libs/views/Login";
 import Reactions from "./Reactions";
+import BoardV2 from "./libs/views/BoardV2";
 
 const RouterAny = Router as any;
 const SwitchAny = Switch as any;
@@ -25,6 +26,11 @@ export default function Routes() {
                             exact
                             path="/board/:boardId"
                             component={Board}
+                        />
+                        <RouteAny
+                            exact
+                            path="/board-v2/:boardId"
+                            component={BoardV2}
                         />
                         <RouteAny exact path="/register" component={Register} />
                         <RouteAny path="*" component={NotFound} />

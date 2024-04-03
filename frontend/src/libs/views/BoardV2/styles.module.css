@@ -1,0 +1,65 @@
+.body {
+    background-color: #ddd;
+}
+
+.board {
+    display: flex;
+    width: 100vw;
+    gap: 10px;
+    margin: 20px;
+}
+
+.deck {
+    border: 1px solid #ddd;
+    background-color: var(--deck-color, #aaa);
+    border-radius: 4px;
+    flex-shrink: 0;
+    width: 350px;
+    height: fit-content;
+    gap: 5px;
+    display: flex;
+    flex-direction: column;
+    padding: 5px;
+
+    & h2 {
+        margin: 0;
+        font-size: 18px;
+        padding: 5px;
+        font-weight: normal;
+    }
+}
+
+.card {
+    background-color: transparent;
+    cursor: move;
+
+    & .cardContent {
+        border-radius: 4px;
+        background-color: white;
+        box-shadow: var(--shadows-0);
+        padding: 10px;
+
+        transition: box-shadow 300ms;
+
+        .movingCard & {
+            box-shadow: var(--shadows-2);
+        }
+
+        &::after {
+            /* nbsp */
+            content: "\00a0\00a0";
+        }
+    }
+}
+
+.cardPlaceholder {
+    background-color: #eee;
+}
+
+.card,
+.cardPlaceholder {
+    margin-bottom: -1px;
+    margin-left: -1px;
+    margin-right: -1px;
+    border-radius: 4px;
+}

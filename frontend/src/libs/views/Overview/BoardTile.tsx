@@ -118,7 +118,12 @@ export default withModal(
     withConfirm(withStatus(withMenu(withRouterAny(BoardTile))))
 );
 
-const Container = styled.div<{ $color: string }>`
+const Container = styled.button.attrs({
+    type: "button",
+}) <{ $color: string }>`
+    all: unset;
+    outline: revert;
+
     cursor: pointer;
     padding: 10px;
     background: ${(p) => p.$color};
