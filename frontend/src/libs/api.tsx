@@ -26,7 +26,6 @@ type Api = {
     deleteCard(payload: { cardId: string }): Promise<void>;
     moveCard(payload: {
         cardId: string;
-        source: any;
         target: any;
         index: number;
     }): unknown;

@@ -88,7 +88,6 @@ export default class BoardView {
 
                         api.moveCard({
                             cardId: cardNode.dataset.cardId,
-                            source: deckNode.dataset.deckId,
                             target: hoverDeck.dataset.deckId,
                             index,
                         });

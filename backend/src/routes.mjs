@@ -219,25 +219,22 @@ export const moveCardRoute = {
   method: 'POST',
   path: '/moveCard',
   /**
-   * @param {{ payload: { cardId: string, source: string, target: string, index: number }, headers: { authorization: string } }} request
+   * @param {{ payload: { cardId: string, target: string, index: number }, headers: { authorization: string } }} request
    * @returns {Promise<{ success: boolean }>}
    */
   async handler(request) {
-    const { cardId, source, target, index } = request.payload
+    const { cardId, target, index } = request.payload
 
-    requireString({ cardId, source, target })
+    requireString({ cardId, target })
     requireInteger({ index })
 
     const card = await getCard(cardId)
 
     if (!card) throw Boom.notFound('The card does not exist')
 
-    if (card.deckId !== source)
-      throw Boom.badRequest('Card did not belong to the source deck')
-
     await assertCanEditBoard(request, card.boardId)
 
-    await moveCard({ cardId, source, target, index })
+    await moveCard({ cardId, target, index })
 
     return { success: true }
   },
