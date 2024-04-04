@@ -52,13 +52,7 @@ class AddCardInput extends React.Component<Props> {
             return;
         }
 
-        const {
-            title,
-            props: {
-                deck: { deckId },
-            },
-            images,
-        } = this;
+        const { title, props: { deck: { deckId } }, images } = this;
 
         this.title = "";
         this.images = [];
@@ -68,7 +62,9 @@ class AddCardInput extends React.Component<Props> {
             deckId,
         });
 
-        const imageUrls = images ? await addCardImages(cardId, images) : [];
+        const imageUrls = images
+            ? await addCardImages(cardId, images)
+            : [];
 
         const card = new Card(title, cardId, imageUrls);
 
@@ -178,9 +174,9 @@ class AddCardInput extends React.Component<Props> {
                             this.props.isPortal
                                 ? theme.secondary1
                                 : this.props.referencedByPortal
-                                ? theme.tertiary1
-                                : this.props.deck.color ||
-                                  theme.defaultDeckColor
+                                    ? theme.tertiary1
+                                    : this.props.deck.color ||
+                                    theme.defaultDeckColor
                         }
                     >
                         <Icon className="material-icons">image</Icon>
@@ -192,9 +188,9 @@ class AddCardInput extends React.Component<Props> {
                             this.props.isPortal
                                 ? theme.secondary1
                                 : this.props.referencedByPortal
-                                ? theme.tertiary1
-                                : this.props.deck.color ||
-                                  theme.defaultDeckColor
+                                    ? theme.tertiary1
+                                    : this.props.deck.color ||
+                                    theme.defaultDeckColor
                         }
                     >
                         Add

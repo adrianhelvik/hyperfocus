@@ -12,7 +12,6 @@ import { Portal } from "react-portal";
 import { observer } from "mobx-react";
 import api from "src/libs/api";
 import React from "react";
-import Draggable from "./Draggable";
 
 export const elementToCard = observable.map();
 
@@ -190,6 +189,7 @@ class Card extends React.Component<CardProps> {
                     data-card={this.props.index}
                     ref={(e) => (this.element = e)}
                     className={this.props.className}
+                    onMouseDown={this.onMouseDown}
                     noPointer={this.noPointer}
                     index={this.props.index}
                     moving={this.moving}
@@ -215,50 +215,31 @@ class Card extends React.Component<CardProps> {
         );
     }
 
-    onDrop = (event: MouseEvent) => {
-        this.props.setMoving(false);
-        const { clientX, clientY } = event;
-        const target = document.elementFromPoint(clientX, clientY);
-        this.noPointer = false;
+    placeholder() {
+        if (!this.props.moving) return null;
 
-        this.props.setHoverIndex(null);
-        const element = someParent(target, (e) => {
-            return elementToDeck.has(e);
-        });
-        const otherDeckComponent = elementToDeck.get(element);
-
-        if (otherDeckComponent) {
-            const otherDeck = otherDeckComponent.props.deck;
-            const index = this.props.getLastHoverIndex();
-            const card = this.props.card;
-
-            api.moveCard({
-                cardId: card.cardId,
-                source: this.props.deck.deckId,
-                target: otherDeck.deckId,
-                index,
-            });
-
-            runInAction(() => {
-                this.props.deck.removeCard(this.props.card);
-                otherDeck.addCard(this.props.card, index);
-            });
-        }
-
-        this.props.off(document, "mousemove");
-        this.props.off(document, "mouseup");
-        this.clientX =
-            this.clientY =
-            this.initialClientX =
-            this.initialClientY =
-                0;
-    };
+        return (
+            <div
+                data-card-placeholder={this.props.index}
+                style={{
+                    width: this.props.placeholderWidth,
+                    height: this.props.placeholderHeight,
+                }}
+            />
+        );
+    }
 
     render() {
+        const Wrapper = this.moving
+            ? /* incorrect types in library */ (Portal as any)
+            : React.Fragment;
+
         return (
-            <Draggable targetId={this.props.card.cardId} onDrop={this.onDrop}>
-                <OuterSpacing>{this.template()}</OuterSpacing>
-            </Draggable>
+            <OuterSpacing>
+                {this.props.hoverIndex === this.props.index &&
+                    this.placeholder()}
+                <Wrapper>{this.template()}</Wrapper>
+            </OuterSpacing>
         );
     }
 }

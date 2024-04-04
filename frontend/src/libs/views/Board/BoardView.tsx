@@ -16,7 +16,6 @@ import AddCircle from "./AddCircle";
 import loadBoard from "./loadBoard";
 import AddDeck from "./AddDeck";
 import useModal from "src/libs/useModal";
-import DragContainer from "./DragContainer";
 
 // TODO: Fix typings
 const Redirect = RedirectOriginal as any;
@@ -41,7 +40,7 @@ export default observer(function BoardView() {
 
     useEffect(() => {
         loadBoard({ store, boardId, history, setLoading });
-    }, [store, boardId, history]);
+    }, [store, boardId]);
 
     if (loading) {
         return <Loading />;
@@ -63,9 +62,7 @@ export default observer(function BoardView() {
                         <Title>{store.board.title}</Title>
                     </Breadcrumbs>
                 </Header>
-                <DragContainer>
-                    <DecksList />
-                </DragContainer>
+                <DecksList />
                 <AddCircle>
                     <AddItem onClick={addDeck}>
                         <AddItemText>Add Deck</AddItemText>
