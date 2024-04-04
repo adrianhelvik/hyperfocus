@@ -25,12 +25,12 @@ export default function Routes() {
                         <RouteAny
                             exact
                             path="/board/:boardId"
-                            component={Board}
+                            component={BoardV2}
                         />
                         <RouteAny
                             exact
-                            path="/board-v2/:boardId"
-                            component={BoardV2}
+                            path="/board-v1/:boardId"
+                            component={Board}
                         />
                         <RouteAny exact path="/register" component={Register} />
                         <RouteAny path="*" component={NotFound} />

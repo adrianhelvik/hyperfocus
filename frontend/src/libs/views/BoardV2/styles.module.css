@@ -1,17 +1,27 @@
 .body {
     background-color: #ddd;
+    display: flex;
+}
+
+.boardView {
+    height: 100dvh;
+    display: flex;
+    flex-direction: column;
 }
 
 .board {
     display: flex;
     width: 100vw;
     gap: 10px;
-    margin: 20px;
+    padding: 20px;
+    overflow-x: auto;
+    flex-grow: 1;
 }
 
 .deck {
     border: 1px solid #ddd;
     background-color: var(--deck-color, #aaa);
+    color: var(--deck-text-color, black);
     border-radius: 4px;
     flex-shrink: 0;
     width: 350px;

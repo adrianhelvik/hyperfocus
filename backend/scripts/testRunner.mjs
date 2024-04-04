@@ -1,4 +1,4 @@
-import sleep from 'sleep-promise'
+import { setTimeout as sleep } from 'node:timers/promises'
 import { v4 as uuid } from 'uuid'
 import clear from './clear.mjs'
 import chalk from 'chalk'
