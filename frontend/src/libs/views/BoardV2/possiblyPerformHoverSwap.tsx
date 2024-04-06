@@ -1,11 +1,18 @@
-import { middleOfElement } from "./domUtils";
-import { findCardAt } from "./createBoardView";
+import { middleOfElement, findCardAt } from "./domUtils";
 
+/**
+ * Determine if the placeholder should be moved to the hovered position
+ */
 export function possiblyPerformHoverSwap({
-    hoverDeck, event, insetY, cardHeight, cardElement, placeholderNode,
+    hoverDeck,
+    clientY,
+    insetY,
+    cardHeight,
+    cardElement,
+    placeholderNode,
 }: {
     hoverDeck: HTMLElement;
-    event: MouseEvent;
+    clientY: number;
     insetY: number;
     cardHeight: number;
     cardElement: HTMLElement;
@@ -13,12 +20,14 @@ export function possiblyPerformHoverSwap({
 }) {
     if (!hoverDeck) return;
     const {
-        bottom: deckBottom, left: deckLeft, width: deckWidth,
+        bottom: deckBottom,
+        left: deckLeft,
+        width: deckWidth,
     } = hoverDeck.getBoundingClientRect();
     const deckCenter = (deckLeft + deckWidth / 2) | 0;
 
-    const topY = event.clientY - insetY;
-    const bottomY = event.clientY - insetY + cardHeight;
+    const topY = clientY - insetY;
+    const bottomY = clientY - insetY + cardHeight;
 
     const cardElementUnderTopEdge = findCardAt(deckCenter, topY, cardElement);
     const cardElementUnderBottomEdge = findCardAt(
@@ -27,20 +36,27 @@ export function possiblyPerformHoverSwap({
         cardElement
     );
 
-    if (cardElementUnderTopEdge &&
-        event.clientY - insetY <= middleOfElement(cardElementUnderTopEdge)) {
+    if (
+        cardElementUnderTopEdge &&
+        clientY - insetY <= middleOfElement(cardElementUnderTopEdge)
+    ) {
         cardElementUnderTopEdge.parentNode.insertBefore(
             placeholderNode,
             cardElementUnderTopEdge
         );
-    } else if (cardElementUnderBottomEdge &&
-        event.clientY - insetY + cardHeight >= middleOfElement(cardElementUnderBottomEdge)) {
+    } else if (
+        cardElementUnderBottomEdge &&
+        clientY - insetY + cardHeight >=
+            middleOfElement(cardElementUnderBottomEdge)
+    ) {
         cardElementUnderBottomEdge.parentNode.insertBefore(
             placeholderNode,
             cardElementUnderBottomEdge
         );
-    } else if (!cardElementUnderBottomEdge &&
-        event.clientY - insetY + cardHeight >= deckBottom) {
+    } else if (
+        !cardElementUnderBottomEdge &&
+        clientY - insetY + cardHeight >= deckBottom
+    ) {
         hoverDeck.append(placeholderNode);
     }
 }

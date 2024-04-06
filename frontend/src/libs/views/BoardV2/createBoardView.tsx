@@ -28,19 +28,6 @@ function findClosestDeck(deckElements: HTMLElement[], x: number) {
     return deckElements[deckElements.length - 1] ?? null;
 }
 
-export function findCardAt(
-    x: number,
-    y: number,
-    excludedCardNode: HTMLElement
-): HTMLElement {
-    return Array.from(document.elementsFromPoint(x, y)).find(
-        (e) =>
-            e instanceof HTMLElement &&
-            !excludedCardNode.contains(e) &&
-            e.dataset.cardId
-    ) as HTMLElement;
-}
-
 function clearInterface(root: HTMLElement) {
     root.innerHTML = "";
     root.classList.remove(classes.board);
@@ -123,7 +110,13 @@ function buildCardForDeck({
 
         cardElement.classList.add(classes.movingCard);
 
-        styleMovedCard({ event, cardElement, insetX, insetY });
+        styleMovedCard({
+            clientX: event.clientX,
+            clientY: event.clientY,
+            cardElement,
+            insetX,
+            insetY,
+        });
 
         cardElement.replaceWith(placeholderNode);
         document.body.appendChild(cardElement);
@@ -155,12 +148,12 @@ function buildCardForDeck({
             document.removeEventListener("mousemove", onMouseMove);
         };
 
-        const onMouseMove = (event: MouseEvent) => {
-            styleMovedCard({ event, cardElement, insetX, insetY });
+        const onMouseMove = ({ clientX, clientY }: MouseEvent) => {
+            styleMovedCard({ clientX, clientY, cardElement, insetX, insetY });
             hoverDeck = findClosestDeck(deckElements, event.clientX);
             possiblyPerformHoverSwap({
                 hoverDeck,
-                event,
+                clientY,
                 insetY,
                 cardHeight,
                 cardElement,

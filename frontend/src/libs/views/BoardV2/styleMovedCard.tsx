@@ -1,5 +1,6 @@
 export function styleMovedCard(opts: {
-    event: MouseEvent;
+    clientX: number;
+    clientY: number;
     cardElement: HTMLElement;
     insetX: number;
     insetY: number;
@@ -9,9 +10,8 @@ export function styleMovedCard(opts: {
         top: 0,
         left: 0,
         transform: [
-            `translateX(${opts.event.clientX - opts.insetX}px)`,
-            `translateY(${opts.event.clientY - opts.insetY}px)`,
+            `translateX(${opts.clientX - opts.insetX}px)`,
+            `translateY(${opts.clientY - opts.insetY}px)`,
         ].join(" "),
     });
 }
-
