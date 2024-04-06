@@ -21,7 +21,6 @@
 .deck {
     border: 1px solid #ddd;
     background-color: var(--deck-color, #aaa);
-    color: var(--deck-text-color, black);
     border-radius: 4px;
     flex-shrink: 0;
     width: 350px;
@@ -32,6 +31,7 @@
     padding: 5px;
 
     & h2 {
+        color: var(--deck-text-color, black);
         margin: 0;
         font-size: 18px;
         padding: 5px;

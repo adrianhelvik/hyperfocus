@@ -24,11 +24,7 @@ type Api = {
     setDeckTitle(payload: { deckId: string; title: string }): Promise<void>;
     setPortalTitle(payload: { portalId: string; title: string }): Promise<void>;
     deleteCard(payload: { cardId: string }): Promise<void>;
-    moveCard(payload: {
-        cardId: string;
-        target: any;
-        index: number;
-    }): unknown;
+    moveCard(payload: { cardId: string; target: any; index: number }): unknown;
     addDeck(payload: {
         boardId: string;
         title: string;

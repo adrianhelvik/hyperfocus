@@ -120,7 +120,7 @@ export default withModal(
 
 const Container = styled.button.attrs({
     type: "button",
-}) <{ $color: string }>`
+})<{ $color: string }>`
     all: unset;
     outline: revert;
 

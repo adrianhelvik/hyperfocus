@@ -26,7 +26,7 @@ import {
     Redirect,
 } from "react-router-dom";
 
-const withRouterAny = withRouter as any as (<T>(Component: T) => T);
+const withRouterAny = withRouter as any as <T>(Component: T) => T;
 
 // XXX: Broken 3rd party types
 const RedirectAny = Redirect as any;
@@ -76,7 +76,7 @@ class Board extends React.Component<Props> {
                         return new PortalModel({
                             ...(child as PortalParam),
                             target: new DeckModel(
-                                (child as PortalModel).target as DeckParam,
+                                (child as PortalModel).target as DeckParam
                             ),
                         });
                     throw Error("Invalid child type");
@@ -124,7 +124,7 @@ class Board extends React.Component<Props> {
             (props) => (
                 <AddPortal {...props} board={this.board} index={index} />
             ),
-            { width: 700 },
+            { width: 700 }
         );
     };
 
@@ -147,7 +147,7 @@ class Board extends React.Component<Props> {
     addPortal = async () => {
         await this.props.showModal(
             (props) => <AddPortal {...props} board={this.board} />,
-            { width: 700 },
+            { width: 700 }
         );
     };
 
@@ -298,7 +298,7 @@ class Board extends React.Component<Props> {
                                                             Keep
                                                         </button>
                                                     </div>
-                                                ),
+                                                )
                                             );
                                         if (!confirmed) return;
                                         api.deletePortal({
@@ -332,7 +332,7 @@ class Board extends React.Component<Props> {
                                                     Keep
                                                 </button>
                                             </div>
-                                        ),
+                                        )
                                     );
                                     if (!confirmed) return;
                                     api.deleteDeck({ deckId: child.deckId });
