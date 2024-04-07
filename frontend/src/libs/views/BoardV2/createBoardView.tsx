@@ -7,6 +7,7 @@ import { BoardParam } from "src/libs/store/Board";
 import Card from "src/libs/store/Card";
 import { styleMovedCard } from "./styleMovedCard";
 import { possiblyPerformHoverSwap } from "./possiblyPerformHoverSwap";
+import { horizontalMiddle } from "./domUtils";
 
 export default function createBoardView(opts: {
     root: HTMLElement;
@@ -61,6 +62,7 @@ async function buildInterface(root: HTMLElement, board: BoardParam) {
 
         for (const card of deck?.cards ?? []) {
             buildCardForDeck({
+                root,
                 card,
                 deckElement,
                 deckElements,
@@ -72,10 +74,12 @@ async function buildInterface(root: HTMLElement, board: BoardParam) {
 }
 
 function buildCardForDeck({
+    root,
     card,
     deckElement,
     deckElements,
 }: {
+    root: HTMLElement,
     card: Card;
     deckElement: HTMLElement;
     deckElements: HTMLElement[];
@@ -97,6 +101,8 @@ function buildCardForDeck({
 
     cardElement.addEventListener("mousedown", (event) => {
         event.preventDefault();
+        root.classList.add(classes.isMovingCard);
+        cardElement.parentElement.classList.add(classes.hoverDeck);
 
         const {
             top,
@@ -133,6 +139,7 @@ function buildCardForDeck({
             cardElement.removeAttribute("style");
             placeholderNode.replaceWith(cardElement);
             cardElement.classList.remove(classes.movingCard);
+            root.classList.remove(classes.isMovingCard);
 
             const index = Array.from(hoverDeck.children)
                 .filter((e: HTMLElement) => e.dataset.cardId)
@@ -144,14 +151,16 @@ function buildCardForDeck({
                 index,
             });
 
+            deckElements.forEach(e => e.classList.remove(classes.hoverDeck));
+
             document.removeEventListener("mouseup", onMouseUp);
             document.removeEventListener("mousemove", onMouseMove);
         };
 
         const onMouseMove = ({ clientX, clientY }: MouseEvent) => {
             styleMovedCard({ clientX, clientY, cardElement, insetX, insetY });
-            hoverDeck = findClosestDeck(deckElements, event.clientX);
-            possiblyPerformHoverSwap({
+            hoverDeck = findClosestDeck(deckElements, horizontalMiddle(cardElement))
+            const didSwap = possiblyPerformHoverSwap({
                 hoverDeck,
                 clientY,
                 insetY,
@@ -159,6 +168,11 @@ function buildCardForDeck({
                 cardElement,
                 placeholderNode,
             });
+
+            if (didSwap) {
+                deckElements.forEach(e => e.classList.remove(classes.hoverDeck));
+                hoverDeck.classList.add(classes.hoverDeck);
+            }
         };
 
         document.addEventListener("mouseup", onMouseUp);

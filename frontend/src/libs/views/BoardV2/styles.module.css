@@ -19,7 +19,6 @@
 }
 
 .deck {
-    border: 1px solid #ddd;
     background-color: var(--deck-color, #aaa);
     border-radius: 4px;
     flex-shrink: 0;
@@ -29,6 +28,10 @@
     display: flex;
     flex-direction: column;
     padding: 5px;
+
+    &.hoverDeck {
+        outline: 2px solid rgba(255, 255, 255, 0.5);
+    }
 
     & h2 {
         color: var(--deck-text-color, black);

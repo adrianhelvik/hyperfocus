@@ -1,4 +1,4 @@
-import { middleOfElement, findCardAt } from "./domUtils";
+import { verticalMiddle, findCardAt } from "./domUtils";
 
 /**
  * Determine if the placeholder should be moved to the hovered position
@@ -38,25 +38,30 @@ export function possiblyPerformHoverSwap({
 
     if (
         cardElementUnderTopEdge &&
-        clientY - insetY <= middleOfElement(cardElementUnderTopEdge)
+        clientY - insetY <= verticalMiddle(cardElementUnderTopEdge)
     ) {
         cardElementUnderTopEdge.parentNode.insertBefore(
             placeholderNode,
             cardElementUnderTopEdge
         );
+        return true;
     } else if (
         cardElementUnderBottomEdge &&
         clientY - insetY + cardHeight >=
-            middleOfElement(cardElementUnderBottomEdge)
+        verticalMiddle(cardElementUnderBottomEdge)
     ) {
         cardElementUnderBottomEdge.parentNode.insertBefore(
             placeholderNode,
-            cardElementUnderBottomEdge
+            cardElementUnderBottomEdge.nextSibling
         );
+        return true;
     } else if (
         !cardElementUnderBottomEdge &&
         clientY - insetY + cardHeight >= deckBottom
     ) {
         hoverDeck.append(placeholderNode);
+        return true;
     }
+
+    return false;
 }

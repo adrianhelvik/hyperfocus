@@ -1,6 +1,11 @@
-export function middleOfElement(element: HTMLElement): number {
+export function verticalMiddle(element: HTMLElement): number {
     const rect = element.getBoundingClientRect();
     return rect.top + rect.height / 2;
+}
+
+export function horizontalMiddle(element: HTMLElement): number {
+    const rect = element.getBoundingClientRect();
+    return rect.left + rect.width / 2;
 }
 
 export function findCardAt(
