@@ -19,11 +19,13 @@ export function possiblyPerformHoverSwap({
     placeholderNode: HTMLElement;
 }) {
     if (!hoverDeck) return;
+    const cardsContainer = hoverDeck.querySelector("[data-cards-container]")
     const {
         bottom: deckBottom,
         left: deckLeft,
         width: deckWidth,
-    } = hoverDeck.getBoundingClientRect();
+        top: deckTop,
+    } = cardsContainer.getBoundingClientRect();
     const deckCenter = (deckLeft + deckWidth / 2) | 0;
 
     const topY = clientY - insetY;
@@ -59,7 +61,11 @@ export function possiblyPerformHoverSwap({
         !cardElementUnderBottomEdge &&
         clientY - insetY + cardHeight >= deckBottom
     ) {
-        hoverDeck.append(placeholderNode);
+        cardsContainer.append(placeholderNode);
+        return true;
+    } else if (clientY - insetY < deckTop) {
+        // Above deck
+        cardsContainer.insertBefore(placeholderNode, cardsContainer.children[0]);
         return true;
     }
 

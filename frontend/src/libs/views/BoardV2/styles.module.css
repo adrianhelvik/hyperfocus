@@ -1,5 +1,5 @@
 .body {
-    background-color: #ddd;
+    background-color: rgb(26, 20, 33);
     display: flex;
 }
 
@@ -7,38 +7,43 @@
     height: 100dvh;
     display: flex;
     flex-direction: column;
+    --padding: 7px;
 }
 
 .board {
     display: flex;
     width: 100vw;
-    gap: 10px;
+    gap: 15px;
     padding: 20px;
     overflow-x: auto;
     flex-grow: 1;
 }
 
 .deck {
-    background-color: var(--deck-color, #aaa);
+    background-color: #ddd;
     border-radius: 4px;
     flex-shrink: 0;
-    width: 350px;
+    width: 300px;
     height: fit-content;
-    gap: 5px;
+    gap: var(--padding);
     display: flex;
     flex-direction: column;
-    padding: 5px;
+    transition: filter 300ms;
 
-    &.hoverDeck {
-        outline: 2px solid rgba(255, 255, 255, 0.5);
+    .isMovingCard &:not(&.hoverDeck) {
+        filter: grayscale(0.2) brightness(0.9);
     }
 
     & h2 {
+        background-color: var(--deck-color, #aaa);
         color: var(--deck-text-color, black);
         margin: 0;
-        font-size: 18px;
-        padding: 5px;
+        font-size: 16px;
+        padding: var(--padding);
         font-weight: normal;
+        border-top-left-radius: 4px;
+        border-top-right-radius: 4px;
+        padding: 10px;
     }
 }
 
@@ -66,7 +71,8 @@
 }
 
 .cardPlaceholder {
-    background-color: #eee;
+    background-color: rgba(255, 255, 255, 0.7);
+    mix-blend-mode: screen;
 }
 
 .card,
@@ -75,4 +81,37 @@
     margin-left: -1px;
     margin-right: -1px;
     border-radius: 4px;
+}
+
+.newCardContainer {
+    padding: var(--padding);
+    padding-top: 0;
+    display: grid;
+    grid-template-columns: 1fr auto;
+    gap: var(--padding);
+
+    .newCardInput {
+        border: none;
+        border-radius: 4px;
+        padding: var(--padding);
+        margin: 0;
+        box-shadow: var(--shadows-0);
+    }
+
+    .newCardButton {
+        border: none;
+        background-color: var(--deck-color);
+        color: var(--deck-text-color);
+        padding: 10px;
+        font-size: inherit;
+        border-radius: 4px;
+        box-shadow: var(--shadows-0);
+    }
+}
+
+.cardsContainer {
+    padding: 0 var(--padding);
+    display: flex;
+    flex-direction: column;
+    gap: var(--padding);
 }

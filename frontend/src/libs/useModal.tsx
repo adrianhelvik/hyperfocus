@@ -20,20 +20,30 @@ export type ModalType = {
 
 export default function useModal(): ModalType {
     const [openModal, setOpenModal] = useState<any>(null);
-    const [root] = useState(() => document.createElement("dialog"));
+    const [root, setRoot] = useState<HTMLDialogElement>();
 
     useLayoutEffect(() => {
+        const root = document.createElement("dialog");
         root.className = styles.dialog;
         document.body.append(root);
+        setRoot(root);
+        const onClose = () => setOpenModal(root.open);
+        root.addEventListener("close", onClose);
         return () => {
             root.remove();
+            root.removeEventListener("close", onClose);
         };
-    }, [root]);
+    }, []);
 
     const hasOpenModal = Boolean(openModal);
 
     useLayoutEffect(() => {
-        root.open = hasOpenModal;
+        if (!root) return;
+        if (hasOpenModal) {
+            if (!root.open) root.showModal();
+        } else if (root.open) {
+            root.close();
+        }
     }, [root, hasOpenModal]);
 
     return {

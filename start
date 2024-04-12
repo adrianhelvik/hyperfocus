@@ -4,7 +4,7 @@ port=9341
 
 (
     for i in {1..100}; do
-        if curl http://localhost:$port/index.html; then
+        if curl http://localhost:$port/index.html > /dev/null; then
             open http://localhost:$port
             break
         fi

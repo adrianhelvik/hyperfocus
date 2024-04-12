@@ -1,5 +1,5 @@
 import classes from "./styles.module.css";
-import Deck from "src/libs/store/Deck";
+import Deck, { DeckParam } from "src/libs/store/Deck";
 import api from "src/libs/api";
 import Portal from "src/libs/store/Portal";
 import Color from "color";
@@ -8,13 +8,74 @@ import Card from "src/libs/store/Card";
 import { styleMovedCard } from "./styleMovedCard";
 import { possiblyPerformHoverSwap } from "./possiblyPerformHoverSwap";
 import { horizontalMiddle } from "./domUtils";
+import animate from "./animate";
 
 export default function createBoardView(opts: {
     root: HTMLElement;
     board: BoardParam;
 }) {
-    buildInterface(opts.root, opts.board);
+    const boardView = new BoardView(opts.root, opts.board);
+    boardView.buildInterface();
     return () => clearInterface(opts.root);
+}
+
+class BoardView {
+    constructor(private root: HTMLElement, private board: BoardParam) {
+    }
+
+    async buildInterface() {
+        const deckElements = [];
+        this.root.classList.add(classes.board);
+        document.body.classList.add(classes.body);
+
+        for (const child of this.board.children) {
+            const deckElement = document.createElement("div");
+            deckElements.push(deckElement);
+            deckElement.className = classes.deck;
+
+            deckElement.append(createDeckTitleNode({
+                deckElement,
+                child
+            }));
+
+            const deck =
+                child.type === "deck"
+                    ? (child as Deck)
+                    : ((child as Portal).target as Deck);
+            if (deck.color) {
+                deckElement.style.setProperty("--deck-color", deck.color);
+                deckElement.style.setProperty(
+                    "--deck-text-color",
+                    Color(deck.color).blacken(0.7).isDark() ? "white" : "black"
+                );
+            }
+            deckElement.dataset.deckId = deck.deckId;
+
+            const cardsContainer = document.createElement("div");
+            cardsContainer.dataset.cardsContainer = deck.deckId;
+            cardsContainer.className = classes.cardsContainer;
+            deckElement.append(cardsContainer);
+
+            for (const card of deck?.cards ?? []) {
+                cardsContainer.append(
+                    buildCardForDeck({
+                        root: this.root,
+                        card,
+                        deckElement,
+                        deckElements,
+                    }));
+            }
+
+            this.root.append(deckElement);
+
+            deckElement.append(createInsertField({
+                root: this.root,
+                deckElement,
+                deckElements,
+                deck,
+            }));
+        }
+    }
 }
 
 function findClosestDeck(deckElements: HTMLElement[], x: number) {
@@ -35,42 +96,44 @@ function clearInterface(root: HTMLElement) {
     document.body.classList.remove(classes.body);
 }
 
-async function buildInterface(root: HTMLElement, board: BoardParam) {
-    const deckElements = [];
-    root.classList.add(classes.board);
-    document.body.classList.add(classes.body);
 
-    for (const child of board.children) {
-        const deckElement = document.createElement("div");
-        deckElements.push(deckElement);
-        deckElement.className = classes.deck;
-        const titleNode = document.createElement("h2");
-        titleNode.textContent = child.title;
-        deckElement.append(titleNode);
-        const deck =
-            child.type === "deck"
-                ? (child as Deck)
-                : ((child as Portal).target as Deck);
-        if (deck.color) {
-            deckElement.style.setProperty("--deck-color", deck.color);
-            deckElement.style.setProperty(
-                "--deck-text-color",
-                Color(deck.color).blacken(0.7).isDark() ? "white" : "black"
-            );
-        }
-        deckElement.dataset.deckId = deck.deckId;
+function createInsertField({ root, deckElement, deckElements, deck }: { root: HTMLElement, deckElement: HTMLElement, deckElements: HTMLElement[], deck: DeckParam }) {
+    const form = document.createElement("form");
+    form.classList.add(classes.newCardContainer);
 
-        for (const card of deck?.cards ?? []) {
-            buildCardForDeck({
-                root,
-                card,
-                deckElement,
-                deckElements,
-            });
-        }
+    const input = document.createElement("input");
+    input.classList.add(classes.newCardInput);
+    input.placeholder = "Add card";
+    form.append(input);
 
-        root.append(deckElement);
+    const button = document.createElement("button");
+    button.classList.add(classes.newCardButton);
+    button.textContent = "Add";
+    form.append(button);
+
+    form.onsubmit = async (e: SubmitEvent) => {
+        e.preventDefault();
+        const title = input.value;
+        input.value = "";
+        const { cardId } = await api.addCard({
+            title,
+            deckId: deck.deckId,
+        });
+        const card = {
+            title,
+            cardId,
+            images: [],
+            setTitle() { },
+        };
+        deckElement.querySelector("[data-cards-container]").append(buildCardForDeck({
+            root,
+            card,
+            deckElement,
+            deckElements,
+        }));
     }
+
+    return form;
 }
 
 function buildCardForDeck({
@@ -85,7 +148,6 @@ function buildCardForDeck({
     deckElements: HTMLElement[];
 }) {
     const cardElement = document.createElement("div");
-    deckElement.append(cardElement);
 
     cardElement.dataset.cardId = card.cardId;
     cardElement.className = classes.card;
@@ -141,8 +203,7 @@ function buildCardForDeck({
             cardElement.classList.remove(classes.movingCard);
             root.classList.remove(classes.isMovingCard);
 
-            const index = Array.from(hoverDeck.children)
-                .filter((e: HTMLElement) => e.dataset.cardId)
+            const index = Array.from(hoverDeck.querySelectorAll("[data-card-id]"))
                 .findIndex((e) => e === cardElement);
 
             api.moveCard({
@@ -160,6 +221,7 @@ function buildCardForDeck({
         const onMouseMove = ({ clientX, clientY }: MouseEvent) => {
             styleMovedCard({ clientX, clientY, cardElement, insetX, insetY });
             hoverDeck = findClosestDeck(deckElements, horizontalMiddle(cardElement))
+
             const didSwap = possiblyPerformHoverSwap({
                 hoverDeck,
                 clientY,
@@ -178,4 +240,57 @@ function buildCardForDeck({
         document.addEventListener("mouseup", onMouseUp);
         document.addEventListener("mousemove", onMouseMove);
     });
+
+    return cardElement;
+}
+
+function createDeckTitleNode({ child, deckElement }: { child: Deck | Portal, deckElement: HTMLElement }) {
+    const titleNode = document.createElement("h2");
+    titleNode.textContent = child.title;
+
+    let deltaY = 0;
+    let deltaX = 0;
+
+    const render = () => {
+        deckElement.style.transform = `translateX(${deltaX}px) translateY(${deltaY}px)`;
+    };
+
+    const onMouseMove = (e: MouseEvent) => {
+        deltaX += e.movementX;
+        deltaY += e.movementY;
+        render();
+    };
+
+    const onMouseUp = (e: MouseEvent) => {
+        animate({
+            values: {
+                x: [deltaX, 0],
+                y: [deltaY, 0],
+            },
+            time: 300,
+            fn: ({ x, y }) => {
+                console.log("render");
+                deltaX = x;
+                deltaY = y;
+                console.log(deltaX, deltaY);
+                render();
+            }
+        });
+
+        render();
+
+        document.removeEventListener("mousemove", onMouseMove);
+        document.removeEventListener("mouseup", onMouseUp);
+    };
+
+    titleNode.onmousedown = e => {
+        deltaX += e.movementX;
+        deltaY += e.movementY;
+        render();
+
+        document.addEventListener("mousemove", onMouseMove);
+        document.addEventListener("mouseup", onMouseUp);
+    }
+
+    return titleNode;
 }
