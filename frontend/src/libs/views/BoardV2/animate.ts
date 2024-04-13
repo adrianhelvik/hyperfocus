@@ -1,30 +1,47 @@
-export default async function animate(opts: { values: Record<string, [number, number]>, time: number, fn: (values: Record<string, number>) => void }) {
-    return new Promise(resolve => {
-        const start = Date.now();
-        let af: ReturnType<typeof requestAnimationFrame>;
-        let progress = 0;
+export default function animate(opts: {
+    values: Record<string, [number, number]>;
+    time: number;
+    onComplete: () => void;
+    fn: (values: Record<string, number>) => void;
+}) {
+    let cancelled = false;
 
-        const updatedValues: Record<string, number> = {};
-        update();
+    const start = Date.now();
+    let af: ReturnType<typeof requestAnimationFrame>;
+    let progress = 0;
 
-        const loop = () => {
-            const now = Date.now();
-            progress = Math.min((now - start) / opts.time, 1);
-            update();
-            opts.fn(updatedValues);
-            if (progress >= 1) {
-                resolve(null);
-            } else {
-                af = requestAnimationFrame(loop);
-            }
-        };
+    const updatedValues: Record<string, number> = {};
+    updateAndRun();
 
-        af = requestAnimationFrame(loop);
+    let cleanup = () => {
+        progress = 1;
+        updateAndRun();
+        cancelled = true;
+        cleanup = () => {};
+    };
 
-        function update() {
-            for (const [key, [init, final]] of Object.entries(opts.values)) {
-                updatedValues[key] = init * (1 - progress) + final * progress;
-            }
+    const loop = () => {
+        if (cancelled) return;
+        const now = Date.now();
+        progress = Math.min((now - start) / opts.time, 1);
+        updateAndRun();
+        if (progress < 1) {
+            af = requestAnimationFrame(loop);
+        } else {
+            cleanup();
         }
-    });
+    };
+
+    af = requestAnimationFrame(loop);
+
+    function updateAndRun() {
+        for (const [key, [init, final]] of Object.entries(opts.values)) {
+            updatedValues[key] = init * (1 - progress) + final * progress;
+        }
+        opts.fn(updatedValues);
+    }
+
+    return () => {
+        cleanup();
+    };
 }

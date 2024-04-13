@@ -35,6 +35,7 @@
     }
 
     & h2 {
+        cursor: move;
         background-color: var(--deck-color, #aaa);
         color: var(--deck-text-color, black);
         margin: 0;
