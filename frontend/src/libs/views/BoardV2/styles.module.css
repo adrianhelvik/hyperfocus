@@ -7,7 +7,6 @@
     height: 100dvh;
     display: flex;
     flex-direction: column;
-    --padding: 7px;
 }
 
 .board {
@@ -25,13 +24,13 @@
     flex-shrink: 0;
     width: 300px;
     height: fit-content;
-    gap: var(--padding);
+    gap: 7px;
     display: flex;
     flex-direction: column;
-    transition: filter 300ms;
+    transition: opacity 300ms, box-shadow 300ms;
 
     .isMovingCard &:not(&.hoverDeck) {
-        filter: grayscale(0.2) brightness(0.9);
+        opacity: 0.9;
     }
 
     & h2 {
@@ -40,16 +39,21 @@
         color: var(--deck-text-color, black);
         margin: 0;
         font-size: 16px;
-        padding: var(--padding);
+        padding: 7px;
         font-weight: normal;
         border-top-left-radius: 4px;
         border-top-right-radius: 4px;
         padding: 10px;
     }
+
+    &.movingDeck {
+        box-shadow: var(--shadows-2);
+    }
 }
 
 .card {
     background-color: transparent;
+    user-select: none;
     cursor: move;
 
     & .cardContent {
@@ -57,16 +61,17 @@
         background-color: white;
         box-shadow: var(--shadows-0);
         padding: 10px;
+        white-space: pre-wrap;
 
         transition: box-shadow 300ms;
-
-        .movingCard & {
-            box-shadow: var(--shadows-2);
-        }
 
         &::after {
             /* nbsp */
             content: "\00a0\00a0";
+        }
+
+        .movingCard & {
+            box-shadow: var(--shadows-2);
         }
     }
 }
@@ -85,16 +90,16 @@
 }
 
 .newCardContainer {
-    padding: var(--padding);
+    padding: 7px;
     padding-top: 0;
     display: grid;
     grid-template-columns: 1fr auto;
-    gap: var(--padding);
+    gap: 7px;
 
     .newCardInput {
         border: none;
         border-radius: 4px;
-        padding: var(--padding);
+        padding: 7px;
         margin: 0;
         box-shadow: var(--shadows-0);
     }
@@ -107,12 +112,29 @@
         font-size: inherit;
         border-radius: 4px;
         box-shadow: var(--shadows-0);
+        align-self: flex-start;
     }
 }
 
 .cardsContainer {
-    padding: 0 var(--padding);
+    padding: 0 7px;
     display: flex;
     flex-direction: column;
-    gap: var(--padding);
+    gap: 7px;
+    min-height: 40px;
+
+    &:empty::after {
+        content: "No cards here yet.";
+        text-align: center;
+        color: #888;
+        margin: auto;
+    }
+}
+
+.deckPlaceholder {
+    background-color: rgba(255, 255, 255, 0.7);
+    mix-blend-mode: screen;
+    flex-shrink: 0;
+    border-radius: 4px;
+    opacity: 0.3;
 }

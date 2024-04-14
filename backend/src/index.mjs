@@ -1,5 +1,6 @@
+import "dotenv/config.js";
+
 import runCodeHeuristics from './runCodeHeuristics.mjs'
-import uuid from './utils/uuid.mjs'
 import Hapi from '@hapi/hapi'
 import chalk from 'chalk'
 

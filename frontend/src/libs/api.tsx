@@ -4,6 +4,10 @@ import Deck from "src/libs/store/Deck";
 import local from "src/libs/local";
 import { Project } from "./types";
 
+const API_URL = import.meta.env.VITE_API_URL;
+
+if (!API_URL) throw Error("VITE_API_URL must be specified");
+
 let persistentHeaders = local.get("persistentHeaders", {});
 
 type PortalParam = {
@@ -66,7 +70,7 @@ export async function addCardImages(cardId: string, images: File[]) {
     console.log(formData);
 
     const response = await fetch(
-        `${import.meta.env.VITE_API_URL}/addCardImages`,
+        `${API_URL}/addCardImages`,
         {
             method: "POST",
             mode: "cors",

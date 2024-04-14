@@ -1,3 +1,6 @@
+import easeInOutQuad from "src/libs/easeInOutQuad";
+import onlyOnceFn from "./onlyOnceFn";
+
 export default function animate(opts: {
     values: Record<string, [number, number]>;
     time: number;
@@ -13,17 +16,17 @@ export default function animate(opts: {
     const updatedValues: Record<string, number> = {};
     updateAndRun();
 
-    let cleanup = () => {
+    const cleanup = onlyOnceFn(() => {
         progress = 1;
         updateAndRun();
         cancelled = true;
-        cleanup = () => {};
-    };
+        opts.onComplete();
+    });
 
     const loop = () => {
         if (cancelled) return;
         const now = Date.now();
-        progress = Math.min((now - start) / opts.time, 1);
+        progress = easeInOutQuad(Math.min((now - start) / opts.time, 1));
         updateAndRun();
         if (progress < 1) {
             af = requestAnimationFrame(loop);
