@@ -367,6 +367,28 @@ export const setBoardColorRoute = {
   },
 }
 
+export const setBoardTitleRoute = {
+  method: 'POST',
+  path: '/setBoardTitle',
+  /**
+   * @param {{ payload: { boardId: string, title: string }, headers: { authorization: string } }} request
+   * @returns {Promise<{ success: boolean }>}
+   */
+  async handler(request) {
+    const { boardId, title } = request.payload
+    await assertCanEditBoard(request, boardId);
+
+    try {
+      await knex("boards").where({ boardId }).update({ title })
+    } catch (e) {
+      console.error(e.stack);
+      return { success: false }
+    }
+    
+    return { success: true }
+  },
+}
+
 export const setDeckTitleRoute = {
   method: 'POST',
   path: '/setDeckTitle',

@@ -18,7 +18,7 @@ import Color from "color";
 const ColorPickerAny = ColorPicker as any as React.ComponentType<any>;
 
 const withRouterAny = withRouter as any as <T extends React.ComponentType<any>>(
-    component: T
+    component: T,
 ) => T;
 
 type Props = WithConfirmProps &
@@ -46,12 +46,30 @@ class BoardTile extends React.Component<Props> {
         });
     };
 
+    rename = (title: string) => {
+        this.props.board.setTitle(title);
+        api.setBoardTitle({ boardId: this.props.board.boardId, title });
+    }
+
     openMenu = (event: MouseEvent) => {
         event.preventDefault();
         event.stopPropagation();
         const nativeEvent: any = event.nativeEvent;
         this.props.showMenu(nativeEvent, {
-            "Change color": async () => {
+            Rename: () => {
+                this.props.showModalInPlace(nativeEvent, ({ resolve }) => (
+                    <form onSubmit={e => {
+                        e.preventDefault();
+                        this.rename(((e.target as HTMLFormElement).elements.namedItem("newBoardTitle") as HTMLInputElement).value);
+                        resolve();
+                    }}>
+                        <div>Enter new name</div>
+                        <input name="newBoardTitle" defaultValue={this.props.board.title} autoFocus />
+                        <button>Save</button>
+                    </form>
+                ));
+            },
+            "Change color": () => {
                 this.props.showModalInPlace(nativeEvent, ({ resolve }) => (
                     <ColorPickerAny
                         onChange={(color: { hex: string }) => {
@@ -115,12 +133,12 @@ class BoardTile extends React.Component<Props> {
 }
 
 export default withModal(
-    withConfirm(withStatus(withMenu(withRouterAny(BoardTile))))
+    withConfirm(withStatus(withMenu(withRouterAny(BoardTile)))),
 );
 
 const Container = styled.button.attrs({
     type: "button",
-})<{ $color: string }>`
+})  <{ $color: string }>`
     all: unset;
     outline: revert;
 

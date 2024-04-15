@@ -72,6 +72,10 @@ class Board {
     @action move(fromIndex: number, toIndex: number) {
         arrayMove(this.children, fromIndex, toIndex);
     }
+
+    @action setTitle(title: string) {
+        this.title = title;
+    }
 }
 
 export default Board;

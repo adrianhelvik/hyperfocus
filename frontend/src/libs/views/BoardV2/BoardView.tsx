@@ -15,6 +15,7 @@ import onlyOnceFn from "./onlyOnceFn";
 import createAutoGrowTextarea from "./createAutoGrowTextarea";
 import { findClosestDeck } from "./findClosestDeck";
 
+const AUTO_SCROLL_OFFSET = 100;
 const CARD_ANIMATION_TIME = 300;
 const DECK_ANIMATION_TIME = 300;
 
@@ -22,6 +23,11 @@ export class BoardView {
     private cleanupHooks = new CleanupHooks();
     private deckElements: HTMLElement[] = [];
     private cleanupAutorun: () => void;
+    private onDestroyCallbacks: Array<() => void> = [];
+
+    private onDestroy(fn: () => void) {
+        this.onDestroyCallbacks.push(fn);
+    }
 
     constructor(
         private root: HTMLElement,
@@ -39,6 +45,8 @@ export class BoardView {
     }
 
     private cleanup() {
+        this.onDestroyCallbacks.forEach((fn) => fn());
+        this.onDestroyCallbacks = [];
         this.root.innerHTML = "";
         this.root.classList.remove(classes.board);
         document.body.classList.remove(classes.body);
@@ -292,7 +300,7 @@ export class BoardView {
                 title,
                 cardId,
                 images: [],
-                setTitle() { },
+                setTitle() {},
             };
             deckElement.querySelector("[data-cards-container]").append(
                 this.buildCardForDeck({
@@ -363,6 +371,23 @@ export class BoardView {
                 classes.hoverDeck,
             );
 
+            let prevMoveCoords: { clientX: number; clientY: number };
+
+            let scrollDirection: "NONE" | "LEFT" | "RIGHT" = "NONE";
+
+            // TODO: setInterval perf may differ across devices.
+            //       Use a time based implementation instead.
+            const scrollInterval = setInterval(() => {
+                if (scrollDirection === "LEFT") {
+                    this.root.scrollBy({ left: -2 });
+                    if (prevMoveCoords) onMouseMove(prevMoveCoords);
+                }
+                if (scrollDirection === "RIGHT") {
+                    this.root.scrollBy({ left: 2 });
+                    if (prevMoveCoords) onMouseMove(prevMoveCoords);
+                }
+            });
+
             const {
                 top,
                 left,
@@ -394,6 +419,8 @@ export class BoardView {
             });
 
             const onMouseUp = (_e: MouseEvent) => {
+                clearInterval(scrollInterval);
+
                 const index = Array.from(
                     placeholderNode.parentNode.children,
                 ).findIndex((e) => e === placeholderNode);
@@ -436,7 +463,15 @@ export class BoardView {
                 document.removeEventListener("mousemove", onMouseMove);
             };
 
-            const onMouseMove = ({ clientX, clientY }: MouseEvent) => {
+            const onMouseMove = ({
+                clientX,
+                clientY,
+            }: {
+                clientX: number;
+                clientY: number;
+            }) => {
+                prevMoveCoords = { clientX, clientY };
+
                 styleMovedCard({
                     clientX,
                     clientY,
@@ -465,6 +500,11 @@ export class BoardView {
                     );
                     hoverDeck.classList.add(classes.hoverDeck);
                 }
+
+                if (clientX < AUTO_SCROLL_OFFSET) scrollDirection = "LEFT";
+                else if (clientX >= screen.width - AUTO_SCROLL_OFFSET)
+                    scrollDirection = "RIGHT";
+                else scrollDirection = "NONE";
             };
 
             document.addEventListener("mouseup", onMouseUp);

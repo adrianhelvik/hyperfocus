@@ -4,7 +4,7 @@
 }
 
 .boardView {
-    height: 100dvh;
+    height: calc(100dvh - 10px);
     display: flex;
     flex-direction: column;
 }
@@ -27,7 +27,10 @@
     gap: 7px;
     display: flex;
     flex-direction: column;
-    transition: opacity 300ms, box-shadow 300ms;
+    transition:
+        opacity 300ms,
+        box-shadow 300ms;
+    max-height: 100%;
 
     .isMovingCard &:not(&.hoverDeck) {
         opacity: 0.9;
@@ -117,11 +120,17 @@
 }
 
 .cardsContainer {
-    padding: 0 7px;
+    padding: 2px 7px;
     display: flex;
     flex-direction: column;
+
+    & > * {
+        flex-shrink: 0;
+    }
+
     gap: 7px;
     min-height: 40px;
+    overflow-y: auto;
 
     &:empty::after {
         content: "No cards here yet.";
