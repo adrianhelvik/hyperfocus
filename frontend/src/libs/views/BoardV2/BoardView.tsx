@@ -198,7 +198,9 @@ export class BoardView {
                 animate({
                     onComplete: onlyOnceFn(() => {
                         placeholder.replaceWith(deckElement);
-                        deckElement.removeAttribute("style");
+                        console.log(deckElement);
+                        deckElement.style.transform = null;
+                        deckElement.style.position = null;
                     }),
                     values: {
                         x: [x, placeholderRect.left],
@@ -248,7 +250,9 @@ export class BoardView {
 
             cleanupHooks.add(() => {
                 this.deckElements.forEach((e) => {
-                    e.removeAttribute("style");
+                    e.style.transition = null;
+                    e.style.transform = null;
+                    e.style.position = null;
                     deckElement.classList.remove(classes.movingDeck);
                 });
                 placeholder.replaceWith(deckElement);
@@ -300,7 +304,7 @@ export class BoardView {
                 title,
                 cardId,
                 images: [],
-                setTitle() {},
+                setTitle() { },
             };
             deckElement.querySelector("[data-cards-container]").append(
                 this.buildCardForDeck({
@@ -374,12 +378,9 @@ export class BoardView {
             let prevMoveCoords: { clientX: number; clientY: number };
 
             let scrollDirection: "NONE" | "LEFT" | "RIGHT" = "NONE";
-
-            // TODO: setInterval perf may differ across devices.
-            //       Use a time based implementation instead.
             const scrollInterval = setInterval(() => {
                 if (scrollDirection === "LEFT") {
-                    this.root.scrollBy({ left: -2 });
+                    this.root.scrollBy({ left: -3 });
                     if (prevMoveCoords) onMouseMove(prevMoveCoords);
                 }
                 if (scrollDirection === "RIGHT") {
@@ -435,7 +436,9 @@ export class BoardView {
 
                 {
                     const cleanup = onlyOnceFn(() => {
-                        cardElement.removeAttribute("style");
+                        cardElement.style.transition = null;
+                        cardElement.style.transform = null;
+                        cardElement.style.position = null;
                         cardElement.remove();
                         placeholderNode.replaceWith(cardElement);
                         cardElement.classList.remove(classes.movingCard);
