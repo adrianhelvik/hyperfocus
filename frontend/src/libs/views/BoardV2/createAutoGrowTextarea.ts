@@ -1,31 +1,31 @@
 export default function createAutoGrowTextarea(): HTMLTextAreaElement {
-    const element = document.createElement("textarea");
-    element.style.resize = "none";
+  const element = document.createElement("textarea");
+  element.style.resize = "none";
 
-    const interval = setInterval(() => {
-        if (!element.parentElement) return;
-        sizeElementRepeatedly(element);
-        clearInterval(interval);
-    });
+  const interval = setInterval(() => {
+    if (!element.parentElement) return;
+    sizeElementRepeatedly(element);
+    clearInterval(interval);
+  });
 
-    element.addEventListener("input", () => {
-        sizeElementRepeatedly(element);
-    });
+  element.addEventListener("input", () => {
+    sizeElementRepeatedly(element);
+  });
 
-    element.addEventListener("focus", () => {
-        sizeElementRepeatedly(element);
-    });
+  element.addEventListener("focus", () => {
+    sizeElementRepeatedly(element);
+  });
 
-    element.addEventListener("blur", () => {
-        sizeElementRepeatedly(element);
-    });
+  element.addEventListener("blur", () => {
+    sizeElementRepeatedly(element);
+  });
 
-    return element;
+  return element;
 }
 
 function sizeElement(element: HTMLTextAreaElement) {
-    element.style.height = "0px";
-    element.style.height = `${element.scrollHeight}px`;
+  element.style.height = "0px";
+  element.style.height = `${element.scrollHeight}px`;
 }
 
 /**
@@ -34,9 +34,9 @@ function sizeElement(element: HTMLTextAreaElement) {
  * element without any explicit lifecycle management.
  */
 function sizeElementRepeatedly(element: HTMLTextAreaElement) {
-    sizeElement(element);
-    setTimeout(() => sizeElement(element), 100);
-    setTimeout(() => sizeElement(element), 300);
-    setTimeout(() => sizeElement(element), 500);
-    setTimeout(() => sizeElement(element), 1000);
+  sizeElement(element);
+  setTimeout(() => sizeElement(element), 100);
+  setTimeout(() => sizeElement(element), 300);
+  setTimeout(() => sizeElement(element), 500);
+  setTimeout(() => sizeElement(element), 1000);
 }

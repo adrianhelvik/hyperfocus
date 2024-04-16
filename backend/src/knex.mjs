@@ -1,8 +1,8 @@
 // @ts-check
 
-import knexfile from '../knexfile.js'
-import Knex from 'knex'
+import knexfile from "../knexfile.js";
+import Knex from "knex";
 
-const knex = Knex(knexfile[process.env.NODE_ENV])
+const knex = Knex(knexfile[process.env.NODE_ENV]);
 
-export default knex
+export default knex;

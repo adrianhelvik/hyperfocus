@@ -1,25 +1,25 @@
-import knex from '../knex.mjs'
+import knex from "../knex.mjs";
 
 export default async function getDeck(deckId) {
-  const deck = await knex('decks')
-    .where('deckId', deckId)
-    .leftJoin('boards', 'decks.boardId', 'boards.boardId')
+  const deck = await knex("decks")
+    .where("deckId", deckId)
+    .leftJoin("boards", "decks.boardId", "boards.boardId")
     .first()
-    .select('decks.*', 'boards.title as boardTitle')
+    .select("decks.*", "boards.title as boardTitle");
 
-  if (!deck) return null
+  if (!deck) return null;
 
-  deck.cards = await knex('cards').where({ deckId }).orderBy('index', 'asc')
+  deck.cards = await knex("cards").where({ deckId }).orderBy("index", "asc");
 
   await Promise.all(
-    deck.cards.map(async card => {
-      card.images = await knex('cardImages')
+    deck.cards.map(async (card) => {
+      card.images = await knex("cardImages")
         .where({ cardId: card.cardId })
-        .orderBy('index', 'asc')
-        .select('url')
-        .then(it => it.map(item => item.url))
-    }),
-  )
+        .orderBy("index", "asc")
+        .select("url")
+        .then((it) => it.map((item) => item.url));
+    })
+  );
 
-  return deck
+  return deck;
 }

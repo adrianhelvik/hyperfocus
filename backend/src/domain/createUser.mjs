@@ -1,10 +1,10 @@
 // @ts-check
 
-import requireString from '../utils/requireString.mjs'
-import createHash from '../utils/createHash.mjs'
-import uuid from '../utils/uuid.mjs'
-import Boom from '@hapi/boom'
-import knex from '../knex.mjs'
+import requireString from "../utils/requireString.mjs";
+import createHash from "../utils/createHash.mjs";
+import uuid from "../utils/uuid.mjs";
+import Boom from "@hapi/boom";
+import knex from "../knex.mjs";
 
 /**
  * @param {object} options
@@ -20,35 +20,35 @@ export default async function createUser({
   userId,
   email,
 }) {
-  const hash = await createHash(password)
+  const hash = await createHash(password);
 
-  requireString({ email, password })
+  requireString({ email, password });
 
-  if (!username) username = null
-  else username = username.toLowerCase()
+  if (!username) username = null;
+  else username = username.toLowerCase();
 
-  if (!email.includes('@')) throw Boom.badRequest('Invalid email')
+  if (!email.includes("@")) throw Boom.badRequest("Invalid email");
 
-  if (username && username.includes('@'))
-    throw Boom.badRequest('Invalid username')
+  if (username && username.includes("@"))
+    throw Boom.badRequest("Invalid username");
 
-  if (!userId) userId = uuid()
+  if (!userId) userId = uuid();
 
-  email = email.toLowerCase()
+  email = email.toLowerCase();
 
-  await knex('users')
+  await knex("users")
     .insert({
       userId,
       username,
       email,
       hash,
     })
-    .catch(error => {
-      console.log(JSON.stringify(error, null, 2))
-      if (error.constraint === 'users_email_unique')
-        throw Boom.badRequest('The email is already in use')
-      throw error
-    })
+    .catch((error) => {
+      console.log(JSON.stringify(error, null, 2));
+      if (error.constraint === "users_email_unique")
+        throw Boom.badRequest("The email is already in use");
+      throw error;
+    });
 
-  return userId
+  return userId;
 }

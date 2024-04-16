@@ -1,8 +1,8 @@
 // @ts-check
 
-import uuid from '../utils/uuid.mjs'
-import isInteger from 'is-integer'
-import knex from '../knex.mjs'
+import uuid from "../utils/uuid.mjs";
+import isInteger from "is-integer";
+import knex from "../knex.mjs";
 
 /**
  * @param {object} args
@@ -12,13 +12,13 @@ import knex from '../knex.mjs'
  * @returns {Promise<string>}
  */
 export default async function addCard({ title, deckId, index }) {
-  const cards = await knex('cards').where({ deckId }).orderBy('index', 'asc')
+  const cards = await knex("cards").where({ deckId }).orderBy("index", "asc");
 
-  if (!isInteger(index)) index = cards.length
+  if (!isInteger(index)) index = cards.length;
 
-  let updates = []
+  let updates = [];
 
-  const cardId = uuid()
+  const cardId = uuid();
 
   cards.splice(index, 0, {
     insert: true,
@@ -26,23 +26,23 @@ export default async function addCard({ title, deckId, index }) {
     title,
     deckId,
     index,
-  })
+  });
 
-  await knex.transaction(async knex => {
+  await knex.transaction(async (knex) => {
     for (let i = 0; i < cards.length; i++) {
-      const { insert, ...card } = cards[i]
+      const { insert, ...card } = cards[i];
 
       if (insert) {
-        await knex('cards').insert(card)
+        await knex("cards").insert(card);
       } else if (card.index !== i) {
         updates.push(async () => {
-          await knex('cards').where('cardId', card.cardId).update({ index: i })
-        })
+          await knex("cards").where("cardId", card.cardId).update({ index: i });
+        });
       }
     }
 
-    await Promise.all(updates.map(fn => fn()))
-  })
+    await Promise.all(updates.map((fn) => fn()));
+  });
 
-  return cardId
+  return cardId;
 }

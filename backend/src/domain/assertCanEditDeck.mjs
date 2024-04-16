@@ -1,17 +1,17 @@
 // @ts-check
 
-import assertCanEditBoard from './assertCanEditBoard.mjs'
-import Boom from '@hapi/boom'
-import knex from '../knex.mjs'
+import assertCanEditBoard from "./assertCanEditBoard.mjs";
+import Boom from "@hapi/boom";
+import knex from "../knex.mjs";
 
 /**
  * @param {any} request
  * @param {string} deckId
  */
 export default async function assertCanEditDeck(request, deckId) {
-  const deck = await knex('decks').where({ deckId }).first()
+  const deck = await knex("decks").where({ deckId }).first();
 
-  if (!deck) throw Boom.unauthorized('Access denied')
+  if (!deck) throw Boom.unauthorized("Access denied");
 
-  await assertCanEditBoard(request, deck.boardId)
+  await assertCanEditBoard(request, deck.boardId);
 }

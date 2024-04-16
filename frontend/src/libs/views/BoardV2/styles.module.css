@@ -1,149 +1,147 @@
 .body {
-    background-color: rgb(26, 20, 33);
-    display: flex;
+  background-color: rgb(26, 20, 33);
+  display: flex;
 }
 
 .boardView {
-    height: calc(100dvh - 10px);
-    display: flex;
-    flex-direction: column;
+  height: calc(100dvh - 10px);
+  display: flex;
+  flex-direction: column;
 }
 
 .board {
-    display: flex;
-    width: 100vw;
-    gap: 15px;
-    padding: 20px;
-    overflow-x: auto;
-    flex-grow: 1;
+  display: flex;
+  width: 100vw;
+  gap: 15px;
+  padding: 20px;
+  overflow-x: auto;
+  flex-grow: 1;
 }
 
 .deck {
-    background-color: #ddd;
-    border-radius: 4px;
-    flex-shrink: 0;
-    width: 300px;
-    height: fit-content;
-    gap: 7px;
-    display: flex;
-    flex-direction: column;
-    transition:
-        opacity 300ms,
-        box-shadow 300ms;
-    max-height: 100%;
+  background-color: #ddd;
+  border-radius: 4px;
+  flex-shrink: 0;
+  width: 300px;
+  height: fit-content;
+  gap: 7px;
+  display: flex;
+  flex-direction: column;
+  transition: opacity 300ms, box-shadow 300ms;
+  max-height: 100%;
 
-    .isMovingCard &:not(&.hoverDeck) {
-        opacity: 0.9;
-    }
+  .isMovingCard &:not(&.hoverDeck) {
+    opacity: 0.9;
+  }
 
-    & h2 {
-        cursor: move;
-        background-color: var(--deck-color, #aaa);
-        color: var(--deck-text-color, black);
-        margin: 0;
-        font-size: 16px;
-        padding: 7px;
-        font-weight: normal;
-        border-top-left-radius: 4px;
-        border-top-right-radius: 4px;
-        padding: 10px;
-    }
+  & h2 {
+    cursor: move;
+    background-color: var(--deck-color, #aaa);
+    color: var(--deck-text-color, black);
+    margin: 0;
+    font-size: 16px;
+    padding: 7px;
+    font-weight: normal;
+    border-top-left-radius: 4px;
+    border-top-right-radius: 4px;
+    padding: 10px;
+  }
 
-    &.movingDeck {
-        box-shadow: var(--shadows-2);
-    }
+  &.movingDeck {
+    box-shadow: var(--shadows-2);
+  }
 }
 
 .card {
-    background-color: transparent;
-    user-select: none;
-    cursor: move;
+  background-color: transparent;
+  user-select: none;
+  cursor: move;
 
-    & .cardContent {
-        border-radius: 4px;
-        background-color: white;
-        box-shadow: var(--shadows-0);
-        padding: 10px;
-        white-space: pre-wrap;
+  & .cardContent {
+    border-radius: 4px;
+    background-color: white;
+    box-shadow: var(--shadows-0);
+    padding: 10px;
+    white-space: pre-wrap;
 
-        transition: box-shadow 300ms;
+    transition: box-shadow 300ms;
 
-        &::after {
-            /* nbsp */
-            content: "\00a0\00a0";
-        }
-
-        .movingCard & {
-            box-shadow: var(--shadows-2);
-        }
+    &::after {
+      /* nbsp */
+      content: "\00a0\00a0";
     }
+
+    .movingCard & {
+      box-shadow: var(--shadows-2);
+    }
+  }
 }
 
 .cardPlaceholder {
-    background-color: rgba(255, 255, 255, 0.7);
-    mix-blend-mode: screen;
+  background-color: rgba(255, 255, 255, 0.7);
+  mix-blend-mode: screen;
 }
 
 .card,
 .cardPlaceholder {
-    margin-bottom: -1px;
-    margin-left: -1px;
-    margin-right: -1px;
-    border-radius: 4px;
+  margin-bottom: -1px;
+  margin-left: -1px;
+  margin-right: -1px;
+  border-radius: 4px;
 }
 
 .newCardContainer {
+  padding: 7px;
+  padding-top: 0;
+  display: grid;
+  grid-template-columns: 1fr auto;
+  gap: 7px;
+
+  .newCardInput {
+    border: none;
+    border-radius: 4px;
     padding: 7px;
-    padding-top: 0;
-    display: grid;
-    grid-template-columns: 1fr auto;
-    gap: 7px;
+    margin: 0;
+    box-shadow: var(--shadows-0);
+  }
 
-    .newCardInput {
-        border: none;
-        border-radius: 4px;
-        padding: 7px;
-        margin: 0;
-        box-shadow: var(--shadows-0);
-    }
-
-    .newCardButton {
-        border: none;
-        background-color: var(--deck-color);
-        color: var(--deck-text-color);
-        padding: 10px;
-        font-size: inherit;
-        border-radius: 4px;
-        box-shadow: var(--shadows-0);
-        align-self: flex-start;
-    }
+  .newCardButton {
+    border: none;
+    background-color: var(--deck-color);
+    color: var(--deck-text-color);
+    padding: 10px;
+    font-size: inherit;
+    border-radius: 4px;
+    box-shadow: var(--shadows-0);
+    align-self: flex-start;
+  }
 }
 
 .cardsContainer {
-    padding: 2px 7px;
-    display: flex;
-    flex-direction: column;
+  padding: 2px 7px;
+  display: flex;
+  flex-direction: column;
 
-    & > * {
-        flex-shrink: 0;
-    }
+  & > * {
+    flex-shrink: 0;
+  }
 
-    gap: 7px;
-    min-height: 40px;
-    overflow-y: auto;
+  gap: 7px;
+  min-height: 40px;
+  overflow-y: auto;
 
-    &:empty::after {
-        content: "No cards here yet.";
-        text-align: center;
-        color: #888;
-        margin: auto;
-    }
+  &:empty::after {
+    content: "No cards here yet.";
+    text-align: center;
+    color: #888;
+    margin: auto;
+  }
 }
 
 .deckPlaceholder {
-    background-color: rgba(255, 255, 255, 0.7);
-    mix-blend-mode: screen;
-    flex-shrink: 0;
-    border-radius: 4px;
-    opacity: 0.3;
+  background-color: rgba(255, 255, 255, 0.7);
+  mix-blend-mode: screen;
+  flex-shrink: 0;
+  border-radius: 4px;
+  opacity: 0.3;
 }

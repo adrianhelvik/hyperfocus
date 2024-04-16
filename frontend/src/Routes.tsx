@@ -14,29 +14,21 @@ const SwitchAny = Switch as any;
 const RouteAny = Route as any;
 
 export default function Routes() {
-    return (
-        <ProvideAuth>
-            <Reactions>
-                <RouterAny>
-                    <SwitchAny>
-                        <RouteAny exact path="/" component={LandingPage} />
-                        <RouteAny exact path="/login" component={Login} />
-                        <RouteAny exact path="/app" component={Overview} />
-                        <RouteAny
-                            exact
-                            path="/board/:boardId"
-                            component={BoardV2}
-                        />
-                        <RouteAny
-                            exact
-                            path="/board-v1/:boardId"
-                            component={Board}
-                        />
-                        <RouteAny exact path="/register" component={Register} />
-                        <RouteAny path="*" component={NotFound} />
-                    </SwitchAny>
-                </RouterAny>
-            </Reactions>
-        </ProvideAuth>
-    );
+  return (
+    <ProvideAuth>
+      <Reactions>
+        <RouterAny>
+          <SwitchAny>
+            <RouteAny exact path="/" component={LandingPage} />
+            <RouteAny exact path="/login" component={Login} />
+            <RouteAny exact path="/app" component={Overview} />
+            <RouteAny exact path="/board/:boardId" component={BoardV2} />
+            <RouteAny exact path="/board-v1/:boardId" component={Board} />
+            <RouteAny exact path="/register" component={Register} />
+            <RouteAny path="*" component={NotFound} />
+          </SwitchAny>
+        </RouterAny>
+      </Reactions>
+    </ProvideAuth>
+  );
 }

@@ -1,13 +1,13 @@
-import random from '../utils/random.mjs'
-import knex from '../knex.mjs'
+import random from "../utils/random.mjs";
+import knex from "../knex.mjs";
 
 export default async function createSession(userId) {
-  const sessionId = await random()
+  const sessionId = await random();
 
-  await knex('sessions').insert({
+  await knex("sessions").insert({
     sessionId,
     userId,
-  })
+  });
 
-  return sessionId
+  return sessionId;
 }

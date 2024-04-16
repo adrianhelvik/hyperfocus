@@ -12,54 +12,54 @@ import BoardList from "./BoardList";
 const RedirectAny = Redirect as any;
 
 type Props = WithAuthProps &
-    WithMenuProps & {
-        children?: React.ReactNode;
-    };
+  WithMenuProps & {
+    children?: React.ReactNode;
+  };
 
 export default withMenu(function Overview(props: Props) {
-    const store = React.useContext(StoreContext);
-    const auth = React.useContext(AuthContext);
+  const store = React.useContext(StoreContext);
+  const auth = React.useContext(AuthContext);
 
-    const onContextMenu = (event: MouseEvent) => {
-        event.preventDefault();
+  const onContextMenu = (event: MouseEvent) => {
+    event.preventDefault();
 
-        props.showMenu(event, {
-            "New board": () => {
-                store.isAddingBoard = true;
-            },
-        });
-    };
+    props.showMenu(event, {
+      "New board": () => {
+        store.isAddingBoard = true;
+      },
+    });
+  };
 
-    React.useEffect(() => {
-        auth.authenticate();
-    }, [auth]);
+  React.useEffect(() => {
+    auth.authenticate();
+  }, [auth]);
 
-    if (auth.status === "failure") {
-        return <RedirectAny to="/" />;
-    }
+  if (auth.status === "failure") {
+    return <RedirectAny to="/" />;
+  }
 
-    return (
-        <Observer>
-            {() => {
-                if (auth.status === "failure") return <RedirectAny to="/" />;
-                return (
-                    <Container onContextMenu={onContextMenu}>
-                        <Header>My boards</Header>
-                        {store.isAddingBoard && <AddBoardModal />}
-                        <BoardList />
-                    </Container>
-                );
-            }}
-        </Observer>
-    );
+  return (
+    <Observer>
+      {() => {
+        if (auth.status === "failure") return <RedirectAny to="/" />;
+        return (
+          <Container onContextMenu={onContextMenu}>
+            <Header>My boards</Header>
+            {store.isAddingBoard && <AddBoardModal />}
+            <BoardList />
+          </Container>
+        );
+      }}
+    </Observer>
+  );
 });
 
 const Container = styled.div`
-    background-color: #eee;
-    position: absolute;
-    bottom: 0;
-    right: 0;
-    left: 0;
-    top: 0;
-    overflow: auto;
+  background-color: #eee;
+  position: absolute;
+  bottom: 0;
+  right: 0;
+  left: 0;
+  top: 0;
+  overflow: auto;
 `;

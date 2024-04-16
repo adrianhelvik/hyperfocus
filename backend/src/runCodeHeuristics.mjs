@@ -1,14 +1,14 @@
-import checkRouteLengths from './heuristics/checkRouteLengths.mjs'
-import chalk from 'chalk'
-import path from 'path'
-import fs from 'fs'
+import checkRouteLengths from "./heuristics/checkRouteLengths.mjs";
+import chalk from "chalk";
+import path from "path";
+import fs from "fs";
 
-const dirname = path.resolve(new URL(import.meta.url).pathname, '..')
+const dirname = path.resolve(new URL(import.meta.url).pathname, "..");
 
 export default async function runCodeHeuristics() {
-  console.log(chalk.gray('Running heuristics...'))
+  console.log(chalk.gray("Running heuristics..."));
 
-  await checkRouteLengths()
+  await checkRouteLengths();
 
-  console.log(chalk.gray('Heuristics done'))
+  console.log(chalk.gray("Heuristics done"));
 }

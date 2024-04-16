@@ -1,18 +1,18 @@
 // @ts-check
 
-import authenticate from './authenticate.mjs'
-import Boom from '@hapi/boom'
-import knex from '../knex.mjs'
+import authenticate from "./authenticate.mjs";
+import Boom from "@hapi/boom";
+import knex from "../knex.mjs";
 
 /**
  * @param {any} request
  */
 export default async function assertIsVerified(request) {
-  const session = await authenticate(request)
+  const session = await authenticate(request);
 
-  const user = await knex('users').where({ userId: session.userId }).first()
+  const user = await knex("users").where({ userId: session.userId }).first();
 
-  if (!user) throw Boom.unauthorized('The user does not exist')
+  if (!user) throw Boom.unauthorized("The user does not exist");
 
   // TODO
   // if (!user.verified)

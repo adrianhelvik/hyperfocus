@@ -1,7 +1,7 @@
 // @ts-check
 
-import knex from '../knex.mjs'
-import uuid from '../utils/uuid.mjs'
+import knex from "../knex.mjs";
+import uuid from "../utils/uuid.mjs";
 
 /**
  * @param {object} options
@@ -10,11 +10,11 @@ import uuid from '../utils/uuid.mjs'
  * @returns {Promise<string>}
  */
 export default async function createProject({ createdBy, title }) {
-  const projectId = uuid()
-  await knex('projects').insert({
+  const projectId = uuid();
+  await knex("projects").insert({
     createdBy,
     projectId,
     title,
-  })
-  return projectId
+  });
+  return projectId;
 }

@@ -1,1 +1,1 @@
-import moveCard from './moveCard.mjs'
+import moveCard from "./moveCard.mjs";

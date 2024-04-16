@@ -5,38 +5,38 @@ import Routes from "./Routes";
 import React from "react";
 
 const components = observable({
-    Routes,
+  Routes,
 });
 
 if (import.meta.hot) {
-    import.meta.hot.accept("./Routes.js", (module) => {
-        components.Routes = module.default;
-    });
-    import.meta.hot.accept("store", () => {
-        window.location.reload();
-    });
+  import.meta.hot.accept("./Routes.js", (module) => {
+    components.Routes = module.default;
+  });
+  import.meta.hot.accept("store", () => {
+    window.location.reload();
+  });
 }
 
 @observer
 export default class App extends React.Component {
-    @observable unhandledRejection = null;
-    store = new Store();
+  @observable unhandledRejection = null;
+  store = new Store();
 
-    componentDidMount() {
-        window.addEventListener("unhandledRejection", (e) => {
-            this.unhandledRejection = e;
-        });
-    }
+  componentDidMount() {
+    window.addEventListener("unhandledRejection", (e) => {
+      this.unhandledRejection = e;
+    });
+  }
 
-    render() {
-        if (this.unhandledRejection)
-            return <div>{this.unhandledRejection.stack}</div>;
-        return (
-            <StoreContext.Provider value={this.store}>
-                <Provider store={this.store}>
-                    <components.Routes />
-                </Provider>
-            </StoreContext.Provider>
-        );
-    }
+  render() {
+    if (this.unhandledRejection)
+      return <div>{this.unhandledRejection.stack}</div>;
+    return (
+      <StoreContext.Provider value={this.store}>
+        <Provider store={this.store}>
+          <components.Routes />
+        </Provider>
+      </StoreContext.Provider>
+    );
+  }
 }

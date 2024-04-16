@@ -6,57 +6,57 @@ import { observable } from "mobx";
 import React from "react";
 
 type Props = WithEventsProps & {
-    children: React.ReactNode;
+  children: React.ReactNode;
 };
 
 @observer
 class AddCircle extends React.Component<Props> {
-    @observable mounted = false;
-    @observable open = false;
-    container: HTMLElement;
+  @observable mounted = false;
+  @observable open = false;
+  container: HTMLElement;
 
-    componentDidMount() {
-        setTimeout(() => {
-            this.mounted = true;
-        }, 400);
-        document.addEventListener("click", this.onDocumentClick);
+  componentDidMount() {
+    setTimeout(() => {
+      this.mounted = true;
+    }, 400);
+    document.addEventListener("click", this.onDocumentClick);
+  }
+
+  componentWillUnmount() {
+    document.removeEventListener("click", this.onDocumentClick);
+  }
+
+  onDocumentClick = (event: MouseEvent) => {
+    if (!(event.target instanceof Element)) {
+      return;
+    }
+    if (this.container.contains(event.target)) {
+      return;
     }
 
-    componentWillUnmount() {
-        document.removeEventListener("click", this.onDocumentClick);
-    }
+    this.open = false;
+  };
 
-    onDocumentClick = (event: MouseEvent) => {
-        if (!(event.target instanceof Element)) {
-            return;
-        }
-        if (this.container.contains(event.target)) {
-            return;
-        }
+  onClick = () => {
+    this.open = !this.open;
+  };
 
-        this.open = false;
-    };
-
-    onClick = () => {
-        this.open = !this.open;
-    };
-
-    render() {
-        return (
-            <Container
-                onClick={this.onClick}
-                ref={(e) => (this.container = e)}
-                mounted={this.mounted}
-                open={this.open}
-            >
-                <Content open={this.open} mounted={this.mounted}>
-                    {this.props.children}
-                </Content>
-                <VerticalLine mounted={this.mounted} open={this.open} />
-                <HorizontalLine mounted={this.mounted} open={this.open} />
-            </Container>
-        );
-    }
+  render() {
+    return (
+      <Container
+        onClick={this.onClick}
+        ref={(e) => (this.container = e)}
+        mounted={this.mounted}
+        open={this.open}
+      >
+        <Content open={this.open} mounted={this.mounted}>
+          {this.props.children}
+        </Content>
+        <VerticalLine mounted={this.mounted} open={this.open} />
+        <HorizontalLine mounted={this.mounted} open={this.open} />
+      </Container>
+    );
+  }
 }
 
 export default withEvents(AddCircle);
@@ -66,42 +66,42 @@ const height = 110;
 const width = 200;
 
 const Container = styled.div<{ open: boolean; mounted: boolean }>`
-    background-color: ${theme.ui1};
-    position: fixed;
-    bottom: 20px;
-    right: 20px;
-    width: ${diameter}px;
-    height: ${diameter}px;
-    text-align: center;
-    border-radius: ${diameter}px;
-    animation: ${(p) => (p.open ? openAnimation : closeAnimation)}
-        ${(p) => (p.mounted ? ".3s" : "0s")};
-    animation-fill-mode: forwards;
-    cursor: pointer;
+  background-color: ${theme.ui1};
+  position: fixed;
+  bottom: 20px;
+  right: 20px;
+  width: ${diameter}px;
+  height: ${diameter}px;
+  text-align: center;
+  border-radius: ${diameter}px;
+  animation: ${(p) => (p.open ? openAnimation : closeAnimation)}
+    ${(p) => (p.mounted ? ".3s" : "0s")};
+  animation-fill-mode: forwards;
+  cursor: pointer;
 `;
 
 const stage1 = css`
-    border-radius: ${diameter};
-    bottom: 20px;
-    right: 20px;
-    width: ${diameter}px;
+  border-radius: ${diameter};
+  bottom: 20px;
+  right: 20px;
+  width: ${diameter}px;
 `;
 
 const stage2 = css`
-    border-radius: 0;
-    border-top-left-radius: 4px;
-    bottom: 0px;
-    right: 0px;
-    width: ${width}px;
+  border-radius: 0;
+  border-top-left-radius: 4px;
+  bottom: 0px;
+  right: 0px;
+  width: ${width}px;
 `;
 
 const stage3 = css`
-    height: ${height}px;
-    width: ${width}px;
-    bottom: 0px;
-    right: 0px;
-    border-radius: 0;
-    border-top-left-radius: 4px;
+  height: ${height}px;
+  width: ${width}px;
+  bottom: 0px;
+  right: 0px;
+  border-radius: 0;
+  border-top-left-radius: 4px;
 `;
 
 const openAnimation = keyframes`
@@ -132,15 +132,15 @@ const lineHeight = 20;
 const lineWidth = 3;
 
 const Line = styled.div<{ open: boolean; mounted: boolean }>`
-    background: white;
-    position: absolute;
-    top: 50%;
-    left: 50%;
-    transform: translateX(-50%) translateY(-50%);
-    pointer-events: none;
-    animation: ${(p) => (p.open ? lineOpen : lineClosed)}
-        ${(p) => (p.mounted ? ".3s" : "0s")};
-    animation-fill-mode: forwards;
+  background: white;
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translateX(-50%) translateY(-50%);
+  pointer-events: none;
+  animation: ${(p) => (p.open ? lineOpen : lineClosed)}
+    ${(p) => (p.mounted ? ".3s" : "0s")};
+  animation-fill-mode: forwards;
 `;
 
 const lineOpen = keyframes`
@@ -162,17 +162,17 @@ const lineClosed = keyframes`
 `;
 
 const VerticalLine = styled(Line)`
-    width: ${lineWidth}px;
-    height: ${lineHeight}px;
+  width: ${lineWidth}px;
+  height: ${lineHeight}px;
 `;
 
 const HorizontalLine = styled(Line)`
-    width: ${lineHeight}px;
-    height: ${lineWidth}px;
+  width: ${lineHeight}px;
+  height: ${lineWidth}px;
 `;
 
 const Content = styled.div<{ open: boolean; mounted: boolean }>`
-    transition: 0.3s;
-    opacity: ${(p) => (p.open ? 1 : 0)};
-    pointer-events: ${(p) => !p.open && "none"};
+  transition: 0.3s;
+  opacity: ${(p) => (p.open ? 1 : 0)};
+  pointer-events: ${(p) => !p.open && "none"};
 `;

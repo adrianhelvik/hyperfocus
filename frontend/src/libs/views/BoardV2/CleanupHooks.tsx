@@ -1,14 +1,14 @@
 export class CleanupHooks {
-    private fns: Array<() => void> = [];
+  private fns: Array<() => void> = [];
 
-    run() {
-        for (const fn of this.fns) {
-            fn();
-        }
-        this.fns = [];
+  run() {
+    for (const fn of this.fns) {
+      fn();
     }
+    this.fns = [];
+  }
 
-    add(fn: () => void) {
-        this.fns.push(fn);
-    }
+  add(fn: () => void) {
+    this.fns.push(fn);
+  }
 }

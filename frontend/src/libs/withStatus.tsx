@@ -8,97 +8,94 @@ import React from "react";
 const PortalAny = Portal as any as React.ComponentType<any>;
 
 export type StatusTemplateProps = {
-    yes: () => void;
-    no: () => void;
+  yes: () => void;
+  no: () => void;
 };
 
 export type WithStatusProps = {
-    showStatus: (
-        Template: React.ComponentType<StatusTemplateProps>
-    ) => Promise<boolean>;
+  showStatus: (
+    Template: React.ComponentType<StatusTemplateProps>
+  ) => Promise<boolean>;
 };
 
 export default function withStatus<Props>(
-    Component: React.ComponentType<Props & WithStatusProps>
+  Component: React.ComponentType<Props & WithStatusProps>
 ): React.ComponentType<Props> {
-    @observer
-    class WithConfirm extends React.Component {
-        @observable Template = null;
-        @observable promise = null;
-        @observable resolve = null;
-        @observable reject = null;
+  @observer
+  class WithConfirm extends React.Component {
+    @observable Template = null;
+    @observable promise = null;
+    @observable resolve = null;
+    @observable reject = null;
 
-        @action.bound showStatus(
-            Template: React.ComponentType<StatusTemplateProps>
-        ) {
-            this.Template = Template;
-            this.promise = new Promise((resolve, reject) => {
-                this.resolve = resolve;
-                this.reject = reject;
-            });
-            return this.promise;
-        }
-
-        @action.bound yes() {
-            this.resolve(true);
-            this.Template = null;
-        }
-
-        @action.bound no() {
-            this.resolve(false);
-            this.Template = null;
-        }
-
-        stopPropagation = (e: { stopPropagation: () => void }) => {
-            e.stopPropagation();
-        };
-
-        render() {
-            const { Template } = this;
-
-            const ComponentAny = Component as any;
-
-            return (
-                <>
-                    <ComponentAny
-                        {...this.props}
-                        showStatus={this.showStatus}
-                    />
-                    {Template && (
-                        <PortalAny>
-                            <Backdrop onClick={this.no}>
-                                <Wrapper onClick={this.stopPropagation}>
-                                    <Template yes={this.yes} no={this.no} />
-                                </Wrapper>
-                            </Backdrop>
-                        </PortalAny>
-                    )}
-                </>
-            );
-        }
+    @action.bound showStatus(
+      Template: React.ComponentType<StatusTemplateProps>
+    ) {
+      this.Template = Template;
+      this.promise = new Promise((resolve, reject) => {
+        this.resolve = resolve;
+        this.reject = reject;
+      });
+      return this.promise;
     }
 
-    hoist(WithConfirm as any, Component as any);
+    @action.bound yes() {
+      this.resolve(true);
+      this.Template = null;
+    }
 
-    return WithConfirm as any as React.ComponentType<Props & WithStatusProps>;
+    @action.bound no() {
+      this.resolve(false);
+      this.Template = null;
+    }
+
+    stopPropagation = (e: { stopPropagation: () => void }) => {
+      e.stopPropagation();
+    };
+
+    render() {
+      const { Template } = this;
+
+      const ComponentAny = Component as any;
+
+      return (
+        <>
+          <ComponentAny {...this.props} showStatus={this.showStatus} />
+          {Template && (
+            <PortalAny>
+              <Backdrop onClick={this.no}>
+                <Wrapper onClick={this.stopPropagation}>
+                  <Template yes={this.yes} no={this.no} />
+                </Wrapper>
+              </Backdrop>
+            </PortalAny>
+          )}
+        </>
+      );
+    }
+  }
+
+  hoist(WithConfirm as any, Component as any);
+
+  return WithConfirm as any as React.ComponentType<Props & WithStatusProps>;
 }
 
 const Backdrop = styled.div`
-    background-color: rgba(0, 0, 0, 0.3);
-    position: fixed;
-    z-index: 10;
-    bottom: 0;
-    right: 0;
-    left: 0;
-    top: 0;
-    overflow: auto;
-    display: flex;
-    align-items: flex-start;
+  background-color: rgba(0, 0, 0, 0.3);
+  position: fixed;
+  z-index: 10;
+  bottom: 0;
+  right: 0;
+  left: 0;
+  top: 0;
+  overflow: auto;
+  display: flex;
+  align-items: flex-start;
 `;
 
 const Wrapper = styled.div`
-    background-color: white;
-    padding: 20px;
-    border-radius: 5px;
-    margin: auto;
+  background-color: white;
+  padding: 20px;
+  border-radius: 5px;
+  margin: auto;
 `;

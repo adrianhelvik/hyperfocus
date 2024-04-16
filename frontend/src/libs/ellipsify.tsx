@@ -1,9 +1,9 @@
 export default function ellipsify(text: string, length = 60) {
-    if (typeof text !== "string") return text;
+  if (typeof text !== "string") return text;
 
-    if (text.length < length) {
-        return text;
-    }
+  if (text.length < length) {
+    return text;
+  }
 
-    return text.slice(0, length - 3) + "...";
+  return text.slice(0, length - 3) + "...";
 }

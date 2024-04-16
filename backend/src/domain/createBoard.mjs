@@ -1,6 +1,6 @@
 // @ts-check
 
-import knex from '../knex.mjs'
+import knex from "../knex.mjs";
 
 /**
  * @param {object} options
@@ -8,10 +8,10 @@ import knex from '../knex.mjs'
  * @param {string} options.boardId
  * @param {string} [options.title='']
  */
-export default async function createBoard({ createdBy, boardId, title = '' }) {
-  await knex('boards').insert({
+export default async function createBoard({ createdBy, boardId, title = "" }) {
+  await knex("boards").insert({
     createdBy,
     boardId,
     title,
-  })
+  });
 }

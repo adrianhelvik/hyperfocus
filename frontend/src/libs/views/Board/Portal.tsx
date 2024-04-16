@@ -7,17 +7,17 @@ type Props = DeckProps;
 
 @observer
 class Portal extends React.Component<Props> {
-    @observable error = null;
+  @observable error = null;
 
-    componentDidCatch(error: Error) {
-        console.error(error);
-        this.error = error;
-    }
+  componentDidCatch(error: Error) {
+    console.error(error);
+    this.error = error;
+  }
 
-    render() {
-        if (this.error) return <div>An error occurred</div>;
-        return <Deck {...this.props} />;
-    }
+  render() {
+    if (this.error) return <div>An error occurred</div>;
+    return <Deck {...this.props} />;
+  }
 }
 
 export default Portal;

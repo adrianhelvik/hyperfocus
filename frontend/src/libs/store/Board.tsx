@@ -6,76 +6,76 @@ import Portal from "./Portal";
 import { observable, computed, action } from "mobx";
 
 export type BoardParam = {
-    title: string;
-    children: (Deck | Portal)[];
-    boardId: string;
-    color: string;
+  title: string;
+  children: (Deck | Portal)[];
+  boardId: string;
+  color: string;
 };
 
 class Board {
-    @observable title = "";
-    @observable children = [];
-    @observable boardId = null;
-    @observable color = null;
+  @observable title = "";
+  @observable children = [];
+  @observable boardId = null;
+  @observable color = null;
 
-    constructor(arg: BoardParam | string) {
-        if (typeof arg === "string") this.fromTitle(arg);
-        else this.fromBoard(arg);
-    }
+  constructor(arg: BoardParam | string) {
+    if (typeof arg === "string") this.fromTitle(arg);
+    else this.fromBoard(arg);
+  }
 
-    fromBoard(board: BoardParam) {
-        this.title = board.title;
-        this.children = board.children.slice();
-        this.boardId = board.boardId;
-        this.color = board.color;
-    }
+  fromBoard(board: BoardParam) {
+    this.title = board.title;
+    this.children = board.children.slice();
+    this.boardId = board.boardId;
+    this.color = board.color;
+  }
 
-    fromTitle(title: string) {
-        this.title = title;
-        this.boardId = uuid();
-    }
+  fromTitle(title: string) {
+    this.title = title;
+    this.boardId = uuid();
+  }
 
-    @computed get decks() {
-        return this.children.filter((x) => x instanceof Deck);
-    }
+  @computed get decks() {
+    return this.children.filter((x) => x instanceof Deck);
+  }
 
-    @computed get portals() {
-        return this.children.filter((x) => x instanceof Portal);
-    }
+  @computed get portals() {
+    return this.children.filter((x) => x instanceof Portal);
+  }
 
-    @computed get decksById() {
-        const decksById = observable.map();
+  @computed get decksById() {
+    const decksById = observable.map();
 
-        for (const deck of this.decks) decksById.set(deck.deckId, deck);
+    for (const deck of this.decks) decksById.set(deck.deckId, deck);
 
-        return decksById;
-    }
+    return decksById;
+  }
 
-    @action addDeck(deck: DeckParam, index: number) {
-        if (typeof index === "number") this.children.splice(index, 0, deck);
-        else this.children.push(deck);
-    }
+  @action addDeck(deck: DeckParam, index: number) {
+    if (typeof index === "number") this.children.splice(index, 0, deck);
+    else this.children.push(deck);
+  }
 
-    @action addPortal(options: {
-        boardId?: string;
-        deckId?: string;
-        index?: number;
-        portalId?: string;
-        title: string;
-        target: DeckParam;
-    }) {
-        const portal = new Portal(options);
-        this.children.push(portal);
-        return portal;
-    }
+  @action addPortal(options: {
+    boardId?: string;
+    deckId?: string;
+    index?: number;
+    portalId?: string;
+    title: string;
+    target: DeckParam;
+  }) {
+    const portal = new Portal(options);
+    this.children.push(portal);
+    return portal;
+  }
 
-    @action move(fromIndex: number, toIndex: number) {
-        arrayMove(this.children, fromIndex, toIndex);
-    }
+  @action move(fromIndex: number, toIndex: number) {
+    arrayMove(this.children, fromIndex, toIndex);
+  }
 
-    @action setTitle(title: string) {
-        this.title = title;
-    }
+  @action setTitle(title: string) {
+    this.title = title;
+  }
 }
 
 export default Board;

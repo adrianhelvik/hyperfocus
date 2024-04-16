@@ -1,13 +1,13 @@
 // @ts-check
 
-import { randomUUID } from 'crypto'
-import knex from '../knex.mjs'
-import fs from 'fs'
-import { Stream } from 'stream'
-import assert from 'assert'
+import { randomUUID } from "crypto";
+import knex from "../knex.mjs";
+import fs from "fs";
+import { Stream } from "stream";
+import assert from "assert";
 
-const UPLOADS_BASE_URL = process.env.UPLOADS_BASE_URL
-assert(UPLOADS_BASE_URL, 'UPLOADS_BASE_URL is required')
+const UPLOADS_BASE_URL = process.env.UPLOADS_BASE_URL;
+assert(UPLOADS_BASE_URL, "UPLOADS_BASE_URL is required");
 
 /**
  * @param {string} cardId
@@ -15,23 +15,23 @@ assert(UPLOADS_BASE_URL, 'UPLOADS_BASE_URL is required')
  * @returns void
  */
 export default async function addCardImages(cardId, images) {
-  const entries = []
+  const entries = [];
 
   await Promise.all(
     images.map((stream, index) => {
-      const fileName = `${cardId}_${randomUUID()}`
-      const url = UPLOADS_BASE_URL + `/uploads/${fileName}`
+      const fileName = `${cardId}_${randomUUID()}`;
+      const url = UPLOADS_BASE_URL + `/uploads/${fileName}`;
       entries.push({
         fileName,
         cardId,
         url,
         index,
-      })
-      return fs.promises.writeFile(`/tmp/${fileName}`, stream)
-    }),
-  )
+      });
+      return fs.promises.writeFile(`/tmp/${fileName}`, stream);
+    })
+  );
 
-  await knex('cardImages').insert(entries)
+  await knex("cardImages").insert(entries);
 
-  return entries.map(entry => entry.url)
+  return entries.map((entry) => entry.url);
 }
