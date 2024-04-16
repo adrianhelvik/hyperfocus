@@ -2,7 +2,7 @@
 
 import getDenormalizedBoard from './getDenormalizedBoard.mjs'
 import uuid from '../utils/uuid.mjs'
-import knex from '../db.mjs'
+import knex from '../knex.mjs'
 
 /**
  * @param {object} options

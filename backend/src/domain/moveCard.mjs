@@ -1,6 +1,6 @@
 // @ts-check
 
-import knex from '../db.mjs'
+import knex from '../knex.mjs'
 
 /**
  * @param {object} options
@@ -9,11 +9,9 @@ import knex from '../db.mjs'
  * @param {number} options.index
  */
 export default async function moveCard({ cardId, target, index }) {
-  const targetCard = await knex('cards')
-    .where({ cardId })
-    .first()
+  const targetCard = await knex('cards').where({ cardId }).first()
 
-  const source = targetCard.deckId;
+  const source = targetCard.deckId
 
   if (source === target) {
     const cards = await knex('cards')

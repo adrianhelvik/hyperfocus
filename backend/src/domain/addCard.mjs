@@ -2,7 +2,7 @@
 
 import uuid from '../utils/uuid.mjs'
 import isInteger from 'is-integer'
-import knex from '../db.mjs'
+import knex from '../knex.mjs'
 
 /**
  * @param {object} args

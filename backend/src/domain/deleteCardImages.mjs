@@ -1,20 +1,19 @@
 // @ts-check
 
-import knex from '../db.mjs'
+import knex from '../knex.mjs'
 import fs from 'fs'
 
 /**
  * @param {string} cardId
  */
 export default async function deleteCardImages(cardId) {
-  const imageObjects = await knex('cardImages')
-    .where({ cardId })
+  const imageObjects = await knex('cardImages').where({ cardId })
 
-  await Promise.all(imageObjects.map(({ fileName }) => {
-    return fs.promises.unlink(`/tmp/${fileName}`);
-  }));
+  await Promise.all(
+    imageObjects.map(({ fileName }) => {
+      return fs.promises.unlink(`/tmp/${fileName}`)
+    }),
+  )
 
-  await knex('cardImages')
-    .where({ cardId })
-    .del()
+  await knex('cardImages').where({ cardId }).del()
 }

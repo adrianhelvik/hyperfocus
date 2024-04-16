@@ -3,7 +3,7 @@ import createSession from './createSession.mjs'
 import createBoard from './createBoard.mjs'
 import createUser from './createUser.mjs'
 import { v4 as uuid } from 'uuid'
-import knex from '../db.mjs'
+import knex from '../knex.mjs'
 
 it('does not throw for an owner', async () => {
   const boardId = uuid()

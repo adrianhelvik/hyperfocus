@@ -1,6 +1,7 @@
-import "dotenv/config.js";
+import 'dotenv/config.js'
 
 import runCodeHeuristics from './runCodeHeuristics.mjs'
+import healthcheck from './healthcheck.mjs'
 import Hapi from '@hapi/hapi'
 import chalk from 'chalk'
 
@@ -15,6 +16,8 @@ async function main() {
       ),
     )
   }
+
+  await healthcheck.db()
 
   const { default: createTestUserUnlessExists } = await import(
     './domain/createTestUserUnlessExists.mjs'
@@ -33,9 +36,17 @@ async function main() {
     },
   })
 
-  server.events.on('response', function(request) {
-    console.log(request.info.remoteAddress + ': ' + request.method.toUpperCase() + ' ' + request.path + ' --> ' + request.response.statusCode);
-  });
+  server.events.on('response', function (request) {
+    console.log(
+      request.info.remoteAddress +
+        ': ' +
+        request.method.toUpperCase() +
+        ' ' +
+        request.path +
+        ' --> ' +
+        request.response.statusCode,
+    )
+  })
 
   const routes = await import('./routes.mjs')
 
@@ -58,12 +69,21 @@ async function main() {
   })
 
   await server.start()
+  await healthcheck()
 
   console.log(chalk.cyan(`Server running at ${server.info.uri}`))
 }
 
 process.on('unhandledRejection', e => {
-  console.log(chalk.red.bold(e.message))
+  if (e instanceof AggregateError) {
+    for (const subError of e.errors) {
+      console.error(chalk.red.bold(subError.message))
+    }
+  } else if (e.message) {
+    console.log(chalk.red.bold('Unhandled rejection: ' + e.message))
+  } else {
+    console.error(e)
+  }
   console.error('\n' + chalk.red(e.stack))
   process.exit(1)
 })

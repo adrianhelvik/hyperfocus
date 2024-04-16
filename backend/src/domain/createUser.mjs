@@ -4,7 +4,7 @@ import requireString from '../utils/requireString.mjs'
 import createHash from '../utils/createHash.mjs'
 import uuid from '../utils/uuid.mjs'
 import Boom from '@hapi/boom'
-import knex from '../db.mjs'
+import knex from '../knex.mjs'
 
 /**
  * @param {object} options

@@ -24,7 +24,7 @@ import getCard from './domain/getCard.mjs'
 import login from './domain/login.mjs'
 import { Stream } from 'stream'
 import Boom from '@hapi/boom'
-import knex from './db.mjs'
+import knex from './knex.mjs'
 import fs from 'fs'
 
 export const loginRoute = {
@@ -376,15 +376,15 @@ export const setBoardTitleRoute = {
    */
   async handler(request) {
     const { boardId, title } = request.payload
-    await assertCanEditBoard(request, boardId);
+    await assertCanEditBoard(request, boardId)
 
     try {
-      await knex("boards").where({ boardId }).update({ title })
+      await knex('boards').where({ boardId }).update({ title })
     } catch (e) {
-      console.error(e.stack);
+      console.error(e.stack)
       return { success: false }
     }
-    
+
     return { success: true }
   },
 }
@@ -475,10 +475,10 @@ export const addCardImagesRoute = {
   options: {
     payload: {
       parse: true,
-      allow: "multipart/form-data",
+      allow: 'multipart/form-data',
       maxBytes: 100 * 1024 ** 3,
       multipart: {
-        output: "stream",
+        output: 'stream',
       },
     },
   },
@@ -488,19 +488,18 @@ export const addCardImagesRoute = {
    */
   async handler(request) {
     try {
-      const cardId = request.payload.cardId;
+      const cardId = request.payload.cardId
       const images = Array.isArray(request.payload.image)
         ? request.payload.image
-        : [request.payload.image].filter(Boolean);
+        : [request.payload.image].filter(Boolean)
 
-      return await addCardImages(cardId, images);
+      return await addCardImages(cardId, images)
     } catch (e) {
-      console.error(e);
+      console.error(e)
       throw e
     }
   },
-};
-
+}
 
 /**
  * @type {import("@hapi/hapi").ServerRoute}
@@ -510,5 +509,5 @@ export const uploadsRoute = {
   path: '/uploads/{fileName}',
   async handler(request) {
     return fs.createReadStream(`/tmp/${request.params.fileName}`)
-  }
+  },
 }

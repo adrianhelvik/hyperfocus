@@ -2,7 +2,7 @@
 
 import deleteCardImages from './deleteCardImages.mjs'
 import getCard from './getCard.mjs'
-import knex from '../db.mjs'
+import knex from '../knex.mjs'
 
 /**
  * @param {string} cardId
@@ -11,7 +11,7 @@ import knex from '../db.mjs'
 export default async function deleteCard(cardId) {
   const card = await getCard(cardId)
 
-  await deleteCardImages(cardId);
+  await deleteCardImages(cardId)
 
   await knex.transaction(async knex => {
     await knex('cards')

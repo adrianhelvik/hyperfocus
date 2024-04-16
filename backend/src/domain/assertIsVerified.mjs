@@ -2,7 +2,7 @@
 
 import authenticate from './authenticate.mjs'
 import Boom from '@hapi/boom'
-import knex from '../db.mjs'
+import knex from '../knex.mjs'
 
 /**
  * @param {any} request

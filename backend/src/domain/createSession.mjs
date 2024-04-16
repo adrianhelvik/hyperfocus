@@ -1,5 +1,5 @@
 import random from '../utils/random.mjs'
-import knex from '../db.mjs'
+import knex from '../knex.mjs'
 
 export default async function createSession(userId) {
   const sessionId = await random()

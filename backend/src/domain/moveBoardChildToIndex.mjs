@@ -2,7 +2,7 @@
 
 import getDenormalizedBoard from './getDenormalizedBoard.mjs'
 import arrayMove from '../utils/arrayMove.mjs'
-import knex from '../db.mjs'
+import knex from '../knex.mjs'
 
 /**
  * @param {object} args

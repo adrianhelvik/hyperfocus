@@ -1,4 +1,4 @@
-import knex from '../db.mjs'
+import knex from '../knex.mjs'
 
 export default async function getDeck(deckId) {
   const deck = await knex('decks')
@@ -11,13 +11,15 @@ export default async function getDeck(deckId) {
 
   deck.cards = await knex('cards').where({ deckId }).orderBy('index', 'asc')
 
-  await Promise.all(deck.cards.map(async card => {
-    card.images = await knex("cardImages")
-      .where({ cardId: card.cardId })
-      .orderBy("index", "asc")
-      .select("url")
-      .then(it => it.map(item => item.url))
-  }));
+  await Promise.all(
+    deck.cards.map(async card => {
+      card.images = await knex('cardImages')
+        .where({ cardId: card.cardId })
+        .orderBy('index', 'asc')
+        .select('url')
+        .then(it => it.map(item => item.url))
+    }),
+  )
 
   return deck
 }

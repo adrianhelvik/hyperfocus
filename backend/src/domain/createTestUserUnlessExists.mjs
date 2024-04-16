@@ -1,5 +1,5 @@
 import createUser from './createUser.mjs'
-import knex from '../db.mjs'
+import knex from '../knex.mjs'
 
 export default async function createTestUserUnlessExists() {
   const testUser = await knex('users').where('username', 'test').first()

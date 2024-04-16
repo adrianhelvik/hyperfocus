@@ -3,7 +3,7 @@
 import assertCanEditBoard from './assertCanEditBoard.mjs'
 import assertCanEditDeck from './assertCanEditDeck.mjs'
 import Boom from '@hapi/boom'
-import knex from '../db.mjs'
+import knex from '../knex.mjs'
 
 /**
  * @param {any} request

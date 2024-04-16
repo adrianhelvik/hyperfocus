@@ -1,4 +1,4 @@
-import knex from '../db.mjs'
+import knex from '../knex.mjs'
 
 /**
  * @param {string} userId

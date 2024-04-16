@@ -1,6 +1,6 @@
 // @ts-check
 
-import knex from '../db.mjs'
+import knex from '../knex.mjs'
 
 /**
  * @param {string} cardId
@@ -12,10 +12,10 @@ export default async function getCard(cardId) {
     .leftJoin('decks', 'cards.deckId', 'decks.deckId')
     .first()
 
-  card.images = await knex("cardImages")
+  card.images = await knex('cardImages')
     .where({ cardId: card.cardId })
-    .orderBy("index", "asc")
-    .select("url")
+    .orderBy('index', 'asc')
+    .select('url')
     .then(it => it.map(item => item.url))
 
   return card
