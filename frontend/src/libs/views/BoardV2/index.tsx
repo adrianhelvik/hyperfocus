@@ -21,6 +21,7 @@ export default function BoardV2() {
 
   const addDeck = async () => {
     await showModal((props) => <AddDeck {...props} board={board} />);
+    dispatchEvent(new Event("subtask:addDeck"));
   };
 
   const addPortal = async () => {

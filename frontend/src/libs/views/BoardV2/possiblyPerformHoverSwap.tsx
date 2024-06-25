@@ -60,7 +60,7 @@ export function possiblyPerformHoverSwap({
   }
 
   if (topEl && clientY - insetY <= verticalMiddle(topEl)) {
-    console.log("A");
+    // console.log("A");
     topEl.parentNode.insertBefore(placeholderNode, topEl);
     return true;
   } else if (
@@ -68,7 +68,7 @@ export function possiblyPerformHoverSwap({
     clientY - insetY + cardHeight >= verticalMiddle(bottomEl) &&
     placeholderNode.parentElement === bottomEl.parentElement
   ) {
-    console.log("B-1");
+    // console.log("B-1");
     bottomEl.parentNode.insertBefore(placeholderNode, bottomEl.nextSibling);
     return true;
   } else if (
@@ -80,14 +80,14 @@ export function possiblyPerformHoverSwap({
     // I have no idea why this works, but when debugging
     // it solved a problem I had. This condition can probably
     // be refined. It's also a good first place to search for bugs.
-    console.log("B-2");
+    // console.log("B-2");
     topEl.parentNode.insertBefore(placeholderNode, topEl.nextSibling);
   } else if (!bottomEl && clientY - insetY + cardHeight >= deckBottom) {
-    console.log("C");
+    // console.log("C");
     cardsContainer.append(placeholderNode);
     return true;
   } else if (clientY - insetY < deckTop) {
-    console.log("D");
+    // console.log("D");
     // Above deck
     cardsContainer.insertBefore(placeholderNode, cardsContainer.children[0]);
     return true;
