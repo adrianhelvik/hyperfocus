@@ -77,13 +77,17 @@ export class BoardView {
       })
     );
 
-    if (deck.color) {
-      deckElement.style.setProperty("--deck-color", deck.color);
-      deckElement.style.setProperty(
-        "--deck-text-color",
-        Color(deck.color).blacken(0.7).isDark() ? "white" : "black"
-      );
-    }
+    let deckColor = deck.color ?? "#757575";
+    const darkColor = Color(deckColor).darken(0.2);
+
+    const isDark = darkColor.isDark();
+
+    deckElement.style.setProperty("--deck-color", deckColor);
+    deckElement.style.setProperty(
+      "--deck-text-color",
+      isDark ? "white" : "black"
+    );
+
     deckElement.dataset.deckId = deck.deckId;
 
     const cardsContainer = document.createElement("div");
@@ -123,8 +127,51 @@ export class BoardView {
     deckElement: HTMLElement;
     cleanupHooks: CleanupHooks;
   }) {
+    const containerNode = document.createElement("div");
+    containerNode.className = classes.cardTitleContainer;
+
     const titleNode = document.createElement("h2");
+    titleNode.className = classes.cardTitle;
     titleNode.textContent = child.title;
+
+    containerNode.append(titleNode);
+
+    const titleInput = document.createElement("input");
+    titleInput.className = classes.cardTitleInput;
+
+    const switchToInput = () => {
+      if (!titleNode.parentNode) return;
+      titleInput.value = titleNode.textContent;
+      titleNode.parentNode.replaceChild(
+        titleInput,
+        titleNode,
+      );
+      titleInput.focus();
+    };
+
+    const switchToText = () => {
+      if (!titleInput.parentNode) return;
+      titleInput.parentNode.replaceChild(
+        titleNode,
+        titleInput,
+      );
+      if ('portalId' in child) {
+        api.setPortalTitle({
+          portalId: child.portalId,
+          title: titleInput.value,
+        });
+      } else {
+        api.setDeckTitle({
+          deckId: child.deckId,
+          title: titleInput.value,
+        });
+      }
+      titleNode.textContent = titleInput.value;
+    };
+
+    titleInput.onblur = () => {
+      switchToText();
+    };
 
     const leftByElement = new Map<HTMLElement, number>();
 
@@ -145,9 +192,13 @@ export class BoardView {
       y = e.clientY - insetY;
     };
 
+    let didMove = false;
+
     const onMouseMove = (e: MouseEvent) => {
       setPosition(e);
       renderFloatingDeck();
+
+      didMove = true;
 
       const ownIndex = this.deckElements.indexOf(deckElement);
 
@@ -177,45 +228,52 @@ export class BoardView {
     };
 
     const onMouseUp = (e: MouseEvent) => {
-      setPosition(e);
-      renderFloatingDeck();
+      if (!didMove) {
+        deckElement.style.transform = null;
+        deckElement.style.position = null;
+        placeholder.replaceWith(deckElement);
+        switchToInput();
+      } else {
+        setPosition(e);
+        renderFloatingDeck();
 
-      const placeholderRect = placeholder.getBoundingClientRect();
+        const placeholderRect = placeholder.getBoundingClientRect();
 
-      api.moveBoardChildToIndex({
-        boardId: this.board.boardId,
-        index: this.deckElements.indexOf(deckElement),
-        item: child,
-      });
+        api.moveBoardChildToIndex({
+          boardId: this.board.boardId,
+          index: this.deckElements.indexOf(deckElement),
+          item: child,
+        });
 
-      cleanupHooks.add(
-        animate({
-          onComplete: onlyOnceFn(() => {
-            placeholder.replaceWith(deckElement);
-            console.log(deckElement);
-            deckElement.style.transform = null;
-            deckElement.style.position = null;
-          }),
-          values: {
-            x: [x, placeholderRect.left],
-            y: [y, placeholderRect.top],
-          },
-          time: DECK_ANIMATION_TIME,
-          fn: (pos) => {
-            x = pos.x;
-            y = pos.y;
-            renderFloatingDeck();
-          },
-        })
-      );
+        cleanupHooks.add(
+          animate({
+            onComplete: onlyOnceFn(() => {
+              placeholder.replaceWith(deckElement);
+              deckElement.style.transform = null;
+              deckElement.style.position = null;
+            }),
+            values: {
+              x: [x, placeholderRect.left],
+              y: [y, placeholderRect.top],
+            },
+            time: DECK_ANIMATION_TIME,
+            fn: (pos) => {
+              x = pos.x;
+              y = pos.y;
+              renderFloatingDeck();
+            },
+          })
+        );
+      }
 
       document.removeEventListener("mousemove", onMouseMove);
       document.removeEventListener("mouseup", onMouseUp);
     };
 
-    titleNode.onmousedown = (e) => {
+    containerNode.onmousedown = (e) => {
       e.preventDefault();
       cleanupHooks.run();
+      didMove = false;
 
       for (const element of this.deckElements) {
         leftByElement.set(element, element.getBoundingClientRect().left);
@@ -261,7 +319,7 @@ export class BoardView {
       document.addEventListener("mouseup", onMouseUp);
     };
 
-    return titleNode;
+    return containerNode;
   }
 
   private createInsertField({
@@ -295,7 +353,7 @@ export class BoardView {
         title,
         cardId,
         images: [],
-        setTitle() {},
+        setTitle() { },
       };
       deckElement.querySelector("[data-cards-container]").append(
         this.buildCardForDeck({
@@ -344,6 +402,36 @@ export class BoardView {
     cardElement.dataset.cardId = card.cardId;
     cardElement.className = classes.card;
 
+    const inputElement = document.createElement("textarea");
+    inputElement.className = classes.cardInput;
+
+    inputElement.onmousedown = e => {
+      e.stopPropagation();
+    };
+
+    const switchToInput = () => {
+      inputElement.value = cardElement.textContent;
+      cardContentElement.replaceWith(inputElement);
+      inputElement.focus();
+    };
+
+    inputElement.onkeydown = e => {
+      if (e.key === "Enter" && !e.shiftKey) {
+        inputElement.value = inputElement.value.trim()
+        e.preventDefault()
+        inputElement.blur();
+      }
+    };
+
+    inputElement.onblur = () => {
+      cardContentElement.textContent = inputElement.value;
+      inputElement.replaceWith(cardContentElement);
+      api.setCardTitle({
+        cardId: card.cardId,
+        title: inputElement.value,
+      });
+    };
+
     const cardContentElement = document.createElement("div");
     cardContentElement.className = classes.cardContent;
     cardContentElement.textContent = card.title;
@@ -352,6 +440,8 @@ export class BoardView {
     const placeholderNode = document.createElement("div");
     placeholderNode.className = classes.cardPlaceholder;
     let hoverDeck: HTMLElement = deckElement;
+
+    let didMove = false;
 
     cardElement.addEventListener("mousedown", (event) => {
       // Ignore anything but left clicks
@@ -424,6 +514,7 @@ export class BoardView {
         cardElement.style.transform = `translateX(${x}px) translateY(${y}px)`;
 
         {
+          let timeout: ReturnType<typeof setTimeout>;
           const cleanup = onlyOnceFn(() => {
             cardElement.style.transition = null;
             cardElement.style.transform = null;
@@ -433,12 +524,18 @@ export class BoardView {
             cardElement.classList.remove(classes.movingCard);
             clearTimeout(timeout);
           });
-          const timeout = setTimeout(() => {
+
+          if (didMove) {
+            timeout = setTimeout(() => {
+              cleanup();
+            }, CARD_ANIMATION_TIME);
+            cleanupHooks.add(() => {
+              cleanup();
+            });
+          } else {
             cleanup();
-          }, CARD_ANIMATION_TIME);
-          cleanupHooks.add(() => {
-            cleanup();
-          });
+            switchToInput();
+          }
         }
 
         api.moveCard({
@@ -451,6 +548,7 @@ export class BoardView {
 
         document.removeEventListener("mouseup", onMouseUp);
         document.removeEventListener("mousemove", onMouseMove);
+        didMove = false;
       };
 
       const onMouseMove = ({
@@ -461,6 +559,7 @@ export class BoardView {
         clientY: number;
       }) => {
         prevMoveCoords = { clientX, clientY };
+        didMove = true;
 
         styleMovedCard({
           clientX,

@@ -4,7 +4,7 @@ import assertCanEditDeck from "./assertCanEditDeck.mjs";
 import getCard from "./getCard.mjs";
 import Boom from "@hapi/boom";
 
-export default async function assertCanEditcard(request, cardId) {
+export default async function assertCanEditCard(request, cardId) {
   const card = await getCard(cardId);
 
   if (!card) throw Boom.notFound("The card does not exist");

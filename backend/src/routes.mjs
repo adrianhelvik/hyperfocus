@@ -26,6 +26,7 @@ import { Stream } from "stream";
 import Boom from "@hapi/boom";
 import knex from "./knex.mjs";
 import fs from "fs";
+import setCardTitle from "./domain/setCardTitle.mjs";
 
 export const loginRoute = {
   method: "POST",
@@ -509,5 +510,24 @@ export const uploadsRoute = {
   path: "/uploads/{fileName}",
   async handler(request) {
     return fs.createReadStream(`/tmp/${request.params.fileName}`);
+  },
+};
+
+export const setCardTitleRoute = {
+  method: "POST",
+  path: "/setCardTitle",
+  /**
+   * @param {{ payload: { cardId: string, title: string } , headers: { authorization: string } }} request
+   */
+  async handler(request) {
+    const { cardId, title } = request.payload;
+
+    await assertCanEditCard(request, cardId);
+
+    await setCardTitle({ cardId, title });
+
+    return {
+      success: true,
+    };
   },
 };

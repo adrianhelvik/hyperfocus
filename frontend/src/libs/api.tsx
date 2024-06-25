@@ -16,6 +16,7 @@ type PortalParam = {
 
 type Api = {
   setBoardTitle(payload: { boardId: string; title: string }): Promise<void>;
+  setCardTitle(payload: { cardId: string, title: string }): Promise<void>;
   ownProjects(): Promise<{ projects: Project[] }>;
   createBoard(board: Board): Promise<void>;
   registerUser(payload: { password: string; email: string }): Promise<void>;

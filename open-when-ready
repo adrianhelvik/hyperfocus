@@ -1,0 +1,18 @@
+#!/bin/sh
+
+port=9341
+
+(
+    for i in {1..100}; do
+        if curl http://localhost:$port/index.html > /dev/null; then
+            open http://localhost:$port
+            break
+        fi
+        sleep 1
+    done
+) &
+
+pid=$?
+
+trap "kill $pid" EXIT
+
