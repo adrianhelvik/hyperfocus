@@ -15,6 +15,8 @@ import createAutoGrowTextarea from "./createAutoGrowTextarea";
 import { findClosestDeck } from "./findClosestDeck";
 import getCaretPositionAndNodeFromPoint from "./getCaretPositionAndNodeFromPoint";
 import { distanceBetween } from "./distanceBetween";
+import { setLinkableText } from "./setLinkableText";
+import { replaceWithInputAndFocusAtCaretPosition } from "./replaceWithInputAndFocusAtCaretPosition";
 
 const AUTO_SCROLL_OFFSET = 100;
 const CARD_ANIMATION_TIME = 300;
@@ -140,7 +142,7 @@ export class BoardView {
 
     const deckTitleNode = document.createElement("h2");
     deckTitleNode.className = classes.deckTitle;
-    deckTitleNode.textContent = child.title;
+    setLinkableText(deckTitleNode, child.title);
     containerNode.append(deckTitleNode);
 
     const menuNode = document.createElement("button");
@@ -160,14 +162,14 @@ export class BoardView {
     const titleInput = document.createElement("input");
     titleInput.className = classes.deckTitleInput;
 
-    const startEditingDeckTitle = () => {
+    const startEditingDeckTitle = (e: { clientX: number, clientY: number }) => {
       if (!deckTitleNode.parentNode) return;
-      titleInput.value = deckTitleNode.textContent;
-      deckTitleNode.parentNode.replaceChild(
-        titleInput,
-        deckTitleNode,
-      );
-      titleInput.focus();
+      replaceWithInputAndFocusAtCaretPosition({
+        sourceElement: deckTitleNode,
+        inputElement: titleInput,
+        clientX: e.clientX,
+        clientY: e.clientY,
+      });
     };
 
     const commitDeckTitleEdits = () => {
@@ -188,7 +190,7 @@ export class BoardView {
           title: titleInput.value,
         });
       }
-      deckTitleNode.textContent = titleInput.value;
+      setLinkableText(deckTitleNode, titleInput.value);
     };
 
     titleInput.onblur = () => {
@@ -257,10 +259,14 @@ export class BoardView {
 
     const onMouseUp = (e: MouseEvent) => {
       if (!didMove) {
-        deckElement.style.transform = null;
-        deckElement.style.position = null;
-        placeholder.replaceWith(deckElement);
-        startEditingDeckTitle();
+        if ((e.target instanceof HTMLElement) && e.target.tagName === "A") {
+          e.target.click();
+        } else {
+          deckElement.style.transform = null;
+          deckElement.style.position = null;
+          placeholder.replaceWith(deckElement);
+          startEditingDeckTitle(e);
+        }
       } else {
         setPosition(e);
         renderFloatingDeck();
@@ -440,14 +446,12 @@ export class BoardView {
     };
 
     const switchToInput = (e: MouseEvent) => {
-      const result = getCaretPositionAndNodeFromPoint(e.clientX, e.clientY);
-      inputElement.value = cardElement.textContent;
-      cardContentElement.replaceWith(inputElement);
-      inputElement.focus();
-      if (result != null) {
-        inputElement.selectionStart = result.offset;
-        inputElement.selectionEnd = result.offset;
-      }
+      replaceWithInputAndFocusAtCaretPosition({
+        sourceElement: cardContentElement,
+        inputElement,
+        clientX: e.clientX,
+        clientY: e.clientY,
+      });
     };
 
     inputElement.onkeydown = e => {
@@ -459,7 +463,7 @@ export class BoardView {
     };
 
     inputElement.onblur = () => {
-      cardContentElement.textContent = inputElement.value;
+      setLinkableText(cardContentElement, inputElement.value);
       inputElement.replaceWith(cardContentElement);
       api.setCardTitle({
         cardId: card.cardId,
@@ -469,7 +473,7 @@ export class BoardView {
 
     const cardContentElement = document.createElement("div");
     cardContentElement.className = classes.cardContent;
-    cardContentElement.textContent = card.title;
+    setLinkableText(cardContentElement, card.title);
     cardElement.append(cardContentElement);
 
     const placeholderNode = document.createElement("div");
@@ -546,7 +550,12 @@ export class BoardView {
         document.removeEventListener("mousemove", onMouseMove);
 
         if (!didMove) {
-          switchToInput(e);
+          // Ignore clicks on links inside the card
+          if ((e.target instanceof HTMLElement) && e.target.tagName === "A") {
+            e.target.click();
+          } else {
+            switchToInput(e);
+          }
           return;
         }
 
@@ -576,12 +585,12 @@ export class BoardView {
             clearTimeout(timeout);
           });
 
-            timeout = setTimeout(() => {
-              cleanup();
-            }, CARD_ANIMATION_TIME);
-            cleanupHooks.add(() => {
-              cleanup();
-            });
+          timeout = setTimeout(() => {
+            cleanup();
+          }, CARD_ANIMATION_TIME);
+          cleanupHooks.add(() => {
+            cleanup();
+          });
         }
 
         api.moveCard({
@@ -641,7 +650,7 @@ export class BoardView {
         }
 
         if (clientX < AUTO_SCROLL_OFFSET) scrollDirection = "LEFT";
-        else if (clientX >= screen.width - AUTO_SCROLL_OFFSET)
+        else if (clientX >= window.innerWidth - AUTO_SCROLL_OFFSET)
           scrollDirection = "RIGHT";
         else scrollDirection = "NONE";
       };

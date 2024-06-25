@@ -2,9 +2,9 @@
 
 import { randomUUID } from "crypto";
 import knex from "../knex.mjs";
-import fs from "fs";
 import { Stream } from "stream";
 import assert from "assert";
+import fs from "fs";
 
 const UPLOADS_BASE_URL = process.env.UPLOADS_BASE_URL;
 assert(UPLOADS_BASE_URL, "UPLOADS_BASE_URL is required");
@@ -19,6 +19,7 @@ export default async function addCardImages(cardId, images) {
 
   await Promise.all(
     images.map((stream, index) => {
+      // TODO: Add support for non-local files
       const fileName = `${cardId}_${randomUUID()}`;
       const url = UPLOADS_BASE_URL + `/uploads/${fileName}`;
       entries.push({
@@ -27,6 +28,7 @@ export default async function addCardImages(cardId, images) {
         url,
         index,
       });
+      console.log(`Uploaded file: ${fileName}`);
       return fs.promises.writeFile(`/tmp/${fileName}`, stream);
     })
   );
