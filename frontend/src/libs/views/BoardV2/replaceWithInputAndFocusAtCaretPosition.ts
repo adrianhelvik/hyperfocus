@@ -1,17 +1,27 @@
 import getCaretPositionAndNodeFromPoint from "./getCaretPositionAndNodeFromPoint";
 
 export function replaceWithInputAndFocusAtCaretPosition(opts: {
-  clientX: number,
-  clientY: number,
+  clientX: number | null,
+  clientY: number | null,
   sourceElement: HTMLElement,
   inputElement: HTMLInputElement | HTMLTextAreaElement,
 }) {
-  const result = getCaretPositionAndNodeFromPoint(opts.clientX, opts.clientY);
+  const result = opts.clientX != null && opts.clientY != null
+    ? getCaretPositionAndNodeFromPoint(opts.clientX, opts.clientY)
+    : null;
+
   opts.inputElement.value = opts.sourceElement.textContent;
   opts.sourceElement.replaceWith(opts.inputElement);
   opts.inputElement.focus();
 
-  if (result != null) {
+  const moveToEnd = () => {
+    opts.inputElement.selectionStart = opts.inputElement.value.length;
+    opts.inputElement.selectionEnd = opts.inputElement.value.length;
+  };
+
+  if (result == null) {
+    moveToEnd();
+  } else {
     const nodes = [].slice.call(opts.sourceElement.childNodes);
     const index = nodes.findIndex((it: Node) => it.contains(result.node));
     if (index !== -1) {
@@ -22,9 +32,7 @@ export function replaceWithInputAndFocusAtCaretPosition(opts: {
       opts.inputElement.selectionStart = offset;
       opts.inputElement.selectionEnd = offset;
     } else {
-      console.log(result.node);
-      opts.inputElement.selectionStart = opts.inputElement.value.length;
-      opts.inputElement.selectionEnd = opts.inputElement.value.length;
+      moveToEnd();
     }
   }
 }

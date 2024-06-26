@@ -13,10 +13,10 @@ import Color from "color";
 import onlyOnceFn from "./onlyOnceFn";
 import createAutoGrowTextarea from "./createAutoGrowTextarea";
 import { findClosestDeck } from "./findClosestDeck";
-import getCaretPositionAndNodeFromPoint from "./getCaretPositionAndNodeFromPoint";
 import { distanceBetween } from "./distanceBetween";
 import { setLinkableText } from "./setLinkableText";
 import { replaceWithInputAndFocusAtCaretPosition } from "./replaceWithInputAndFocusAtCaretPosition";
+import { isKeypressElement } from "./isKeypressElement";
 
 const AUTO_SCROLL_OFFSET = 100;
 const CARD_ANIMATION_TIME = 300;
@@ -25,12 +25,14 @@ const DECK_ANIMATION_TIME = 300;
 export class BoardView {
   private cleanupHooks = new CleanupHooks();
   private deckElements: HTMLElement[] = [];
+  private newCardElements: HTMLElement[] = [];
   private onDestroyCallbacks: Array<() => void> = [];
 
   constructor(private root: HTMLElement, private board: BoardParam) {
     addEventListener("subtask:addDeck", this.onDeckAdded);
     this.cleanup();
     this.buildInterface();
+    document.addEventListener("keydown", this.onKeydown);
   }
 
   onDeckAdded = () => {
@@ -50,6 +52,46 @@ export class BoardView {
     this.root.innerHTML = "";
     this.root.classList.remove(classes.board);
     document.body.classList.remove(classes.body);
+    document.removeEventListener("keydown", this.onKeydown);
+  }
+
+  private onKeydown = (e: KeyboardEvent) => {
+    console.log("onKeydown");
+
+    if (!isKeypressElement(e.target)) {
+      if (e.key === "F" && (e.metaKey || e.ctrlKey)) {
+        this.showSearchUI();
+      }
+    }
+
+    if (!isKeypressElement(e.target) || ('value' in e.target && !e.target.value)) {
+      // TODO: Evaluate whether I should use these modifier keys
+
+      if (e.key === "ArrowRight") {
+        const deckIndex = this.deckElements.findIndex(it => document.activeElement == null || it.contains(document.activeElement));
+        const sibling = this.deckElements[deckIndex + 1];
+        this.focusAddCardInputInDeck(sibling);
+      }
+
+      if (e.key === "ArrowLeft") {
+        let deckIndex = this.deckElements.findIndex(it => document.activeElement == null || it.contains(document.activeElement));
+        if (deckIndex === -1) deckIndex = this.deckElements.length - 1;
+        const sibling = this.deckElements[deckIndex - 1];
+        this.focusAddCardInputInDeck(sibling);
+      }
+
+      if (e.key === "ArrowUp") {
+        // TODO
+      }
+
+      if (e.key === "ArrowDown") {
+        // TODO
+      }
+    }
+  }
+
+  private showSearchUI() {
+    // TODO: Implement this
   }
 
   private buildInterface() {
@@ -83,8 +125,10 @@ export class BoardView {
     let deckColor = deck.color || "#757575";
 
     const isDark = Color(deckColor).darken(0.2).isDark();
+    const isVeryDark = Color(deckColor).lighten(0.2).isDark();
 
     deckElement.style.setProperty("--deck-color", deckColor);
+    if (deck.color) deckElement.style.setProperty("--deck-color-or-unset", deckColor);
     deckElement.style.setProperty(
       "--deck-text-color",
       isDark ? "white" : "black"
@@ -95,7 +139,7 @@ export class BoardView {
     );
     deckElement.style.setProperty(
       "--deck-black-or-white-contrast",
-      isDark ? "black" : "white"
+      isVeryDark ? "white" : "black"
     );
 
     deckElement.dataset.deckId = deck.deckId;
@@ -117,7 +161,7 @@ export class BoardView {
     }
 
     deckElement.append(
-      this.createInsertField({
+      this.createNewCardInputField({
         root: this.root,
         deckElement,
         deck,
@@ -137,13 +181,22 @@ export class BoardView {
     deckElement: HTMLElement;
     cleanupHooks: CleanupHooks;
   }) {
+    let editSource: "keyboard" | "mouse" = "mouse";
+
     const containerNode = document.createElement("div");
     containerNode.className = classes.deckTitleContainer;
 
     const deckTitleNode = document.createElement("h2");
+    deckTitleNode.tabIndex = 0;
     deckTitleNode.className = classes.deckTitle;
     setLinkableText(deckTitleNode, child.title);
     containerNode.append(deckTitleNode);
+
+    deckTitleNode.onkeydown = e => {
+      if (e.key === "Enter") {
+        startEditingDeckTitle(null);
+      }
+    };
 
     const menuNode = document.createElement("button");
     menuNode.type = "button";
@@ -162,13 +215,16 @@ export class BoardView {
     const titleInput = document.createElement("input");
     titleInput.className = classes.deckTitleInput;
 
-    const startEditingDeckTitle = (e: { clientX: number, clientY: number }) => {
+    const startEditingDeckTitle = (e: { clientX: number, clientY: number } | null) => {
       if (!deckTitleNode.parentNode) return;
+      if (e == null) editSource = "keyboard";
+      else editSource = "mouse";
+
       replaceWithInputAndFocusAtCaretPosition({
         sourceElement: deckTitleNode,
         inputElement: titleInput,
-        clientX: e.clientX,
-        clientY: e.clientY,
+        clientX: e ? e.clientX : null,
+        clientY: e ? e.clientY : null,
       });
     };
 
@@ -191,6 +247,9 @@ export class BoardView {
         });
       }
       setLinkableText(deckTitleNode, titleInput.value);
+      if (editSource === "keyboard") {
+        deckTitleNode.focus();
+      }
     };
 
     titleInput.onblur = () => {
@@ -198,7 +257,7 @@ export class BoardView {
     };
 
     titleInput.onkeydown = (e) => {
-      if (e.key === "Enter") {
+      if (e.key === "Enter" || e.key === "Escape") {
         titleInput.blur();
       }
     };
@@ -358,7 +417,7 @@ export class BoardView {
     return containerNode;
   }
 
-  private createInsertField({
+  private createNewCardInputField({
     root,
     deckElement,
     deck,
@@ -373,6 +432,7 @@ export class BoardView {
     form.classList.add(classes.newCardContainer);
 
     const input = createAutoGrowTextarea();
+    input.dataset.addCardInput = deck.deckId;
     input.required = true;
     input.classList.add(classes.newCardInput);
     input.placeholder = "Add card";
@@ -403,7 +463,7 @@ export class BoardView {
     };
 
     input.addEventListener("keydown", (e) => {
-      if (e.which === 13 && !e.shiftKey) {
+      if (e.key === "Enter" && !e.shiftKey) {
         e.preventDefault();
         submit();
       }
@@ -422,6 +482,18 @@ export class BoardView {
     return form;
   }
 
+  private focusAddCardInputInDeck(sibling: HTMLElement | null) {
+    if (!sibling) return
+    const addCardInput = sibling.querySelector("[data-add-card-input]");
+    if (addCardInput instanceof HTMLElement) {
+      addCardInput.focus();
+      addCardInput.scrollIntoView({
+        block: "nearest",
+        inline: "center",
+      });
+    }
+  }
+
   private buildCardForDeck({
     root,
     card,
@@ -433,48 +505,101 @@ export class BoardView {
     deckElement: HTMLElement;
     cleanupHooks: CleanupHooks;
   }) {
-    const cardElement = document.createElement("div");
+    let editSource: "keyboard" | "mouse" = "mouse";
 
+    const cardElement = document.createElement("div");
     cardElement.dataset.cardId = card.cardId;
     cardElement.className = classes.card;
 
-    const inputElement = document.createElement("textarea");
-    inputElement.className = classes.cardInput;
+    const cardInputElement = document.createElement("textarea");
+    cardInputElement.className = classes.cardInput;
 
-    inputElement.onmousedown = e => {
+    cardInputElement.onmousedown = e => {
       e.stopPropagation();
     };
 
-    const switchToInput = (e: MouseEvent) => {
+    const switchToInput = (e: MouseEvent | null) => {
+      if (e) editSource = "mouse"
+      else editSource = "keyboard";
+      cardElement.dataset.editSource = editSource;
+
       replaceWithInputAndFocusAtCaretPosition({
         sourceElement: cardContentElement,
-        inputElement,
-        clientX: e.clientX,
-        clientY: e.clientY,
+        inputElement: cardInputElement,
+        clientX: e ? e.clientX : null,
+        clientY: e ? e.clientY : null,
       });
     };
 
-    inputElement.onkeydown = e => {
+    cardInputElement.onkeydown = e => {
       if (e.key === "Enter" && !e.shiftKey) {
-        inputElement.value = inputElement.value.trim()
+        cardInputElement.value = cardInputElement.value.trim()
         e.preventDefault()
-        inputElement.blur();
+        cardInputElement.blur();
       }
     };
 
-    inputElement.onblur = () => {
-      setLinkableText(cardContentElement, inputElement.value);
-      inputElement.replaceWith(cardContentElement);
-      api.setCardTitle({
-        cardId: card.cardId,
-        title: inputElement.value,
-      });
+    cardInputElement.onblur = () => {
+      setLinkableText(cardContentElement, cardInputElement.value);
+      cardInputElement.replaceWith(cardContentElement);
+      if (cardInputElement.value === "") {
+        cardElement.remove();
+        api.deleteCard({
+          cardId: card.cardId,
+        });
+        this.board.children.find(it => {
+          if ("deckId" in it && it.deckId === deckElement.dataset.deckId) {
+            const index = it.cards.findIndex(it => it.cardId === card.cardId);
+
+            if (index !== -1) {
+              it.cards.splice(index, 1);
+            }
+          }
+          // TODO: Handle removing empty cards from portals
+        });
+      } else {
+        api.setCardTitle({
+          cardId: card.cardId,
+          title: cardInputElement.value,
+        });
+        if (editSource === "keyboard") {
+          cardContentElement.focus();
+        }
+      }
     };
 
     const cardContentElement = document.createElement("div");
     cardContentElement.className = classes.cardContent;
+    cardContentElement.tabIndex = 0;
     setLinkableText(cardContentElement, card.title);
     cardElement.append(cardContentElement);
+
+    cardContentElement.onkeydown = e => {
+      if (!(e.target instanceof HTMLElement)) return;
+
+      switch (e.key) {
+        case "Enter": {
+          if (e.target.tagName === "A") break;
+          e.preventDefault();
+          switchToInput(null);
+          break;
+        }
+        // TODO:
+        // - Left: Select card to left
+        // - Right: Select card to left
+        // - Up: Select card above
+        // - Down: Select card below
+        // - alt-Left: Move card left
+        // - alt-Right: Move card right
+        // - alt-Up: Move card up
+        // - alt-Down: Move card down
+      }
+    };
+
+    cardContentElement.onfocus = () => {
+      editSource = "keyboard";
+      cardElement.dataset.editSource = editSource;
+    };
 
     const placeholderNode = document.createElement("div");
     placeholderNode.className = classes.cardPlaceholder;
