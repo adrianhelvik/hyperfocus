@@ -56,7 +56,10 @@ export class BoardView {
   }
 
   private onKeydown = (e: KeyboardEvent) => {
-    console.log("onKeydown");
+    if (e.metaKey && /[1-9]/.test(e.key)) {
+      e.preventDefault();
+      location.href = "/app";
+    }
 
     if (!isKeypressElement(e.target)) {
       if (e.key === "F" && (e.metaKey || e.ctrlKey)) {

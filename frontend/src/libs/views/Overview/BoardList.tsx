@@ -28,6 +28,22 @@ export default function BoardList() {
     });
   }, [store]);
 
+  React.useLayoutEffect(() => {
+    const onKeyDown = (e: KeyboardEvent) => {
+      if (e.metaKey && /[1-9]/.test(e.key)) {
+        e.preventDefault();
+        window.location.pathname = `/board/${store.boards[parseInt(e.key, 10) - 1].boardId}`;
+      }
+    };
+
+    document.addEventListener("keydown", onKeyDown);
+
+    return () => {
+      document.removeEventListener("keydown", onKeyDown);
+    };
+  });
+
+
   if (!store) return null;
 
   return (
