@@ -82,6 +82,7 @@
     background-color: var(--input-bg);
     color: var(--deck-text-color, black);
     margin: 0;
+    flex-grow: 0;
 
     line-height: 1.5;
   }
@@ -99,6 +100,7 @@
     color: var(--deck-text-color);
     cursor: pointer;
     transition: background-color 100ms;
+    height: 35px;
 
     &:hover {
       background: color-mix(in srgb, var(--deck-color, #aaa) 50%, var(--deck-black-or-white-contrast));

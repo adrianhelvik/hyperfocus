@@ -25,7 +25,6 @@ const DECK_ANIMATION_TIME = 300;
 export class BoardView {
   private cleanupHooks = new CleanupHooks();
   private deckElements: HTMLElement[] = [];
-  private newCardElements: HTMLElement[] = [];
   private onDestroyCallbacks: Array<() => void> = [];
 
   constructor(private root: HTMLElement, private board: BoardParam) {
@@ -185,6 +184,7 @@ export class BoardView {
     cleanupHooks: CleanupHooks;
   }) {
     let editSource: "keyboard" | "mouse" = "mouse";
+    let initialIndex = -1;
 
     const containerNode = document.createElement("div");
     containerNode.className = classes.deckTitleContainer;
@@ -215,7 +215,7 @@ export class BoardView {
     iconNode.textContent = "menu";
     menuNode.append(iconNode);
 
-    const titleInput = document.createElement("input");
+    const titleInput = createAutoGrowTextarea();
     titleInput.className = classes.deckTitleInput;
 
     const startEditingDeckTitle = (e: { clientX: number, clientY: number } | null) => {
@@ -335,11 +335,14 @@ export class BoardView {
 
         const placeholderRect = placeholder.getBoundingClientRect();
 
-        api.moveBoardChildToIndex({
-          boardId: this.board.boardId,
-          index: this.deckElements.indexOf(deckElement),
-          item: child,
-        });
+        const index = this.deckElements.indexOf(deckElement);
+        if (initialIndex !== index) {
+          api.moveBoardChildToIndex({
+            boardId: this.board.boardId,
+            index,
+            item: child,
+          });
+        }
 
         cleanupHooks.add(
           animate({
@@ -404,6 +407,8 @@ export class BoardView {
         });
         placeholder.replaceWith(deckElement);
       });
+
+      initialIndex = this.deckElements.indexOf(deckElement);
 
       insetX = e.clientX - rect.left;
       insetY = e.clientY - rect.top;
