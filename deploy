@@ -2,7 +2,7 @@
 
 set -xe
 
-TAG="`git rev-parse --short HEAD`-`date +%s`"
+TAG="`date +%s`_`git rev-parse --short HEAD`"
 IMAGE_REGISTRY="rg.nl-ams.scw.cloud/hyperfocus"
 CONFIG_DIR="/tmp/hyperfocus-config-$TAG"
 
@@ -11,8 +11,8 @@ echo "Using tag: $TAG"
 FRONTEND_IMAGE="${IMAGE_REGISTRY}/hyperfocus-frontend:${TAG}"
 BACKEND_IMAGE="${IMAGE_REGISTRY}/hyperfocus-backend:${TAG}"
 
-docker build . -f ./frontend/Dockerfile -t "${FRONTEND_IMAGE}" 
-docker build . -f ./backend/Dockerfile -t "${BACKEND_IMAGE}"
+docker build --platform=linux/amd64 . -f ./frontend/Dockerfile -t "${FRONTEND_IMAGE}"
+docker build --platform=linux/amd64 . -f ./backend/Dockerfile -t "${BACKEND_IMAGE}"
 
 docker push "${FRONTEND_IMAGE}"
 docker push "${BACKEND_IMAGE}"
