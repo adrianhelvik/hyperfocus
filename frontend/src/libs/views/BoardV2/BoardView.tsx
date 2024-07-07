@@ -101,6 +101,20 @@ export class BoardView {
     // TODO: Implement this
   }
 
+  addEventListener<
+    Handler extends Function,
+    EventName extends string,
+    Target extends {
+      addEventListener(n: EventName, e: Handler): void;
+      removeEventListener(n: EventName, e: Handler): void;
+    }
+  >(target: Target, event: EventName, handler: Handler) {
+    target.addEventListener(event, handler);
+    return () => {
+      target.removeEventListener(event, handler);
+    };
+  }
+
   private buildInterface() {
     this.deckElements = [];
     this.root.classList.add(classes.board);
@@ -112,15 +126,13 @@ export class BoardView {
 
     let isSnapping = false;
 
-    this.root.onwheel = () => {
+    const endSnapToDeck = () => {
       if (this.cancelSnapToDeck) this.cancelSnapToDeck();
     };
+    this.addEventListener(document, "wheel", endSnapToDeck);
+    this.addEventListener(document, "touchstart", endSnapToDeck);
 
-    this.root.ontouchstart = () => {
-      if (this.cancelSnapToDeck) this.cancelSnapToDeck();
-    };
-
-    this.root.onscrollend = () => {
+    const initSnapToDeck = () => {
       if (isSnapping) return;
 
       const screenCenter = window.innerWidth / 2;
@@ -137,7 +149,7 @@ export class BoardView {
         }
       }
 
-      if (!target) return console.log("Target not found");
+      if (!target) return;
 
       // Don't snap on desktop.
       if (target.clientWidth < .8 * window.innerWidth) {
@@ -154,6 +166,8 @@ export class BoardView {
         });
       }, 500);
     };
+    this.addEventListener(this.root, "scrollend", initSnapToDeck);
+    this.addEventListener(document, "touchend", initSnapToDeck);
   }
 
   private createDeckElement(child: Deck | Portal) {
