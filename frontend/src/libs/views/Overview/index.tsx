@@ -4,6 +4,7 @@ import { AuthContext } from "src/libs/authContext";
 import { useNavigate } from "react-router-dom";
 import { StoreContext } from "src/libs/store";
 import AddBoardModal from "./AddBoardModal";
+import classes from "./styles.module.css";
 import Header from "src/libs/ui/Header";
 import styled from "styled-components";
 import { Observer } from "mobx-react";
@@ -38,27 +39,24 @@ export default withMenu(function Overview(props: Props) {
     }
   }, [auth.status]);
 
+  useEffect(() => {
+    document.body.classList.add(classes.body);
+    return () => {
+      document.body.classList.add(classes.body);
+    };
+  }, []);
+
   return (
     <Observer>
       {() => {
         return (
-          <Container onContextMenu={onContextMenu}>
+          <div onContextMenu={onContextMenu}>
             <Header>My boards</Header>
             {store.isAddingBoard && <AddBoardModal />}
             <BoardList />
-          </Container>
+          </div>
         );
       }}
     </Observer>
   );
 });
-
-const Container = styled.div`
-  background-color: #eee;
-  position: absolute;
-  bottom: 0;
-  right: 0;
-  left: 0;
-  top: 0;
-  overflow: auto;
-`;

@@ -141,6 +141,8 @@ const Container = styled.button.attrs({
 }) <{ $color: string }>`
   all: unset;
   outline: revert;
+  width: 100%;
+  box-sizing: border-box;
 
   cursor: pointer;
   padding: 10px;
@@ -150,7 +152,7 @@ const Container = styled.button.attrs({
   margin-right: 10px;
   margin-bottom: 10px;
   position: relative;
-  display: inline-flex;
+  display: flex;
   box-shadow: ${theme.shadows[0]};
   transition: box-shadow 0.3s;
   height: 80px;
