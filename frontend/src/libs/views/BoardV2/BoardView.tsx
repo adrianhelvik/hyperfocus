@@ -17,6 +17,7 @@ import onlyOnceFn from "./onlyOnceFn";
 import animate from "./animate";
 import api from "src/libs/api";
 import Color from "color";
+import { smootScrollToCenter } from "./smoothScrollToCenter";
 
 const AUTO_SCROLL_OFFSET = 100;
 const CARD_ANIMATION_TIME = 300;
@@ -26,6 +27,8 @@ export class BoardView {
   private cleanupHooks = new CleanupHooks();
   private deckElements: HTMLElement[] = [];
   private onDestroyCallbacks: Array<() => void> = [];
+  private scrollSnapTimeout: ReturnType<typeof setTimeout> | null = null;
+  private cancelSnapToDeck: (() => void) | null = null;
 
   constructor(private root: HTMLElement, private board: BoardParam) {
     addEventListener("subtask:addDeck", this.onDeckAdded);
@@ -52,6 +55,8 @@ export class BoardView {
     this.root.classList.remove(classes.board);
     document.body.classList.remove(classes.body);
     document.removeEventListener("keydown", this.onKeydown);
+    if (this.scrollSnapTimeout) clearTimeout(this.scrollSnapTimeout);
+    if (this.cancelSnapToDeck) this.cancelSnapToDeck()
   }
 
   private onKeydown = (e: KeyboardEvent) => {
@@ -104,6 +109,47 @@ export class BoardView {
     for (const child of this.board.children) {
       this.root.append(this.createDeckElement(child));
     }
+
+    let isSnapping = false;
+
+    this.root.onwheel = () => {
+      if (this.cancelSnapToDeck) this.cancelSnapToDeck();
+    };
+
+    this.root.onscrollend = () => {
+      if (isSnapping) return;
+
+      const screenCenter = window.innerWidth / 2;
+      let minDiff: number | null = null;
+      let target: HTMLElement | null = null;
+
+      for (const element of this.deckElements) {
+        const rect = element.getBoundingClientRect();
+        const center = rect.left + rect.width / 2;
+        const diff = Math.abs(screenCenter - center);
+        if (minDiff == null || diff < minDiff) {
+          minDiff = diff;
+          target = element;
+        }
+      }
+
+      if (!target) return;
+
+      // Don't snap on desktop.
+      if (target.clientWidth < .8 * window.innerWidth) {
+        return;
+      }
+
+      if (this.scrollSnapTimeout) clearTimeout(this.scrollSnapTimeout);
+      if (this.cancelSnapToDeck) this.cancelSnapToDeck()
+      this.scrollSnapTimeout = setTimeout(() => {
+        isSnapping = true;
+        if (this.cancelSnapToDeck) this.cancelSnapToDeck()
+        this.cancelSnapToDeck = smootScrollToCenter(this.root, target, () => {
+          isSnapping = false;
+        });
+      }, 500);
+    };
   }
 
   private createDeckElement(child: Deck | Portal) {
