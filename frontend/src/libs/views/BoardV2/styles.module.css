@@ -155,7 +155,10 @@
     padding: 10px;
     border: none;
     display: block;
-    field-sizing: content;
+    border: 0;
+    border-radius: 4px;
+    margin: 0;
+    box-shadow: var(--shadows-1);
   }
 }
 

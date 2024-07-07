@@ -583,7 +583,7 @@ export class BoardView {
     cardElement.dataset.cardId = card.cardId ?? undefined;
     cardElement.className = classes.card;
 
-    const cardInputElement = document.createElement("textarea");
+    const cardInputElement = createAutoGrowTextarea();
     cardInputElement.className = classes.cardInput;
 
     cardInputElement.onmousedown = e => {
