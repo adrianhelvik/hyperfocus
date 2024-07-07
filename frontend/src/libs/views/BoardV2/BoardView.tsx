@@ -164,7 +164,7 @@ export class BoardView {
         this.cancelSnapToDeck = smoothScrollToCenter(this.root, target, () => {
           isSnapping = false;
         });
-      }, 500);
+      }, 300);
     };
     this.addEventListener(this.root, "scroll", initSnapToDeck);
     this.addEventListener(document, "touchend", initSnapToDeck);
