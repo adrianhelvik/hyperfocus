@@ -40,6 +40,7 @@ export function ProvideAuth(props: { children: ReactNode }) {
   const [status, setStatus] = useState<Status>("pending");
 
   const authenticate = useAutoCallback(async (): Promise<boolean> => {
+    if (status === "success") return true;
     try {
       await api.authenticate();
       setStatus("success");

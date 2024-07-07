@@ -1,44 +1,46 @@
-import { WithAuthProps, withAuth } from "src/libs/authContext";
 import { useLocation } from "react-router-dom";
+import { useAuth } from "src/libs/authContext";
 import * as zIndexes from "src/libs/zIndexes";
 import * as theme from "src/libs/theme";
 import { Link } from "react-router-dom";
 import styled from "styled-components";
 import Color from "color";
 import React from "react";
+import { useAutoEffect } from "hooks.macro";
 
-type OwnProps = {
+type Props = {
   color?: string;
   children?: React.ReactNode;
 };
 
-type Props = WithAuthProps & OwnProps;
+export default function Header(props: Props) {
+  const location = useLocation()
+  const isInApp = /^\/(app|board)($|\/)/.test(location.pathname);
+  const pageColor = props.color || theme.ui1;
+  const auth = useAuth();
 
-function Header(props: Props) {
-    const location = useLocation()
-    const isInApp = /^\/(app|board)($|\/)/.test(location.pathname);
-    const pageColor = props.color || theme.ui1;
+  useAutoEffect(() => {
+    auth.authenticate();
+  });
 
-    return (
-      <Container $color={pageColor}>
-        <UndecoratedLink to={isInApp ? "/app" : "/"}>
-          <Logo pageColor={pageColor} />
-        </UndecoratedLink>
-        <Children>{props.children}</Children>
-        {props.auth.status === "success" ? (
-          location.pathname === "/" ? (
-            <Login to="/login">Go to dashboard</Login>
-          ) : (
-            <Logout onClick={props.auth.logout}>Log out</Logout>
-          )
-        ) : (
-          <Login to="/login">Log in</Login>
-        )}
-      </Container>
-    );
+  return (
+    <Container $color={pageColor}>
+      <UndecoratedLink to={isInApp ? "/app" : "/"}>
+        <Logo pageColor={pageColor} />
+      </UndecoratedLink>
+      <Children>{props.children}</Children>
+      {auth.status === "success" && location.pathname === "/" && (
+        <Login to="/login">Go to dashboard</Login>
+      )}
+      {auth.status === "success" && location.pathname === "/app" && (
+        <Logout onClick={auth.logout}>Log out</Logout>
+      )}
+      {auth.status === "failure" && (
+        <Login to="/login">Log in</Login>
+      )}
+    </Container>
+  );
 }
-
-export default withAuth(Header)
 
 const UndecoratedLink = styled(Link)`
   text-decoration: none;
