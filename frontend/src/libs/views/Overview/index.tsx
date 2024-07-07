@@ -6,7 +6,6 @@ import { StoreContext } from "src/libs/store";
 import AddBoardModal from "./AddBoardModal";
 import classes from "./styles.module.css";
 import Header from "src/libs/ui/Header";
-import styled from "styled-components";
 import { Observer } from "mobx-react";
 import BoardList from "./BoardList";
 
