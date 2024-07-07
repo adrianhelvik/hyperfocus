@@ -1,3 +1,5 @@
+import easeInOutQuad from "src/libs/easeInOutQuad";
+
 const TIME = 300;
 
 export function smoothScrollToCenter(container: HTMLElement, target: HTMLElement, onEnd: () => void) {
@@ -10,7 +12,8 @@ export function smoothScrollToCenter(container: HTMLElement, target: HTMLElement
   let progress = 0;
 
   const style = () => {
-    container.scrollLeft = progress * scrollEnd + (1 - progress) * scrollStart;
+    const animationProgress = easeInOutQuad(progress);
+    container.scrollLeft = animationProgress * scrollEnd + (1 - animationProgress) * scrollStart;
   };
 
   const next = () => {
