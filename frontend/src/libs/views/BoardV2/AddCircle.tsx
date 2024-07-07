@@ -1,6 +1,7 @@
 import withEvents, { WithEventsProps } from "src/libs/util/withEvents";
 import styled, { keyframes, css } from "styled-components";
-import React, { useEffect, useState } from "react";
+import { useAutoEffect } from "hooks.macro";
+import React, { useState } from "react";
 import * as theme from "src/libs/theme";
 
 type Props = WithEventsProps & {
@@ -12,19 +13,20 @@ function AddCircle(props: Props) {
   const [open, setOpen] = useState(false);
   const [container, setContainer] = useState<HTMLElement | null>(null);
 
-  useEffect(() => {
+  useAutoEffect(() => {
     const timeout = setTimeout(() => {
       setMounted(true);
     }, 400);
     return () => {
       clearTimeout(timeout);
     };
-  }, []);
+  });
 
-  useEffect(() => {
+  useAutoEffect(() => {
     if (!open) return;
 
     const onDocumentClick = (event: MouseEvent) => {
+      console.log("odc");
       if (!(event.target instanceof Element)) {
         return;
       }
@@ -43,7 +45,7 @@ function AddCircle(props: Props) {
       clearTimeout(timeout);
       document.removeEventListener("click", onDocumentClick);
     };
-  }, []);
+  });
 
   return (
     <Container
