@@ -12,6 +12,7 @@ import * as theme from "src/libs/theme";
 import styled from "styled-components";
 import api from "src/libs/api";
 import Color from "color";
+import { useNavigate } from "react-router-dom";
 
 const ColorPickerAny = ColorPicker as any as React.ComponentType<any>;
 
@@ -25,9 +26,10 @@ type Props = WithConfirmProps &
 
 function BoardTile(props: Props) {
   const store = useContext(StoreContext)!;
+  const navigate = useNavigate();
 
   const openBoard = () => {
-    window.location.pathname = `/board/${props.board.boardId}`;
+    navigate(`/board/${props.board.boardId}`);
   };
 
   const setColor = ({ hex }: { hex: string }) => {
