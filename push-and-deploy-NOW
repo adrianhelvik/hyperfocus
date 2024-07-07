@@ -1,0 +1,9 @@
+#!/bin/zsh
+
+git add -A
+git commit -m '...'
+git push && ./deploy
+
+cd ~/Personal/hyperfocus-config
+git pull
+./scripts/deploy
