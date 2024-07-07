@@ -18,6 +18,7 @@ import animate from "./animate";
 import api from "src/libs/api";
 import Color from "color";
 import { smoothScrollToCenter as smoothScrollToCenter } from "./smoothScrollToCenter";
+import { NavigateFunction } from "react-router-dom";
 
 const AUTO_SCROLL_OFFSET = 100;
 const CARD_ANIMATION_TIME = 300;
@@ -30,7 +31,7 @@ export class BoardView {
   private scrollSnapTimeout: ReturnType<typeof setTimeout> | null = null;
   private cancelSnapToDeck: (() => void) | null = null;
 
-  constructor(private root: HTMLElement, private board: BoardParam) {
+  constructor(private root: HTMLElement, private board: BoardParam, private navigate: NavigateFunction) {
     addEventListener("subtask:addDeck", this.onDeckAdded);
     this.cleanup();
     this.buildInterface();
@@ -62,7 +63,7 @@ export class BoardView {
   private onKeydown = (e: KeyboardEvent) => {
     if (e.metaKey && /[1-9]/.test(e.key)) {
       e.preventDefault();
-      location.href = "/app";
+      return this.navigate("/app");
     }
 
     if (!isKeypressElement(e.target)) {

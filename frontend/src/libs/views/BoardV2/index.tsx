@@ -59,9 +59,9 @@ export default function BoardV2() {
   useEffect(() => {
     if (!boardParam) return;
     if (!div) return;
-    const boardView = new BoardView(div, boardParam);
+    const boardView = new BoardView(div, boardParam, navigate);
     return () => boardView.unmount();
-  }, [div, boardParam]);
+  }, [div, boardParam, navigate]);
 
   return (
     <div className={classes.boardView}>

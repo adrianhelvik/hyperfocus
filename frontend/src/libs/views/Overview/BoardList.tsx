@@ -31,7 +31,7 @@ export default function BoardList() {
     const onKeyDown = (e: KeyboardEvent) => {
       if (e.metaKey && /[1-9]/.test(e.key)) {
         e.preventDefault();
-        window.location.pathname = `/board/${store.boards[parseInt(e.key, 10) - 1].boardId}`;
+        navigate(`/board/${store.boards[parseInt(e.key, 10) - 1].boardId}`);
       }
     };
 
