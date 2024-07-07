@@ -92,6 +92,10 @@ const Breadcrumbs = styled.header`
   display: flex;
   align-items: start;
   gap: 10px;
+
+  @media (max-width: 960px) {
+    display: none;
+  }
 `;
 
 const CrumbButton = styled.button`
