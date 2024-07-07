@@ -1,8 +1,8 @@
 // @ts-check
 
 import { randomUUID } from "crypto";
-import knex from "../knex.mjs";
 import { Stream } from "stream";
+import knex from "../knex.mjs";
 import assert from "assert";
 import fs from "fs";
 

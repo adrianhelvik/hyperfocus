@@ -1,9 +1,9 @@
 import AbstractTextArea from "react-textarea-autosize";
 import type DeckModel from "src/libs/store/Deck";
 import React, { ChangeEvent } from "react";
+import styled from "styled-components";
 import { observer } from "mobx-react";
 import api from "src/libs/api";
-import styled from "styled-components";
 
 @observer
 class EditDeckTitle extends React.Component<{ deck: DeckModel }> {

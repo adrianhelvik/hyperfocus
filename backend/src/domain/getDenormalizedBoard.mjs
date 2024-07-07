@@ -1,6 +1,6 @@
 import getDeck from "./getDeck.mjs";
-import assert from "assert";
 import knex from "../knex.mjs";
+import assert from "assert";
 
 /**
  * @typedef {import("../types").Board} Board

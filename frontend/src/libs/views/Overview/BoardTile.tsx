@@ -5,13 +5,13 @@ import withMenu, { WithMenuProps } from "src/libs/withMenu";
 import { CirclePicker as ColorPicker } from "react-color";
 import React, { MouseEvent, useContext } from "react";
 import { StoreContext } from "src/libs/store";
+import onSelect from "src/libs/util/onSelect";
 import MenuIcon from "src/libs/ui/MenuIcon";
 import Board from "src/libs/store/Board";
 import * as theme from "src/libs/theme";
 import styled from "styled-components";
 import api from "src/libs/api";
 import Color from "color";
-import onSelect from "src/libs/util/onSelect";
 
 const ColorPickerAny = ColorPicker as any as React.ComponentType<any>;
 

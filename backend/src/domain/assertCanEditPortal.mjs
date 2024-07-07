@@ -2,8 +2,8 @@
 
 import assertCanEditBoard from "./assertCanEditBoard.mjs";
 import assertCanEditDeck from "./assertCanEditDeck.mjs";
-import Boom from "@hapi/boom";
 import knex from "../knex.mjs";
+import Boom from "@hapi/boom";
 
 /**
  * @param {any} request

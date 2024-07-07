@@ -1,5 +1,11 @@
+import { replaceWithInputAndFocusAtCaretPosition } from "./replaceWithInputAndFocusAtCaretPosition";
 import { possiblyPerformHoverSwap } from "./possiblyPerformHoverSwap";
+import createAutoGrowTextarea from "./createAutoGrowTextarea";
+import { isKeypressElement } from "./isKeypressElement";
 import Deck, { DeckParam } from "src/libs/store/Deck";
+import { findClosestDeck } from "./findClosestDeck";
+import { distanceBetween } from "./distanceBetween";
+import { setLinkableText } from "./setLinkableText";
 import { BoardParam } from "src/libs/store/Board";
 import { styleMovedCard } from "./styleMovedCard";
 import { horizontalMiddle } from "./domUtils";
@@ -7,16 +13,10 @@ import { CleanupHooks } from "./CleanupHooks";
 import Portal from "src/libs/store/Portal";
 import classes from "./styles.module.css";
 import Card from "src/libs/store/Card";
+import onlyOnceFn from "./onlyOnceFn";
 import animate from "./animate";
 import api from "src/libs/api";
 import Color from "color";
-import onlyOnceFn from "./onlyOnceFn";
-import createAutoGrowTextarea from "./createAutoGrowTextarea";
-import { findClosestDeck } from "./findClosestDeck";
-import { distanceBetween } from "./distanceBetween";
-import { setLinkableText } from "./setLinkableText";
-import { replaceWithInputAndFocusAtCaretPosition } from "./replaceWithInputAndFocusAtCaretPosition";
-import { isKeypressElement } from "./isKeypressElement";
 
 const AUTO_SCROLL_OFFSET = 100;
 const CARD_ANIMATION_TIME = 300;
@@ -197,6 +197,7 @@ export class BoardView {
 
     deckTitleNode.onkeydown = e => {
       if (e.key === "Enter") {
+        e.preventDefault();
         startEditingDeckTitle(null);
       }
     };
@@ -207,7 +208,7 @@ export class BoardView {
     containerNode.append(menuNode);
 
     menuNode.onclick = () => {
-      console.log({ ...child });
+      // TODO: Show menu.
     };
 
     const iconNode = document.createElement("i");
@@ -237,7 +238,8 @@ export class BoardView {
         deckTitleNode,
         titleInput,
       );
-      child.title = titleInput.value;
+      child.title = titleInput.value.replace(/\n/g, "");
+      titleInput.value = child.title;
       if ('portalId' in child && child.portalId) {
         api.setPortalTitle({
           portalId: child.portalId,
@@ -250,9 +252,6 @@ export class BoardView {
         });
       }
       setLinkableText(deckTitleNode, titleInput.value);
-      if (editSource === "keyboard") {
-        deckTitleNode.focus();
-      }
     };
 
     titleInput.onblur = () => {
@@ -262,6 +261,7 @@ export class BoardView {
     titleInput.onkeydown = (e) => {
       if (e.key === "Enter" || e.key === "Escape") {
         titleInput.blur();
+        deckTitleNode.focus();
       }
     };
 

@@ -1,7 +1,7 @@
+import { useAutoCallback, useAutoMemo } from "hooks.macro";
 import { useNavigate, useParams } from "react-router-dom";
 import Board, { BoardParam } from "src/libs/store/Board";
 import { useState, useEffect } from "react";
-import { useAutoCallback, useAutoMemo } from "hooks.macro";
 import classes from "./styles.module.css";
 import useModal from "src/libs/useModal";
 import Header from "src/libs/ui/Header";
