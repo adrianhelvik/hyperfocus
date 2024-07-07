@@ -1,13 +1,11 @@
 import withEvents, { WithEventsProps } from "src/libs/util/withEvents";
 import styled, { css, keyframes } from "styled-components";
-import hoist from "hoist-non-react-statics";
-import { Portal } from "react-portal";
-import { observer } from "mobx-react";
 import onSelect from "src/libs/util/onSelect";
 import * as zIndexes from "src/libs/zIndexes";
-import { observable } from "mobx";
+import { useAutoEffect } from "hooks.macro";
 import * as theme from "src/libs/theme";
-import React from "react";
+import React, { useState } from "react";
+import { Portal } from "react-portal";
 
 const PortalAny = Portal as any;
 
@@ -23,90 +21,80 @@ export default function withMenu<Props>(
 ): React.ComponentType<Props> {
   const openMenus: any[] = [];
 
-  @observer
-  class NewComponent extends React.Component<
-    WithEventsProps & Props
-  > {
-    @observable.ref menu: HTMLElement | null = null;
-    @observable options: any = null;
-    @observable x: number | null = null;
-    @observable y: number | null = null;
+  function NewComponent(props: WithEventsProps & Props) {
+    const [showMenuTimeout, setShowMenuTimeout] = useState<ReturnType<typeof setTimeout> | null>(null);
+    const [menu, setMenu] = useState<HTMLElement | null>(null);
+    const [options, setOptions] = useState<any>(null);
+    const [x, setX] = useState<number | null>(null);
+    const [y, setY] = useState<number | null>(null);
+    const [id] = useState(() => crypto.randomUUID());
 
-    showMenuTimeout?: ReturnType<typeof setTimeout>;
-
-    componentDidMount() {
-      this.props.on(document, "click", (event) => {
-        if (this.menu) {
-          console.log("menu:", this.menu, "target:", event.target);
-        }
-        if (this.menu && !this.menu.contains(event.target)) this.closeMenu();
+    useAutoEffect(() => {
+      props.on(document, "click", (event) => {
+        if (menu && !menu.contains(event.target)) closeMenu();
       });
-    }
 
-    componentWillUnmount() {
-      const index = openMenus.indexOf(this);
-      if (index > -1) openMenus.splice(index, 1);
-      clearTimeout(this.showMenuTimeout);
-    }
+      return () => {
+        const index = openMenus.indexOf(id);
+        if (index > -1) openMenus.splice(index, 1);
+        if (showMenuTimeout) clearTimeout(showMenuTimeout);
+      }
+    });
 
-    showMenu = (
+
+    const showMenu = (
       event: { clientX: number; clientY: number },
       options: Record<string, (e: { target: HTMLElement }) => void>
     ) => {
-      clearTimeout(this.showMenuTimeout);
-      this.showMenuTimeout = setTimeout(() => {
+      setShowMenuTimeout(setTimeout(() => {
         openMenus.forEach((menu) => {
           menu.closeMenu();
         });
-        openMenus.push(this);
-        this.x = event.clientX;
-        this.y = event.clientY;
-        this.options = options;
-      }, 100);
+        openMenus.push(id);
+        setX(event.clientX);
+        setY(event.clientY);
+        setOptions(options);
+      }, 100));
     };
 
-    closeMenu = () => {
-      this.options = null;
-      this.x = null;
-      this.y = null;
-      const index = openMenus.indexOf(this);
+    const closeMenu = () => {
+      setOptions(null);
+      setX(null);
+      setY(null);
+      const index = openMenus.indexOf(id);
       if (index > -1) openMenus.splice(index, 1);
     };
 
-    selectItem = (e: { target: HTMLElement }) => {
+    const selectItem = (e: { target: HTMLElement }) => {
       const key = e.target.getAttribute("data-key");
       if (!key) return;
-      this.options[key](e);
-      this.closeMenu();
+      options[key](e);
+      closeMenu();
     };
 
-    render() {
-      return (
-        <React.Fragment>
-          <WrappedComponent {...this.props} showMenu={this.showMenu} />
-          {this.options && (
-            <PortalAny>
-              <MenuWrapper $x={this.x} $y={this.y} ref={(e) => (this.menu = e)}>
-                {Object.keys(this.options).map((key, index) => (
-                  <MenuItem
-                    ref={(e) => index === 0 && e && e.focus()}
-                    {...onSelect(this.selectItem)}
-                    data-disable-drag
-                    data-key={key}
-                    key={key}
-                  >
-                    {key}
-                  </MenuItem>
-                ))}
-              </MenuWrapper>
-            </PortalAny>
-          )}
-        </React.Fragment>
-      );
-    }
+    return (
+      <React.Fragment>
+        <WrappedComponent {...props} showMenu={showMenu} />
+        {options && (
+          <PortalAny>
+            <MenuWrapper $x={x} $y={y} ref={(e) => setMenu(e)}>
+              {Object.keys(options).map((key, index) => (
+                <MenuItem
+                  ref={(e) => index === 0 && e && e.focus()}
+                  {...onSelect(selectItem)}
+                  data-disable-drag
+                  data-key={key}
+                  key={key}
+                >
+                  {key}
+                </MenuItem>
+              ))}
+            </MenuWrapper>
+          </PortalAny>
+        )}
+      </React.Fragment>
+    );
   }
-
-  hoist(NewComponent as any, WrappedComponent as any);
 
   return withEvents(NewComponent);
 }

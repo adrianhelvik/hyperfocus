@@ -63,7 +63,6 @@ function AddDeck(props: Props) {
 export default AddDeck;
 
 const Container = styled.form`
-  min-width: 500px;
 `;
 
 const Title = styled.h2`

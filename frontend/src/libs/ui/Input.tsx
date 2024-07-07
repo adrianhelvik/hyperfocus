@@ -64,6 +64,7 @@ export default function Input(props: Props) {
         <InputField
           onChange={props.onChange}
           value={props.value}
+          size={50}
           ref={innerRef}
           type={showPassword ? "text" : type}
           $forPassword={props.type === "password"}

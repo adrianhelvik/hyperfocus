@@ -1,10 +1,7 @@
-import hoist from "hoist-non-react-statics";
-import { observable, action } from "mobx";
-import { observer } from "mobx-react";
 import { Portal } from "react-portal";
 import { Coord } from "./types";
 import Modal from "./ui/Modal";
-import React from "react";
+import React, { useState } from "react";
 
 const PortalAny = Portal as any as React.ComponentType<any>;
 
@@ -26,80 +23,66 @@ export type WithModalProps = {
 export default function withModal<Props>(
   WrappedComponent: React.ComponentType<Props & WithModalProps>
 ): React.ComponentType<Props> {
-  @observer
-  class NewComponent extends React.Component<WithModalProps & Props> {
-    static displayName =
-      "withModal(" +
-      (WrappedComponent.displayName || WrappedComponent.name) +
-      ")";
+  function NewComponent(props: WithModalProps & Props) {
+    const [placement, setPlacement] = useState<null | Coord>(null);
+    const [width, setWidth] = useState<number | null>(null);
+    const [backdrop, setBackdrop] = useState(true);
+    const [Template, setTemplate] = useState<React.ComponentType<any> | null>(null);
+    const [resolve, setResolve] = useState<(() => void) | null>(null);
 
-    @observable placement: null | Coord = null;
-    @observable width: number | null = null;
-    @observable backdrop = true;
-    @observable Template: React.ComponentType<any> | null = null;
-    @observable promise: Promise<any> | null = null;
-    @observable resolve: any = null;
-    @observable reject: any = null;
-
-    @action.bound showModal(
+    const showModal = (
       Template: React.ComponentType<any>,
       options: { width?: number } = {}
-    ) {
-      this.promise = new Promise((resolve, reject) => {
-        this.resolve = resolve;
-        this.reject = reject;
-        this.Template = Template;
-        this.width = options.width || null;
+    ) => {
+      const promise = new Promise((resolve) => {
+        setResolve(() => resolve);
+        setTemplate(() => Template);
+        setWidth(options.width || null);
       });
+      return promise;
     }
 
-    @action.bound showModalInPlace(event: any, Template: any) {
-      this.showModal(Template);
-      this.placement = {
+    const showModalInPlace = (event: any, Template: any) => {
+      showModal(Template);
+      setPlacement({
         x: event.clientX,
         y: event.clientY,
-      };
-      this.backdrop = false;
-      this.width = null;
+      });
+      setBackdrop(false);
+      setWidth(null);
     }
 
-    @action.bound hide() {
-      this.resolve();
-      this.placement = null;
-      this.backdrop = true;
-      this.Template = null;
-      this.promise = null;
-      this.resolve = null;
-      this.reject = null;
-      this.width = null;
+    const hide = () => {
+      if (resolve) resolve();
+      setPlacement(null);
+      setBackdrop(true);
+      setTemplate(null);
+      setResolve(null);
+      setWidth(null);
     }
 
-    render() {
-      return (
-        <>
-          <WrappedComponent
-            {...this.props}
-            showModal={this.showModal}
-            showModalInPlace={this.showModalInPlace}
-          />
-          {typeof this.Template === "function" ? (
-            <PortalAny>
-              <Modal
-                hide={this.hide}
-                placement={this.placement}
-                backdrop={this.backdrop}
-                width={this.width}
-              >
-                <this.Template resolve={this.hide} />
-              </Modal>
-            </PortalAny>
-          ) : null}
-        </>
-      );
-    }
+    return (
+      <>
+        <WrappedComponent
+          {...props}
+          showModal={showModal}
+          showModalInPlace={showModalInPlace}
+        />
+        {typeof Template === "function" ? (
+          <PortalAny>
+            <Modal
+              hide={hide}
+              placement={placement}
+              backdrop={backdrop}
+              width={width}
+            >
+              <Template resolve={hide} />
+            </Modal>
+          </PortalAny>
+        ) : null}
+      </>
+    );
   }
-
-  hoist(NewComponent as any, WrappedComponent as any);
 
   return NewComponent as any;
 }

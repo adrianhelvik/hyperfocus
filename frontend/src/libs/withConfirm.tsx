@@ -1,11 +1,9 @@
 import hoist from "hoist-non-react-statics";
-import { observable, action } from "mobx";
-import { Portal } from "react-portal";
-import { observer } from "mobx-react";
 import Backdrop from "src/libs/ui/Backdrop";
-import { Coord } from "./types";
+import React, { useState } from "react";
+import { Portal } from "react-portal";
 import Modal from "src/libs/ui/Modal";
-import React from "react";
+import { Coord } from "./types";
 
 // Broken types in the library
 const AnyPortal = Portal as any;
@@ -28,74 +26,67 @@ export type WithConfirmProps = {
 export default function withConfirm<Props extends Record<string, any>>(
   Component: React.ComponentType<Props & WithConfirmProps>
 ): React.ComponentType<Props> {
-  @observer
-  class WithConfirm extends React.Component<Props> {
-    @observable placement: null | Coord = null;
-    @observable.ref
-    Template: null | React.ComponentType<ConfirmTemplateProps> = null;
-    @observable promise: Promise<boolean> | null = null;
-    @observable resolve: ((result: boolean) => void) | null = null;
-    @observable reject: ((error: Error) => void) | null = null;
+  function WithConfirm(props: Props) {
+    const [placement, setPlacement] = useState<null | Coord>(null);
+    const [Template, setTemplate] = useState<null | React.ComponentType<ConfirmTemplateProps>>(null);
+    const [resolve, setResolve] = useState<((result: boolean) => void) | null>(null);
 
-    @action.bound confirm(Template: React.ComponentType<ConfirmTemplateProps>) {
-      this.Template = Template;
-      this.promise = new Promise((resolve, reject) => {
-        this.resolve = resolve;
-        this.reject = reject;
+    const confirm = (Template: React.ComponentType<ConfirmTemplateProps>) => {
+      setTemplate(() => Template);
+      const promise = new Promise<boolean>((resolve) => {
+        setResolve(() => resolve);
       });
-      return this.promise;
+      return promise;
     }
 
-    @action.bound confirmInPlace(
+    const confirmInPlace = (
       event: MouseEvent,
       Template: React.ComponentType<ConfirmTemplateProps>
-    ) {
+    ) => {
       if (typeof event.clientX !== "number")
         throw Error("event.clientX was not a number");
       if (typeof event.clientY !== "number")
         throw Error("event.clientY was not a number");
-      const promise = this.confirm(Template);
-      this.placement = {
+      const promise = confirm(Template);
+      setPlacement({
         x: event.clientX,
         y: event.clientY,
-      };
+      });
       return promise;
     }
 
-    @action.bound yes() {
-      if (!this.resolve) return;
-      this.resolve(true);
-      this.Template = null;
-      this.placement = null;
+    const yes = () => {
+      if (!resolve) return;
+      resolve(true);
+      setTemplate(null);
+      setPlacement(null);
     }
 
-    @action.bound no() {
-      if (!this.resolve) return;
-      this.resolve(false);
-      this.Template = null;
-      this.placement = null;
+    const no = () => {
+      if (!resolve) return;
+      resolve(false);
+      setTemplate(null);
+      setPlacement(null);
     }
 
-    render() {
-      return (
-        <React.Fragment>
-          <Component
-            {...(this.props as Props)}
-            confirm={this.confirm}
-            confirmInPlace={this.confirmInPlace}
-          />
-          {this.Template && (
-            <AnyPortal>
-              <Backdrop hide={this.no}>
-                <Modal placement={this.placement} hide={this.no}>
-                  <this.Template yes={this.yes} no={this.no} />
-                </Modal>
-              </Backdrop>
-            </AnyPortal>
-          )}
-        </React.Fragment>
-      );
-    }
+    return (
+      <>
+        <Component
+          {...(props)}
+          confirm={confirm}
+          confirmInPlace={confirmInPlace}
+        />
+        {Template && (
+          <AnyPortal>
+            <Backdrop hide={no}>
+              <Modal placement={placement} hide={no}>
+                <Template yes={yes} no={no} />
+              </Modal>
+            </Backdrop>
+          </AnyPortal>
+        )}
+      </>
+    );
   }
 
   hoist(WithConfirm as any, Component as any);

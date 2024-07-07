@@ -3,16 +3,15 @@ import withStatus, { WithStatusProps } from "src/libs/withStatus";
 import withModal, { WithModalProps } from "src/libs/withModal";
 import withMenu, { WithMenuProps } from "src/libs/withMenu";
 import { CirclePicker as ColorPicker } from "react-color";
-import Store, { StoreContext } from "src/libs/store";
-import onSelect from "src/libs/util/onSelect";
+import React, { MouseEvent, useContext } from "react";
+import { StoreContext } from "src/libs/store";
 import MenuIcon from "src/libs/ui/MenuIcon";
-import React, { MouseEvent } from "react";
 import Board from "src/libs/store/Board";
 import * as theme from "src/libs/theme";
 import styled from "styled-components";
-import { observer } from "mobx-react";
 import api from "src/libs/api";
 import Color from "color";
+import onSelect from "src/libs/util/onSelect";
 
 const ColorPickerAny = ColorPicker as any as React.ComponentType<any>;
 
@@ -24,42 +23,40 @@ type Props = WithConfirmProps &
     board: Board;
   };
 
-@observer
-class BoardTile extends React.Component<Props> {
-  static contextType = StoreContext;
-  declare context: Store;
+function BoardTile(props: Props) {
+  const store = useContext(StoreContext)!;
 
-  onSelect = () => {
-    window.location.pathname = `/board/${this.props.board.boardId}`;
+  const openBoard = () => {
+    window.location.pathname = `/board/${props.board.boardId}`;
   };
 
-  setColor = ({ hex }: { hex: string }) => {
-    this.props.board.color = hex;
+  const setColor = ({ hex }: { hex: string }) => {
+    props.board.color = hex;
     api.setBoardColor({
-      boardId: this.props.board.boardId!,
+      boardId: props.board.boardId!,
       color: hex,
     });
   };
 
-  rename = (title: string) => {
-    this.props.board.setTitle(title);
+  const rename = (title: string) => {
+    props.board.setTitle(title);
     api.setBoardTitle({
-      boardId: this.props.board.boardId!,
+      boardId: props.board.boardId!,
       title,
     });
   };
 
-  openMenu = (event: MouseEvent) => {
+  const openMenu = (event: MouseEvent) => {
     event.preventDefault();
     event.stopPropagation();
     const nativeEvent: any = event.nativeEvent;
-    this.props.showMenu(nativeEvent, {
+    props.showMenu(nativeEvent, {
       Rename: () => {
-        this.props.showModalInPlace(nativeEvent, ({ resolve }) => (
+        props.showModalInPlace(nativeEvent, ({ resolve }) => (
           <form
             onSubmit={(e) => {
               e.preventDefault();
-              this.rename(
+              rename(
                 (
                   (e.target as HTMLFormElement).elements.namedItem(
                     "newBoardTitle"
@@ -72,7 +69,7 @@ class BoardTile extends React.Component<Props> {
             <div>Enter new name</div>
             <input
               name="newBoardTitle"
-              defaultValue={this.props.board.title}
+              defaultValue={props.board.title}
               autoFocus
             />
             <button>Save</button>
@@ -80,10 +77,10 @@ class BoardTile extends React.Component<Props> {
         ));
       },
       "Change color": () => {
-        this.props.showModalInPlace(nativeEvent, ({ resolve }) => (
+        props.showModalInPlace(nativeEvent, ({ resolve }) => (
           <ColorPickerAny
             onChange={(color: { hex: string }) => {
-              this.setColor(color);
+              setColor(color);
               resolve();
             }}
           />
@@ -91,7 +88,7 @@ class BoardTile extends React.Component<Props> {
       },
       Delete: async () => {
         if (
-          !(await this.props.confirmInPlace(nativeEvent, (p) => (
+          !(await props.confirmInPlace(nativeEvent, (p) => (
             <div>
               <div>Delete board permanently</div>
               <button onClick={p.yes}>Yes</button>
@@ -100,14 +97,14 @@ class BoardTile extends React.Component<Props> {
           )))
         )
           return;
-        const boardId = this.props.board.boardId!;
+        const boardId = props.board.boardId!;
         try {
           await api.deleteBoard({
             boardId,
           });
-          this.context.deleteBoard(boardId);
+          store.deleteBoard(boardId);
         } catch (e: any) {
-          this.props.showStatus(() => (
+          props.showStatus(() => (
             <div>
               Whoopsie! That caused an error!
               <br />
@@ -123,18 +120,16 @@ class BoardTile extends React.Component<Props> {
     });
   };
 
-  render() {
-    return (
-      <Container
-        {...onSelect(this.onSelect)}
-        $color={this.props.board.color || "white"}
-        onContextMenu={this.openMenu}
-      >
-        <Title>{this.props.board.title || <Weak>Untitled</Weak>}</Title>
-        <MenuIcon $dark={!this.props.board.color} onClick={this.openMenu} />
-      </Container>
-    );
-  }
+  return (
+    <Container
+      {...onSelect(openBoard)}
+      $color={props.board.color || "white"}
+      onContextMenu={openMenu}
+    >
+      <Title>{props.board.title || <Weak>Untitled</Weak>}</Title>
+      <MenuIcon $dark={!props.board.color} onClick={openMenu} />
+    </Container>
+  );
 }
 
 export default withModal(
