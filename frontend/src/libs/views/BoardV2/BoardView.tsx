@@ -17,7 +17,7 @@ import onlyOnceFn from "./onlyOnceFn";
 import animate from "./animate";
 import api from "src/libs/api";
 import Color from "color";
-import { smootScrollToCenter } from "./smoothScrollToCenter";
+import { smoothScrollToCenter as smoothScrollToCenter } from "./smoothScrollToCenter";
 
 const AUTO_SCROLL_OFFSET = 100;
 const CARD_ANIMATION_TIME = 300;
@@ -110,7 +110,15 @@ export class BoardView {
       this.root.append(this.createDeckElement(child));
     }
 
-    this.root.ontouchend = () => {
+    let isSnapping = false;
+
+    this.root.onwheel = () => {
+      if (this.cancelSnapToDeck) this.cancelSnapToDeck();
+    };
+
+    this.root.onscrollend = () => {
+      if (isSnapping) return;
+
       const screenCenter = window.innerWidth / 2;
       let minDiff: number | null = null;
       let target: HTMLElement | null = null;
@@ -125,7 +133,7 @@ export class BoardView {
         }
       }
 
-      if (!target) return;
+      if (!target) return console.log("Target not found");
 
       // Don't snap on desktop.
       if (target.clientWidth < .8 * window.innerWidth) {
@@ -135,8 +143,10 @@ export class BoardView {
       if (this.scrollSnapTimeout) clearTimeout(this.scrollSnapTimeout);
       if (this.cancelSnapToDeck) this.cancelSnapToDeck()
       this.scrollSnapTimeout = setTimeout(() => {
+        isSnapping = true;
         if (this.cancelSnapToDeck) this.cancelSnapToDeck()
-        this.cancelSnapToDeck = smootScrollToCenter(this.root, target, () => {
+        this.cancelSnapToDeck = smoothScrollToCenter(this.root, target, () => {
+          isSnapping = false;
         });
       }, 500);
     };

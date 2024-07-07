@@ -1,10 +1,9 @@
 const TIME = 300;
 
-export function smootScrollToCenter(container: HTMLElement, target: HTMLElement, onEnd: () => void) {
+export function smoothScrollToCenter(container: HTMLElement, target: HTMLElement, onEnd: () => void) {
   const rect = target.getBoundingClientRect();
   const targetCenter = (rect.left + rect.width / 2) | 0;
   const windowCenter = (window.innerWidth / 2) | 0;
-  const diff = windowCenter - targetCenter;
   const scrollStart = container.scrollLeft;
   const scrollEnd = targetCenter - windowCenter + scrollStart;
   const start = Date.now();
