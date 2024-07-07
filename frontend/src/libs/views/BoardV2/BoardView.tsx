@@ -133,32 +133,32 @@ export class BoardView {
     this.addEventListener(document, "touchstart", endSnapToDeck);
 
     const initSnapToDeck = () => {
-      if (isSnapping) return;
-
-      const screenCenter = window.innerWidth / 2;
-      let minDiff: number | null = null;
-      let target: HTMLElement | null = null;
-
-      for (const element of this.deckElements) {
-        const rect = element.getBoundingClientRect();
-        const center = rect.left + rect.width / 2;
-        const diff = Math.abs(screenCenter - center);
-        if (minDiff == null || diff < minDiff) {
-          minDiff = diff;
-          target = element;
-        }
-      }
-
-      if (!target) return;
-
-      // Don't snap on desktop.
-      if (target.clientWidth < .8 * window.innerWidth) {
-        return;
-      }
-
       if (this.scrollSnapTimeout) clearTimeout(this.scrollSnapTimeout);
-      if (this.cancelSnapToDeck) this.cancelSnapToDeck()
       this.scrollSnapTimeout = setTimeout(() => {
+        if (isSnapping) return;
+
+        const screenCenter = window.innerWidth / 2;
+        let minDiff: number | null = null;
+        let target: HTMLElement | null = null;
+
+        for (const element of this.deckElements) {
+          const rect = element.getBoundingClientRect();
+          const center = rect.left + rect.width / 2;
+          const diff = Math.abs(screenCenter - center);
+          if (minDiff == null || diff < minDiff) {
+            minDiff = diff;
+            target = element;
+          }
+        }
+
+        if (!target) return;
+
+        // Don't snap on desktop.
+        if (target.clientWidth < .8 * window.innerWidth) {
+          return;
+        }
+
+        if (this.cancelSnapToDeck) this.cancelSnapToDeck()
         isSnapping = true;
         if (this.cancelSnapToDeck) this.cancelSnapToDeck()
         this.cancelSnapToDeck = smoothScrollToCenter(this.root, target, () => {
