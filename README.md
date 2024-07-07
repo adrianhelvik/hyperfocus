@@ -16,6 +16,3 @@
   1. Select the board "Development"
   2. Select the deck "Design finished"
 8. The deck "Design finished" will now be shared between "Design" and "Development"
-
-## Notes
-- The project is in the process of being migrated from JavaScript to TypeScript.
