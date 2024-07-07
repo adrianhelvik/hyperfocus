@@ -227,7 +227,7 @@ export class BoardView {
     }
 
     deckElement.append(
-      this.createNewCardInputField({
+      this.createAddCardInput({
         root: this.root,
         deckElement,
         deck,
@@ -489,7 +489,7 @@ export class BoardView {
     return containerNode;
   }
 
-  private createNewCardInputField({
+  private createAddCardInput({
     root,
     deckElement,
     deck,
@@ -503,16 +503,16 @@ export class BoardView {
     const form = document.createElement("form");
     form.classList.add(classes.newCardContainer);
 
-    const input = createAutoGrowTextarea();
-    input.dataset.addCardInput = deck.deckId;
-    input.required = true;
-    input.classList.add(classes.newCardInput);
-    input.placeholder = "Add card";
-    form.append(input);
+    const addCardInput = createAutoGrowTextarea();
+    addCardInput.dataset.addCardInput = deck.deckId;
+    addCardInput.required = true;
+    addCardInput.classList.add(classes.newCardInput);
+    addCardInput.placeholder = "Add card";
+    form.append(addCardInput);
 
     const submit = async () => {
-      const title = input.value;
-      input.value = "";
+      const title = addCardInput.value;
+      addCardInput.value = "";
       const { cardId } = await api.addCard({
         title,
         deckId: deck.deckId!,
@@ -531,10 +531,9 @@ export class BoardView {
           cleanupHooks,
         })
       );
-      input.focus();
     };
 
-    input.addEventListener("keydown", (e) => {
+    addCardInput.addEventListener("keydown", (e) => {
       if (e.key === "Enter" && !e.shiftKey) {
         e.preventDefault();
         submit();
@@ -549,6 +548,7 @@ export class BoardView {
     form.onsubmit = async (e: SubmitEvent) => {
       e.preventDefault();
       submit();
+      addCardInput.focus();
     };
 
     return form;
