@@ -166,7 +166,7 @@ export class BoardView {
         });
       }, 500);
     };
-    this.addEventListener(this.root, "scrollend", initSnapToDeck);
+    this.addEventListener(this.root, "scroll", initSnapToDeck);
     this.addEventListener(document, "touchend", initSnapToDeck);
   }
 
