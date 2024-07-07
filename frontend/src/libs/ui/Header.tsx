@@ -66,10 +66,10 @@ const Container = styled.div<{ $color: string }>`
 const Logo = ({ pageColor }: { pageColor: string }) => (
   <Logo.Container>
     <Logo.Text1 $pageColor={pageColor}>
-      task
+      Hyper
       <UnderLine $pageColor={pageColor} />
     </Logo.Text1>
-    <Logo.Text2 $pageColor={pageColor}>link</Logo.Text2>
+    <Logo.Text2 $pageColor={pageColor}>focus</Logo.Text2>
   </Logo.Container>
 );
 
