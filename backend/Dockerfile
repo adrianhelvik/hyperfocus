@@ -12,4 +12,4 @@ COPY ./backend/migrations ./migrations
 COPY ./backend/knexfile.js ./
 COPY ./backend/src src
 
-CMD ["yarn", "start"]
+CMD node node_modules/.bin/knex migrate:latest && node src/index.mjs
