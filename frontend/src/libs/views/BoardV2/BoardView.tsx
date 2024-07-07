@@ -116,6 +116,10 @@ export class BoardView {
       if (this.cancelSnapToDeck) this.cancelSnapToDeck();
     };
 
+    this.root.ontouchstart = () => {
+      if (this.cancelSnapToDeck) this.cancelSnapToDeck();
+    };
+
     this.root.onscrollend = () => {
       if (isSnapping) return;
 
