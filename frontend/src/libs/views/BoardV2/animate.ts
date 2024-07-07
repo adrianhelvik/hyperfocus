@@ -21,6 +21,7 @@ export default function animate(opts: {
     updateAndRun();
     cancelled = true;
     opts.onComplete();
+    cancelAnimationFrame(af);
   });
 
   const loop = () => {
@@ -29,6 +30,7 @@ export default function animate(opts: {
     progress = easeInOutQuad(Math.min((now - start) / opts.time, 1));
     updateAndRun();
     if (progress < 1) {
+      cancelAnimationFrame(af);
       af = requestAnimationFrame(loop);
     } else {
       cleanup();

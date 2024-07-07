@@ -1,13 +1,11 @@
 import ModalFooter from "src/libs/ui/ModalFooter";
-import { observable, action } from "mobx";
 import Board from "src/libs/store/Board";
 import Button from "src/libs/ui/Button";
 import Deck from "src/libs/store/Deck";
 import styled from "styled-components";
-import { observer } from "mobx-react";
 import Input from "src/libs/ui/Input";
+import { useState } from "react";
 import api from "src/libs/api";
-import React from "react";
 
 type Props = {
   board: Board;
@@ -15,54 +13,51 @@ type Props = {
   resolve: () => void;
 };
 
-@observer
-class AddDeck extends React.Component<Props> {
-  @observable loading = false;
-  @observable title = "";
+function AddDeck(props: Props) {
+  const [loading, setLoading] = useState(false);
+  const [title, setTitle] = useState("");
 
-  @action.bound setTitle(event: { target: { value: string } }) {
-    this.title = event.target.value;
-  }
+  const setTitleFromEvent = (event: { target: { value: string } }) => {
+    setTitle(event.target.value);
+  };
 
-  onSubmit = async (event: { preventDefault: () => void }) => {
-    if (this.loading) return;
-    this.loading = true;
+  const onSubmit = async (event: { preventDefault: () => void }) => {
+    if (loading) return;
+    setLoading(true);
     event.preventDefault();
     const { deckId } = await api.addDeck({
-      boardId: this.props.board.boardId,
-      title: this.title,
-      index: this.props.index,
+      boardId: props.board.boardId!,
+      title: title,
+      index: props.index!,
     });
     const deck = new Deck({
       deckId,
-      boardId: this.props.board.boardId,
+      boardId: props.board.boardId!,
       portals: [],
-      title: this.title,
+      title: title,
     });
     deck.initialFocus = true;
-    this.props.board.addDeck(deck, this.props.index);
-    this.props.resolve();
+    props.board.addDeck(deck, props.index!);
+    props.resolve();
   };
 
-  render() {
     return (
-      <Container onSubmit={this.onSubmit}>
+      <Container onSubmit={onSubmit}>
         <Title>Create a deck</Title>
         <Input
           autoFocus
           placeholder="Title"
-          onChange={this.setTitle}
-          value={this.title}
+          onChange={setTitleFromEvent}
+          value={title}
         />
         <ModalFooter>
-          <Button $gray type="button" onClick={() => this.props.resolve()}>
+          <Button $gray type="button" onClick={() => props.resolve()}>
             Cancel
           </Button>
           <Button>Create</Button>
         </ModalFooter>
       </Container>
     );
-  }
 }
 
 export default AddDeck;

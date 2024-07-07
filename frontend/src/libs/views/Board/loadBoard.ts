@@ -1,6 +1,6 @@
 import PortalModel, { PortalParam } from "src/libs/store/Portal";
 import DeckModel, { DeckParam } from "src/libs/store/Deck";
-import { useHistory } from "react-router-dom";
+import { useNavigate } from "react-router-dom";
 import BoardModel from "src/libs/store/Board";
 import { runInAction } from "mobx";
 import Store from "src/libs/store";
@@ -9,7 +9,7 @@ import api from "src/libs/api";
 type Options = {
   store: Store;
   boardId: string;
-  history: ReturnType<typeof useHistory>;
+  navigate: ReturnType<typeof useNavigate>;
   setLoading: (loading: boolean) => void;
 };
 
@@ -18,9 +18,9 @@ export default async function loadBoard(options: Options) {
     var { boardId, color, title, children } = await api.getBoard({
       boardId: options.boardId,
     });
-  } catch (e) {
+  } catch (e: any) {
     alert(e.message);
-    options.history.push("/app");
+    options.navigate("/app");
     return;
   }
 
@@ -40,7 +40,7 @@ export default async function loadBoard(options: Options) {
       color,
     });
 
-    options.store.setActiveBoard(new BoardModel(board));
+    options.store.setActiveBoard(board);
 
     options.setLoading(false);
   });

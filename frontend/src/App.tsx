@@ -1,16 +1,17 @@
 import Store, { StoreContext } from "src/libs/store";
 import { observer, Provider } from "mobx-react";
+import AppRoutes from "./AppRoutes";
 import { observable } from "mobx";
-import Routes from "./Routes";
 import React from "react";
 
 const components = observable({
-  Routes,
+  Routes: AppRoutes,
 });
 
 if (import.meta.hot) {
   import.meta.hot.accept("./Routes.js", (module) => {
-    components.Routes = module.default;
+    if (module) components.Routes = module.default;
+    else window.location.reload();
   });
   import.meta.hot.accept("store", () => {
     window.location.reload();
@@ -19,7 +20,7 @@ if (import.meta.hot) {
 
 @observer
 export default class App extends React.Component {
-  @observable unhandledRejection = null;
+  @observable unhandledRejection: any = null;
   store = new Store();
 
   componentDidMount() {

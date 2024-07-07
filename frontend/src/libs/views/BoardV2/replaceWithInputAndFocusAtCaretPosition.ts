@@ -10,7 +10,7 @@ export function replaceWithInputAndFocusAtCaretPosition(opts: {
     ? getCaretPositionAndNodeFromPoint(opts.clientX, opts.clientY)
     : null;
 
-  opts.inputElement.value = opts.sourceElement.textContent;
+  opts.inputElement.value = opts.sourceElement.textContent ?? "";
   opts.sourceElement.replaceWith(opts.inputElement);
   opts.inputElement.focus();
 
@@ -22,12 +22,12 @@ export function replaceWithInputAndFocusAtCaretPosition(opts: {
   if (result == null) {
     moveToEnd();
   } else {
-    const nodes = [].slice.call(opts.sourceElement.childNodes);
+    const nodes = Array.from(opts.sourceElement.childNodes);
     const index = nodes.findIndex((it: Node) => it.contains(result.node));
     if (index !== -1) {
       let offset = result.offset;
       for (let i = 0; i < index; i++) {
-        offset += nodes[i].textContent.length;
+        offset += nodes[i].textContent?.length ?? 0;
       }
       opts.inputElement.selectionStart = offset;
       opts.inputElement.selectionEnd = offset;

@@ -5,8 +5,8 @@ export function setLinkableText(element: HTMLElement, content: string) {
   element.textContent = "";
 
   let urlCount = 0;
-  const urls = [];
-  const template = content.replace(URL_REGEX, (match: string, ...rest) => {
+  const urls: string[] = [];
+  const template = content.replace(URL_REGEX, (match: string) => {
     urlCount += 1;
     urls.push(match);
     return SEPARATOR;

@@ -2,7 +2,7 @@ import { observable, action } from "mobx";
 
 class Card {
   @observable title = "";
-  @observable cardId = null;
+  @observable cardId: string | null = null;
   @observable.ref images: string[] = [];
 
   constructor(title: string, cardId: string, images: string[]) {

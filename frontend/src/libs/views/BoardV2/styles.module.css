@@ -219,14 +219,15 @@
   padding: 2px 7px;
   display: flex;
   flex-direction: column;
-
-  &>* {
-    flex-shrink: 0;
-  }
+  scrollbar-width: none;
 
   gap: 7px;
   min-height: 40px;
   overflow-y: auto;
+
+  & > * {
+    flex-shrink: 0;
+  }
 
   &:empty::after {
     content: "No cards here yet";

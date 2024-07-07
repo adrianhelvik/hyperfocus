@@ -10,16 +10,16 @@ import styled, { css } from "styled-components";
 import * as zIndexes from "src/libs/zIndexes";
 import MenuIcon from "src/libs/ui/MenuIcon";
 import { observable, computed } from "mobx";
+import EditDeckTitle from "./EditDeckTitle";
 import React, { ChangeEvent } from "react";
 import Portal from "src/libs/store/Portal";
 import AddCardInput from "./AddCardInput";
-import sleep from "src/libs/util/sleep";
 import * as theme from "src/libs/theme";
 import { observer } from "mobx-react";
+import sleep from "src/libs/sleep";
 import api from "src/libs/api";
 import Color from "color";
 import Card from "./Card";
-import EditDeckTitle from "./EditDeckTitle";
 
 // XXX: The library uses a different version of @types/react
 const ColorPickerAny = ColorPicker as any;
@@ -29,7 +29,7 @@ const decks = observable.map();
 
 class SharedState {
   @observable moving = observable.array();
-  @observable lastHoverIndex = null;
+  @observable lastHoverIndex: number | null = null;
 }
 
 const sharedState = new SharedState();
@@ -37,7 +37,7 @@ const sharedState = new SharedState();
 export type DeckProps = {
   deck: DeckModel;
   index: number;
-  simulateMove(fromIndex: number, toIndex: number): void;
+  simulateMove(fromIndex: number | null, toIndex: number | null): void;
   move(fromIndex: number, toIndex: number): void;
   moveLeft: boolean;
   moveRight: boolean;
@@ -50,35 +50,33 @@ type Props = WithEventsProps & WithMenuProps & WithModalProps & DeckProps;
 
 @observer
 class Deck extends React.Component<Props> {
-  @observable lastHoverIndex = null;
-  @observable cardWith = null;
-  @observable cardHeight = null;
-  @observable hoverIndex = null;
+  @observable lastHoverIndex: number | null = null;
+  @observable hoverIndex: number | null = null;
   @observable hide = false;
   @observable justPlaced = false;
   @observable movingChild = false;
   @observable moving = false;
-  @observable x = null;
-  @observable y = null;
-  @observable initialX = null;
-  @observable initialY = null;
-  @observable insetX = null;
-  @observable insetY = null;
+  @observable x: number | null = null;
+  @observable y: number | null = null;
+  @observable initialX: number | null = null;
+  @observable initialY: number | null = null;
+  @observable insetX: number | null = null;
+  @observable insetY: number | null = null;
 
-  input: HTMLInputElement;
-  element: HTMLDivElement;
+  input: HTMLInputElement | undefined;
+  element: HTMLDivElement | undefined | null;
   initialRects: {
     width: number;
     height: number;
     left: number;
     right: number;
-  }[];
-  placeholderHeight: number;
-  placeholderWidth: number;
+  }[] = [];
+  placeholderHeight: number | undefined;
+  placeholderWidth: number | undefined;
 
   componentDidMount() {
     if (this.props.deck.initialFocus) {
-      this.input.focus();
+      this.input?.focus();
       this.props.deck.initialFocus = false;
     }
     decks.set(this, this.props.index);
@@ -92,12 +90,12 @@ class Deck extends React.Component<Props> {
 
   @computed get deltaX() {
     if (!this.moving) return null;
-    return this.x - this.initialX - this.insetX;
+    return this.x! - this.initialX! - this.insetX!;
   }
 
   @computed get deltaY() {
     if (!this.moving) return 0;
-    return this.y - this.initialY - this.insetY;
+    return this.y! - this.initialY! - this.insetY!;
   }
 
   onMouseDown = (event: {
@@ -169,7 +167,7 @@ class Deck extends React.Component<Props> {
 
   calcInitialRects() {
     const container = document.querySelector(".board-decks");
-    const elements = container.children;
+    const elements = container!.children;
     this.initialRects = [];
 
     for (let i = 0; i < elements.length; i++) {
@@ -181,7 +179,7 @@ class Deck extends React.Component<Props> {
     for (let i = 0; i < this.initialRects.length; i++) {
       const rect = this.initialRects[i];
 
-      if (rect.left + rect.width >= this.x) {
+      if (rect.left + rect.width >= this.x!) {
         return i;
       }
     }
@@ -212,7 +210,7 @@ class Deck extends React.Component<Props> {
     else sharedState.moving.remove(this);
   };
 
-  setHoverIndex = (index: number) => {
+  setHoverIndex = (index: number | null) => {
     this.hoverIndex = index;
     if (typeof index === "number") {
       this.lastHoverIndex = index;
@@ -336,7 +334,7 @@ class Deck extends React.Component<Props> {
             ) : (
               <React.Fragment>
                 <EditDeckTitle deck={this.props.deck} />
-                {this.props.deck.portals.map((portal) => (
+                {this.props.deck.portals?.map((portal) => (
                   <ReferencedBy key={portal.portalId}>
                     <Arrow>→</Arrow>
                     <ReferenceBoardTitle>
@@ -432,7 +430,7 @@ const StyledCard = styled(Card as any)`
   padding: 10px;
   font-size: 0.8rem;
   line-height: 15px;
-` as any; // TODO: Fix types
+`;
 
 const ReferencedBy = styled.div`
   font-size: 10px;
@@ -442,7 +440,8 @@ const ReferencedBy = styled.div`
 const ReferenceBoardTitle = styled.span`
   margin-left: 3px;
   font-weight: bold;
-  :after {
+
+  &:after {
     content: ": ";
   }
 `;
@@ -459,7 +458,7 @@ const Arrow = styled.span`
 
 const TopBar = styled.div<{
   color: string;
-  referencedByPortal: boolean;
+  referencedByPortal?: boolean;
 }>`
   display: flex;
   background-color: ${(p) => {
@@ -501,7 +500,7 @@ type EditPortalProps = {
 
 @observer
 class EditPortalTitle extends React.Component<EditPortalProps> {
-  saveTimeout: ReturnType<typeof setTimeout>;
+  saveTimeout: ReturnType<typeof setTimeout> | undefined;
 
   onChange = (event: ChangeEvent) => {
     if (!(event.target instanceof HTMLInputElement)) return;
@@ -509,7 +508,7 @@ class EditPortalTitle extends React.Component<EditPortalProps> {
     clearTimeout(this.saveTimeout);
     this.saveTimeout = setTimeout(() => {
       api.setPortalTitle({
-        portalId: this.props.portal.portalId,
+        portalId: this.props.portal.portalId!,
         title: this.props.portal.title,
       });
     }, 300);

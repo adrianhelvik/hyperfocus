@@ -1,60 +1,61 @@
 import {
-  Redirect as RedirectOriginal,
-  useHistory,
+  useNavigate,
   useParams,
+  redirect,
 } from "react-router-dom";
 import { useContext, useEffect, useState } from "react";
 import { StoreContext } from "src/libs/store";
 import Loading from "src/libs/ui/Loading";
+import useModal from "src/libs/useModal";
 import * as theme from "src/libs/theme";
 import Header from "src/libs/ui/Header";
 import styled from "styled-components";
-import { observer } from "mobx-react";
 import DecksList from "./DecksList";
 import AddPortal from "./AddPortal";
 import AddCircle from "./AddCircle";
 import loadBoard from "./loadBoard";
 import AddDeck from "./AddDeck";
-import useModal from "src/libs/useModal";
 
-// TODO: Fix typings
-const Redirect = RedirectOriginal as any;
-
-export default observer(function BoardView() {
+export default function BoardView() {
   const [loading, setLoading] = useState<boolean>(true);
   const { boardId } = useParams<{ boardId: string }>();
+  if (!boardId) throw Error("Expected boardId to be provided in path");
   const { showModal, renderModal } = useModal();
-  const store = useContext(StoreContext);
-  const history = useHistory();
+  const store = useContext(StoreContext)!;
+  const navigate = useNavigate();
 
   const addDeck = async () => {
-    await showModal((props) => <AddDeck {...props} board={store.board} />);
+    const board = store.board;
+    if (!board) return;
+    await showModal((props) => <AddDeck {...props} board={board} />);
   };
 
   const addPortal = async () => {
-    await showModal((props) => <AddPortal {...props} board={store.board} />, {
+    const board = store.board;
+    if (!board) return;
+    await showModal((props) => <AddPortal {...props} board={board} />, {
       width: 700,
     });
   };
 
   useEffect(() => {
-    loadBoard({ store, boardId, history, setLoading });
-  }, [store, boardId, history]);
+    loadBoard({ store, boardId, navigate, setLoading });
+  }, [store, boardId, navigate]);
 
   if (loading) {
     return <Loading />;
   }
 
   if (!store.board) {
-    return <Redirect to="/" />;
+    return <>{redirect("/")}</>;
   }
 
   return (
     <>
       <Container>
-        <Header color={store.board.color}>
+        <Header color={store.board.color ?? undefined}>
           <Breadcrumbs>
-            <GoBack onClick={() => history.goBack()}>My boards</GoBack>
+            <GoBack onClick={() => navigate(-1)}>My boards</GoBack>
             <div>›</div>
             <Title>{store.board.title}</Title>
           </Breadcrumbs>
@@ -72,7 +73,7 @@ export default observer(function BoardView() {
       {renderModal()}
     </>
   );
-});
+};
 
 const Container = styled.main`
   background: ${theme.bg1};
@@ -113,7 +114,7 @@ const AddItem = styled.div`
   display: flex;
   align-items: flex-start;
 
-  :first-child {
+  &:first-child {
     border-top-left-radius: 4px;
   }
 `;

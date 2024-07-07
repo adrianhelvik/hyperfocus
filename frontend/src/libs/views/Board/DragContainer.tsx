@@ -19,7 +19,7 @@ export type Move = {
 export const MoveContext = createContext<{
   move: Move | null;
   setMove: React.Dispatch<SetStateAction<Move | null>>;
-}>(null);
+} | null>(null);
 
 export default function DragContainer(props: { children: ReactNode }) {
   const [move, setMove] = useState<Move | null>(null);

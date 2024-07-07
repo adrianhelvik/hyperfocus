@@ -4,7 +4,6 @@ import withModal, { WithModalProps } from "src/libs/withModal";
 import withMenu, { WithMenuProps } from "src/libs/withMenu";
 import { CirclePicker as ColorPicker } from "react-color";
 import Store, { StoreContext } from "src/libs/store";
-import { withRouter } from "react-router-dom";
 import onSelect from "src/libs/util/onSelect";
 import MenuIcon from "src/libs/ui/MenuIcon";
 import React, { MouseEvent } from "react";
@@ -16,10 +15,6 @@ import api from "src/libs/api";
 import Color from "color";
 
 const ColorPickerAny = ColorPicker as any as React.ComponentType<any>;
-
-const withRouterAny = withRouter as any as <T extends React.ComponentType<any>>(
-  component: T
-) => T;
 
 type Props = WithConfirmProps &
   WithStatusProps &
@@ -38,17 +33,20 @@ class BoardTile extends React.Component<Props> {
     window.location.pathname = `/board/${this.props.board.boardId}`;
   };
 
-  setColor = ({ hex }) => {
+  setColor = ({ hex }: { hex: string }) => {
     this.props.board.color = hex;
     api.setBoardColor({
-      boardId: this.props.board.boardId,
+      boardId: this.props.board.boardId!,
       color: hex,
     });
   };
 
   rename = (title: string) => {
     this.props.board.setTitle(title);
-    api.setBoardTitle({ boardId: this.props.board.boardId, title });
+    api.setBoardTitle({
+      boardId: this.props.board.boardId!,
+      title,
+    });
   };
 
   openMenu = (event: MouseEvent) => {
@@ -102,13 +100,13 @@ class BoardTile extends React.Component<Props> {
           )))
         )
           return;
-        const { boardId } = this.props.board;
+        const boardId = this.props.board.boardId!;
         try {
           await api.deleteBoard({
             boardId,
           });
           this.context.deleteBoard(boardId);
-        } catch (e) {
+        } catch (e: any) {
           this.props.showStatus(() => (
             <div>
               Whoopsie! That caused an error!
@@ -140,12 +138,12 @@ class BoardTile extends React.Component<Props> {
 }
 
 export default withModal(
-  withConfirm(withStatus(withMenu(withRouterAny(BoardTile))))
+  withConfirm(withStatus(withMenu(BoardTile)))
 );
 
 const Container = styled.button.attrs({
   type: "button",
-})<{ $color: string }>`
+}) <{ $color: string }>`
   all: unset;
   outline: revert;
 
@@ -162,7 +160,7 @@ const Container = styled.button.attrs({
   transition: box-shadow 0.3s;
   height: 80px;
 
-  :hover {
+  &:hover {
     box-shadow: ${theme.shadows[1]};
   }
 `;

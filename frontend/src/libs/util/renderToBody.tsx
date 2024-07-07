@@ -8,7 +8,7 @@ export default (template: any) => {
   return {
     remove: () => {
       root.unmount();
-      rootElement.parentNode.removeChild(rootElement);
+      rootElement.parentNode?.removeChild(rootElement);
     },
     rerender: (template: any) => {
       root.render(template);

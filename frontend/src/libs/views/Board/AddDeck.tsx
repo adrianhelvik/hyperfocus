@@ -29,18 +29,18 @@ class AddDeck extends React.Component<Props> {
     this.loading = true;
     event.preventDefault();
     const { deckId } = await api.addDeck({
-      boardId: this.props.board.boardId,
+      boardId: this.props.board.boardId!,
       title: this.title,
-      index: this.props.index,
+      index: this.props.index!,
     });
     const deck = new Deck({
       deckId,
-      boardId: this.props.board.boardId,
+      boardId: this.props.board.boardId!,
       portals: [],
       title: this.title,
     });
     deck.initialFocus = true;
-    this.props.board.addDeck(deck, this.props.index);
+    this.props.board.addDeck(deck, this.props.index!);
     this.props.resolve();
   };
 

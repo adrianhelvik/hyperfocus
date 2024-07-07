@@ -28,7 +28,6 @@ export default function Input(props: Props) {
 
   useEffect(() => {
     if (!props.autoFocus) return;
-    console.log("autoFocus");
     if (!element) return;
     element.focus();
   }, [props.autoFocus, element]);
@@ -67,10 +66,10 @@ export default function Input(props: Props) {
           value={props.value}
           ref={innerRef}
           type={showPassword ? "text" : type}
-          forPassword={props.type === "password"}
-          colored={showPassword}
+          $forPassword={props.type === "password"}
+          $colored={showPassword}
         />
-        <LabelText hasContent={Boolean(props.value)}>
+        <LabelText $hasContent={Boolean(props.value)}>
           {props.placeholder}
         </LabelText>
       </Label>
@@ -95,7 +94,7 @@ const Container = styled.div`
   margin-top: 15px;
 `;
 
-const InputField = styled.input<{ forPassword: boolean; colored: boolean }>`
+const InputField = styled.input<{ $forPassword: boolean; $colored: boolean }>`
   font-size: ${fontSize};
   padding: ${padding};
   border: 1px solid ${theme.gray1};
@@ -111,18 +110,18 @@ const InputField = styled.input<{ forPassword: boolean; colored: boolean }>`
     color: ${theme.ui1};
   }
   ${(p) =>
-    p.forPassword &&
+    p.$forPassword &&
     css`
       padding-right: 30px;
     `}
   ${(p) =>
-    p.colored &&
+    p.$colored &&
     css`
       border-color: ${theme.ui1};
     `}
 `;
 
-const LabelText = styled.div<{ hasContent: boolean }>`
+const LabelText = styled.div<{ $hasContent: boolean }>`
   position: absolute;
   font-size: ${fontSize};
   padding: ${padding};
@@ -134,11 +133,11 @@ const LabelText = styled.div<{ hasContent: boolean }>`
   transform-origin: 0 0;
   transition: 0.3s;
   ${(props) =>
-    props.hasContent &&
+    props.$hasContent &&
     css`
       transform: translateY(calc(-100% - 7px)) scale(0.7) translateX(-5px);
     `}
-  :-webkit-autofill + & {
+  &:-webkit-autofill + & {
     transform: translateY(calc(-100% - 7px)) scale(0.7) translateX(-5px);
   }
 `;

@@ -1,24 +1,22 @@
-import { AuthContext, WithAuthProps } from "src/libs/authContext";
 import withMenu, { WithMenuProps } from "src/libs/withMenu";
+import { MouseEvent, useContext, useEffect } from "react";
+import { AuthContext } from "src/libs/authContext";
+import { useNavigate } from "react-router-dom";
 import { StoreContext } from "src/libs/store";
-import { Redirect } from "react-router-dom";
 import AddBoardModal from "./AddBoardModal";
-import React, { MouseEvent } from "react";
 import Header from "src/libs/ui/Header";
 import styled from "styled-components";
 import { Observer } from "mobx-react";
 import BoardList from "./BoardList";
 
-const RedirectAny = Redirect as any;
-
-type Props = WithAuthProps &
-  WithMenuProps & {
-    children?: React.ReactNode;
-  };
+type Props = WithMenuProps & {
+  children?: React.ReactNode;
+};
 
 export default withMenu(function Overview(props: Props) {
-  const store = React.useContext(StoreContext);
-  const auth = React.useContext(AuthContext);
+  const store = useContext(StoreContext)!;
+  const auth = useContext(AuthContext)!;
+  const navigate = useNavigate();
 
   const onContextMenu = (event: MouseEvent) => {
     event.preventDefault();
@@ -30,18 +28,19 @@ export default withMenu(function Overview(props: Props) {
     });
   };
 
-  React.useEffect(() => {
+  useEffect(() => {
     auth.authenticate();
   }, [auth]);
 
-  if (auth.status === "failure") {
-    return <RedirectAny to="/" />;
-  }
+  useEffect(() => {
+    if (auth.status === "failure") {
+      navigate("/");
+    }
+  }, [auth.status]);
 
   return (
     <Observer>
       {() => {
-        if (auth.status === "failure") return <RedirectAny to="/" />;
         return (
           <Container onContextMenu={onContextMenu}>
             <Header>My boards</Header>

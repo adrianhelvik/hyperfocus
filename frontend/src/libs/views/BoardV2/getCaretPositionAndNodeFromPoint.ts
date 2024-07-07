@@ -15,6 +15,7 @@ export default function getCaretPositionAndNodeFromPoint(x: number, y: number) {
   } else if (document.caretRangeFromPoint) {
     // Use WebKit-proprietary fallback method
     const range = document.caretRangeFromPoint(x, y);
+    if (!range) return;
     const node = range.startContainer;
     return {
       node,

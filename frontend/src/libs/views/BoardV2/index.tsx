@@ -1,7 +1,8 @@
-import { useHistory, useParams } from "react-router-dom";
+import { useNavigate, useParams } from "react-router-dom";
+import Board, { BoardParam } from "src/libs/store/Board";
 import { useState, useEffect } from "react";
+import { useAutoCallback, useAutoMemo } from "hooks.macro";
 import classes from "./styles.module.css";
-import Board from "src/libs/store/Board";
 import useModal from "src/libs/useModal";
 import Header from "src/libs/ui/Header";
 import * as theme from "src/libs/theme";
@@ -14,49 +15,63 @@ import api from "src/libs/api";
 
 export default function BoardV2() {
   const { boardId } = useParams<{ boardId: string }>();
+  if (!boardId) throw Error("Expected boardId to be provided");
+
+  const [boardParam, setBoardParam] = useState<BoardParam | null>(null);
   const [div, setDiv] = useState<HTMLDivElement | null>(null);
-  const [board, setBoard] = useState<Board | null>(null);
+  const [refreshKey, setRefreshKey] = useState(0);
   const { showModal, renderModal } = useModal();
-  const history = useHistory();
+  const navigate = useNavigate();
+
+  const refresh = useAutoCallback(() => setRefreshKey(refreshKey => refreshKey + 1));
+
+  const board = useAutoMemo(() => {
+    if (!boardParam) return null;
+    return new Board(boardParam)
+  });
 
   const addDeck = async () => {
+    if (!board) return;
     await showModal((props) => <AddDeck {...props} board={board} />);
     dispatchEvent(new Event("subtask:addDeck"));
+    refresh();
   };
 
   const addPortal = async () => {
+    if (!board) return;
     await showModal((props) => <AddPortal {...props} board={board} />, {
       width: 700,
     });
+    refresh();
   };
 
   useEffect(() => {
     let cancelled = false;
     api.getBoard({ boardId }).then((board) => {
       if (cancelled) return;
-      setBoard(new Board(board));
+      setBoardParam(board);
     });
     return () => {
       cancelled = true;
     };
-  }, [boardId]);
+  }, [boardId, refreshKey]);
 
   useEffect(() => {
-    if (!board) return;
+    if (!boardParam) return;
     if (!div) return;
-    const boardView = new BoardView(div, board);
+    const boardView = new BoardView(div, boardParam);
     return () => boardView.unmount();
-  }, [div, board]);
+  }, [div, boardParam]);
 
   return (
     <div className={classes.boardView}>
       <Header>
         <Breadcrumbs>
-          <CrumbButton onClick={() => history.push("/app")}>
+          <CrumbButton onClick={() => navigate("/app")}>
             My boards
           </CrumbButton>
           <div>›</div>
-          <Title>{board?.title}</Title>
+          <Title>{boardParam?.title}</Title>
         </Breadcrumbs>
       </Header>
       <div ref={setDiv} />
@@ -105,7 +120,7 @@ const AddItem = styled.div`
   display: flex;
   align-items: flex-start;
 
-  :first-child {
+  &:first-child {
     border-top-left-radius: 4px;
   }
 `;

@@ -14,22 +14,19 @@
     ],
     "moduleResolution": "node",
     "allowJs": true,
-    "strict": false,
-    "noUnusedLocals": "warn",
-    "noUnusedParameters": "warn",
+    "strict": true,
+    "noUnusedLocals": true,
+    "noUnusedParameters": true,
     "noFallthroughCasesInSwitch": true,
     "skipLibCheck": true,
     "forceConsistentCasingInFileNames": true,
     "esModuleInterop": true,
     "resolveJsonModule": true,
-    "paths": {
-      "src/*": [
-        "./src/*"
-      ]
-    }
+    "isolatedModules": true
   },
   "include": [
-    "./src/**/*"
+    "./src/**/*.ts",
+    "./src/**/*.tsx"
   ],
   "exclude": [
     "node_modules",

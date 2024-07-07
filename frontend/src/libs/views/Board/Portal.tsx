@@ -7,7 +7,7 @@ type Props = DeckProps;
 
 @observer
 class Portal extends React.Component<Props> {
-  @observable error = null;
+  @observable error: Error | null = null;
 
   componentDidCatch(error: Error) {
     console.error(error);

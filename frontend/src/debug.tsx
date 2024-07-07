@@ -47,7 +47,7 @@ function createOutline(element: Element) {
   return outline;
 }
 
-let points = [];
+let points: HTMLDivElement[] = [];
 
 declare global {
   interface Window {
@@ -73,6 +73,6 @@ window.point = function point(x, y = 200) {
 };
 
 window.removePoints = function removePoints() {
-  for (const point of points) point.parentNode.removeChild(point);
+  for (const point of points) point.parentNode?.removeChild(point);
   points = [];
 };

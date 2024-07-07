@@ -66,7 +66,7 @@ export class BoardView {
       }
     }
 
-    if (!isKeypressElement(e.target) || ('value' in e.target && !e.target.value)) {
+    if (!isKeypressElement(e.target) || (e.target && 'value' in e.target && !e.target.value)) {
       // TODO: Evaluate whether I should use these modifier keys
 
       if (e.key === "ArrowRight") {
@@ -238,12 +238,12 @@ export class BoardView {
         titleInput,
       );
       child.title = titleInput.value;
-      if ('portalId' in child) {
+      if ('portalId' in child && child.portalId) {
         api.setPortalTitle({
           portalId: child.portalId,
           title: titleInput.value,
         });
-      } else {
+      } else if ('deckId' in child && child.deckId) {
         api.setDeckTitle({
           deckId: child.deckId,
           title: titleInput.value,
@@ -305,12 +305,12 @@ export class BoardView {
 
       if (prevRect && prevRect.left + prevRect.width > x) {
         placeholder.remove();
-        prevElement.parentNode.insertBefore(placeholder, prevElement);
+        prevElement.parentNode?.insertBefore(placeholder, prevElement);
         this.deckElements.splice(ownIndex, 1);
         this.deckElements.splice(ownIndex - 1, 0, deckElement);
       } else if (nextRect && nextRect.left < x) {
         placeholder.remove();
-        nextElement.parentNode.insertBefore(
+        nextElement.parentNode?.insertBefore(
           placeholder,
           nextElement.nextElementSibling
         );
@@ -324,8 +324,8 @@ export class BoardView {
         if ((e.target instanceof HTMLElement) && e.target.tagName === "A") {
           e.target.click();
         } else {
-          deckElement.style.transform = null;
-          deckElement.style.position = null;
+          deckElement.style.transform = "";
+          deckElement.style.position = "";
           placeholder.replaceWith(deckElement);
           startEditingDeckTitle(e);
         }
@@ -348,8 +348,8 @@ export class BoardView {
           animate({
             onComplete: onlyOnceFn(() => {
               placeholder.replaceWith(deckElement);
-              deckElement.style.transform = null;
-              deckElement.style.position = null;
+              deckElement.style.transform = "";
+              deckElement.style.position = "";
             }),
             values: {
               x: [x, placeholderRect.left],
@@ -400,9 +400,9 @@ export class BoardView {
 
       cleanupHooks.add(() => {
         this.deckElements.forEach((e) => {
-          e.style.transition = null;
-          e.style.transform = null;
-          e.style.position = null;
+          e.style.transition = "";
+          e.style.transform = "";
+          e.style.position = "";
           deckElement.classList.remove(classes.movingDeck);
         });
         placeholder.replaceWith(deckElement);
@@ -451,7 +451,7 @@ export class BoardView {
       input.value = "";
       const { cardId } = await api.addCard({
         title,
-        deckId: deck.deckId,
+        deckId: deck.deckId!,
       });
       const card = {
         title,
@@ -459,7 +459,7 @@ export class BoardView {
         images: [],
         setTitle() { },
       };
-      deckElement.querySelector("[data-cards-container]").append(
+      deckElement.querySelector("[data-cards-container]")?.append(
         this.buildCardForDeck({
           root,
           card,
@@ -516,7 +516,7 @@ export class BoardView {
     let editSource: "keyboard" | "mouse" = "mouse";
 
     const cardElement = document.createElement("div");
-    cardElement.dataset.cardId = card.cardId;
+    cardElement.dataset.cardId = card.cardId ?? undefined;
     cardElement.className = classes.card;
 
     const cardInputElement = document.createElement("textarea");
@@ -553,7 +553,7 @@ export class BoardView {
       if (cardInputElement.value === "") {
         cardElement.remove();
         api.deleteCard({
-          cardId: card.cardId,
+          cardId: card.cardId!,
         });
         this.board.children.find(it => {
           if ("deckId" in it && it.deckId === deckElement.dataset.deckId) {
@@ -567,7 +567,7 @@ export class BoardView {
         });
       } else {
         api.setCardTitle({
-          cardId: card.cardId,
+          cardId: card.cardId!,
           title: cardInputElement.value,
         });
         if (editSource === "keyboard") {
@@ -645,7 +645,7 @@ export class BoardView {
         cleanupHooks.run();
 
         root.classList.add(classes.isMovingCard);
-        cardElement.parentElement.parentElement.classList.add(classes.hoverDeck);
+        cardElement.parentElement?.parentElement?.classList.add(classes.hoverDeck);
 
         scrollInterval = setInterval(() => {
           if (scrollDirection === "LEFT") {
@@ -694,7 +694,7 @@ export class BoardView {
 
         clearInterval(scrollInterval);
 
-        const index = Array.from(placeholderNode.parentNode.children).findIndex(
+        const index = Array.from(placeholderNode.parentNode?.children ?? []).findIndex(
           (e) => e === placeholderNode
         );
         root.classList.remove(classes.isMovingCard);
@@ -709,9 +709,10 @@ export class BoardView {
         {
           let timeout: ReturnType<typeof setTimeout>;
           const cleanup = onlyOnceFn(() => {
-            cardElement.style.transition = null;
-            cardElement.style.transform = null;
-            cardElement.style.position = null;
+            cardElement.style.transition = "";
+            cardElement.style.transform = "";
+            cardElement.style.position = "";
+            cardElement.style.width = "";
             cardElement.remove();
             placeholderNode.replaceWith(cardElement);
             cardElement.classList.remove(classes.movingCard);
@@ -727,7 +728,7 @@ export class BoardView {
         }
 
         api.moveCard({
-          cardId: cardElement.dataset.cardId,
+          cardId: cardElement.dataset.cardId!,
           target: hoverDeck.dataset.deckId,
           index,
         });

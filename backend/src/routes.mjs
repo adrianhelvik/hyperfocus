@@ -2,6 +2,7 @@
 
 import moveBoardChildToIndex from "./domain/moveBoardChildToIndex.mjs";
 import getDenormalizedBoard from "./domain/getDenormalizedBoard.mjs";
+import { deleteUploadedFile } from "./domain/deleteUploadedFile.mjs";
 import assertCanEditPortal from "./domain/assertCanEditPortal.mjs";
 import assertCanEditBoard from "./domain/assertCanEditBoard.mjs";
 import assertCanEditCard from "./domain/assertCanEditCard.mjs";
@@ -12,6 +13,7 @@ import requireInteger from "./utils/requireInteger.mjs";
 import addCardImages from "./domain/addCardImages.mjs";
 import createProject from "./domain/createProject.mjs";
 import requireString from "./utils/requireString.mjs";
+import setCardTitle from "./domain/setCardTitle.mjs";
 import authenticate from "./domain/authenticate.mjs";
 import createBoard from "./domain/createBoard.mjs";
 import createUser from "./domain/createUser.mjs";
@@ -26,8 +28,6 @@ import { Stream } from "stream";
 import Boom from "@hapi/boom";
 import knex from "./knex.mjs";
 import fs from "fs";
-import setCardTitle from "./domain/setCardTitle.mjs";
-import { deleteUploadedFile } from "./domain/deleteUploadedFile.mjs";
 
 export const loginRoute = {
   method: "POST",

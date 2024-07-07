@@ -14,9 +14,9 @@ export type BoardParam = {
 
 class Board {
   @observable title = "";
-  @observable children = [];
-  @observable boardId = null;
-  @observable color = null;
+  @observable children: (Deck | Portal)[] = [];
+  @observable boardId: string | null = null;
+  @observable color: string | null = null;
 
   constructor(arg: BoardParam | string) {
     if (typeof arg === "string") this.fromTitle(arg);
@@ -46,14 +46,21 @@ class Board {
   @computed get decksById() {
     const decksById = observable.map();
 
-    for (const deck of this.decks) decksById.set(deck.deckId, deck);
+    for (const deck of this.decks) {
+      if ("deckId" in deck) {
+        decksById.set(deck.deckId, deck);
+      }
+    }
 
     return decksById;
   }
 
-  @action addDeck(deck: DeckParam, index: number) {
-    if (typeof index === "number") this.children.splice(index, 0, deck);
-    else this.children.push(deck);
+  @action addDeck(deck: Deck, index: number) {
+    if (typeof index === "number") {
+      this.children.splice(index, 0, deck);
+    } else {
+      this.children.push(deck);
+    }
   }
 
   @action addPortal(options: {

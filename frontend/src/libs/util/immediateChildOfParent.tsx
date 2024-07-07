@@ -1,7 +1,7 @@
-export default function immediateChildOfParent(element, fn) {
+export default function immediateChildOfParent(element: HTMLElement, fn: (e: HTMLElement) => boolean) {
   if (!element || !element.parentNode) return null;
 
-  if (fn(element.parentNode)) return element.parentNode;
+  if (fn(element.parentNode as HTMLElement)) return element.parentNode;
 
-  return immediateChildOfParent(element.parentNode, fn);
+  return immediateChildOfParent(element.parentNode as HTMLElement, fn);
 }

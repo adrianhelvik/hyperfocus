@@ -1,12 +1,11 @@
-import { withRouter } from "react-router-dom";
 import hoist from "hoist-non-react-statics";
 import { observable, action } from "mobx";
 import { observer } from "mobx-react";
 import { Portal } from "react-portal";
-import Modal from "src/libs/ui/Modal";
+import { Coord } from "./types";
+import Modal from "./ui/Modal";
 import React from "react";
 
-const withRouterAny = withRouter as any as <T>(c: T) => T;
 const PortalAny = Portal as any as React.ComponentType<any>;
 
 export type ModalTemplateProps = {
@@ -34,16 +33,16 @@ export default function withModal<Props>(
       (WrappedComponent.displayName || WrappedComponent.name) +
       ")";
 
-    @observable placement = null;
-    @observable width = null;
+    @observable placement: null | Coord = null;
+    @observable width: number | null = null;
     @observable backdrop = true;
-    @observable Template = null;
-    @observable promise = null;
-    @observable resolve = null;
-    @observable reject = null;
+    @observable Template: React.ComponentType<any> | null = null;
+    @observable promise: Promise<any> | null = null;
+    @observable resolve: any = null;
+    @observable reject: any = null;
 
     @action.bound showModal(
-      Template: React.ComponentType,
+      Template: React.ComponentType<any>,
       options: { width?: number } = {}
     ) {
       this.promise = new Promise((resolve, reject) => {
@@ -100,7 +99,7 @@ export default function withModal<Props>(
     }
   }
 
-  hoist(withRouterAny(NewComponent) as any, WrappedComponent as any);
+  hoist(NewComponent as any, WrappedComponent as any);
 
-  return NewComponent;
+  return NewComponent as any;
 }

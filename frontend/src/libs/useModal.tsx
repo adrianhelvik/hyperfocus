@@ -81,7 +81,7 @@ export default function useModal(): ModalType {
       if (openModal) {
         const { Template } = openModal;
         return (
-          <>{createPortal(<Template resolve={openModal.resolve} />, root)}</>
+          <>{createPortal(<Template resolve={openModal.resolve} />, root!)}</>
         );
       }
       return null;

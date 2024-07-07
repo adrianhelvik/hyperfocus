@@ -1,12 +1,13 @@
 import * as theme from "../theme";
 import React from "react";
 
-const style = (e: HTMLElement, s: Partial<CSSStyleDeclaration>) =>
-  Object.assign(e.style, s);
+const style = (e: HTMLElement | undefined | null, s: Partial<CSSStyleDeclaration>) => {
+  if (e) Object.assign(e.style, s);
+  }
 
 class Loading extends React.Component {
-  element: HTMLDivElement;
-  interval: ReturnType<typeof setInterval>;
+  element: HTMLDivElement | null = null;
+  interval: ReturnType<typeof setInterval> | undefined;
 
   componentDidMount() {
     this.element = document.createElement("div");
@@ -46,7 +47,7 @@ class Loading extends React.Component {
         width: `${s}px`,
       });
 
-      this.element.appendChild(circle);
+      this.element?.appendChild(circle);
 
       setTimeout(() => {
         style(circle, {
@@ -56,7 +57,7 @@ class Loading extends React.Component {
       }, 20);
 
       setTimeout(() => {
-        this.element.removeChild(circle);
+        this.element?.removeChild(circle);
       }, 10000);
     }, 800);
 
@@ -69,7 +70,7 @@ class Loading extends React.Component {
     clearInterval(this.interval);
 
     const circle = document.createElement("div");
-    this.element.appendChild(circle);
+    this.element?.appendChild(circle);
 
     style(circle, {
       position: "absolute",
@@ -94,7 +95,7 @@ class Loading extends React.Component {
     });
 
     setTimeout(() => {
-      if (this.element.parentNode)
+      if (this.element?.parentNode)
         this.element.parentNode.removeChild(this.element);
     }, 500);
   }

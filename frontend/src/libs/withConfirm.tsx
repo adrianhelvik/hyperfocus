@@ -25,11 +25,11 @@ export type WithConfirmProps = {
   ) => Promise<boolean>;
 };
 
-export default function withConfirm<Props>(
+export default function withConfirm<Props extends Record<string, any>>(
   Component: React.ComponentType<Props & WithConfirmProps>
 ): React.ComponentType<Props> {
   @observer
-  class WithConfirm extends React.Component<WithConfirmProps & Props> {
+  class WithConfirm extends React.Component<Props> {
     @observable placement: null | Coord = null;
     @observable.ref
     Template: null | React.ComponentType<ConfirmTemplateProps> = null;

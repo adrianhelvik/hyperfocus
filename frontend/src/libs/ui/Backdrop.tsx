@@ -4,12 +4,12 @@ import * as zIndexes from "../zIndexes";
 
 type Props = {
   transparent?: boolean;
-  hide: (event?: Event) => void;
+  hide: (event?: React.MouseEvent | KeyboardEvent) => void;
   children: JSX.Element;
 };
 
-const Backdrop: React.FC<Props> = ({ hide, transparent, children }) => {
-  const [container, setContainer] = useState<Element>();
+const Backdrop = ({ hide, transparent, children }: Props) => {
+  const [container, setContainer] = useState<Element | null>(null);
 
   useEffect(() => {
     const onKeyDown = (event: KeyboardEvent) => {
@@ -21,13 +21,13 @@ const Backdrop: React.FC<Props> = ({ hide, transparent, children }) => {
     };
   }, [hide]);
 
-  const onContainerClick = (event: MouseEvent) => {
+  const onContainerClick = (event: React.MouseEvent) => {
     if (event.target === container && typeof hide === "function") hide(event);
   };
 
   return (
     <OuterContainer
-      transparent={transparent}
+      $transparent={transparent}
       onClick={onContainerClick}
       ref={setContainer}
     >
@@ -38,7 +38,7 @@ const Backdrop: React.FC<Props> = ({ hide, transparent, children }) => {
 
 export default Backdrop;
 
-const OuterContainer = styled.div<any>`
+const OuterContainer = styled.div<{ $transparent?: boolean }>`
   position: fixed;
   bottom: 0;
   right: 0;
@@ -54,7 +54,7 @@ const OuterContainer = styled.div<any>`
   animation: ${keyframes`from { opacity: 0; }`} 0.5s;
 
   ${(p) =>
-    p.transparent &&
+    p.$transparent &&
     css`
       background-color: rgba(0, 0, 0, 0.0001);
     `}

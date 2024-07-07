@@ -1,20 +1,19 @@
-import { Redirect } from "react-router-dom";
 import { AuthContext } from "src/libs/authContext";
+import { useNavigate } from "react-router-dom";
+import { StoreContext } from "src/libs/store";
+import React, { useEffect } from "react";
+import Board from "src/libs/store/Board";
+import * as theme from "src/libs/theme";
 import ProjectTile from "./ProjectTile";
 import styled from "styled-components";
 import { Observer } from "mobx-react";
-import { StoreContext } from "src/libs/store";
 import BoardTile from "./BoardTile";
-import Board from "src/libs/store/Board";
-import * as theme from "src/libs/theme";
-import React from "react";
 import api from "src/libs/api";
 
-const RedirectAny = Redirect as any;
-
 export default function BoardList() {
-  const store = React.useContext(StoreContext);
-  const auth = React.useContext(AuthContext);
+  const store = React.useContext(StoreContext)!;
+  const auth = React.useContext(AuthContext)!;
+  const navigate = useNavigate();
 
   React.useEffect(() => {
     api.ownBoards().then(({ boards }) => {
@@ -43,16 +42,17 @@ export default function BoardList() {
     };
   });
 
+  useEffect(() => {
+    if (auth.status === "failure") {
+      return navigate("/login")
+    }
+  }, [auth.status]);
 
   if (!store) return null;
 
   return (
     <Observer>
       {() => {
-        if (auth.status === "failure") {
-          return <RedirectAny to="/login" />;
-        }
-
         return (
           <Container>
             <Header>
@@ -121,12 +121,12 @@ const PlusButton = styled.button`
   box-shadow: ${theme.shadows[0]};
   cursor: pointer;
 
-  :hover {
+  &:hover {
     background-color: ${theme.ui2};
     box-shadow: ${theme.shadows[1]};
   }
 
-  :hover:active {
+  &:hover:active {
     background-color: ${theme.darkPurple};
   }
 `;

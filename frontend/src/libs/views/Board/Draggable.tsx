@@ -6,7 +6,7 @@ import {
   useState,
 } from "react";
 import { createPortal } from "react-dom";
-import { MoveContext } from "./DragContainer";
+import { Move, MoveContext } from "./DragContainer";
 
 export default function Draggable(props: {
   targetId: string;
@@ -17,7 +17,7 @@ export default function Draggable(props: {
     document.createElement("div")
   );
   const [realRoot, setRealRoot] = useState<HTMLDivElement | null>(null);
-  const { move, setMove } = useContext(MoveContext);
+  const { move, setMove } = useContext(MoveContext)!;
   const isMoving = move != null && move.targetId === props.targetId;
 
   const onDropRef = useRef<(e: MouseEvent) => void>(props.onDrop);
@@ -48,7 +48,7 @@ export default function Draggable(props: {
     const onMouseMove = (event: MouseEvent) => {
       if (started) {
         setMove((move) => ({
-          ...move,
+          ...(move as Move),
           clientX: event.clientX,
           clientY: event.clientY,
         }));
@@ -91,11 +91,13 @@ export default function Draggable(props: {
     };
   }, [realRoot, props.targetId, setMove]);
 
+  let clone: ReactNode = null;
+
   if (isMoving) {
     const x = move.clientX - move.insetX;
     const y = move.clientY - move.insetY;
 
-    var clone = (
+    clone = (
       <>
         {createPortal(
           <div

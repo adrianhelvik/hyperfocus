@@ -67,13 +67,13 @@ class AddPortal extends React.Component<Props> {
     event.preventDefault();
     if (!this.board || !this.deck || !this.title) return;
     const { portalId } = await api.addPortal({
-      boardId: this.props.board.boardId,
+      boardId: this.props.board.boardId!,
       deckId: this.deck.deckId,
-      index: this.props.index,
+      index: this.props.index!,
       title: this.title,
     });
     this.props.board.addPortal({
-      boardId: this.props.board.boardId,
+      boardId: this.props.board.boardId!,
       deckId: this.deck.deckId,
       index: this.props.index,
       target: this.deck,
@@ -131,7 +131,7 @@ class AddPortal extends React.Component<Props> {
         </Sections>
         <hr />
         <ModalFooter>
-          <Button $gray onClick={() => this.props.resolve()}>
+          <Button $gray onClick={() => this.props.resolve?.()}>
             Cancel
           </Button>
           <Button disabled={!this.board || !this.deck || !this.title}>
@@ -160,18 +160,6 @@ const Tile = styled.button.attrs({
   padding: 10px;
   border-radius: 4px;
   background: #ddd;
-  :not(:last-child) {
-    margin-bottom: 10px;
-  }
-  :focus {
-    outline: none;
-    border-color: #707070;
-  }
-  :active:hover {
-    background: #707070;
-    color: white;
-  }
-
   ${(p) =>
     p.$selected &&
     css`
@@ -184,16 +172,29 @@ const Tile = styled.button.attrs({
     css`
       opacity: 0.5;
     `}
+
+  &:not(:last-child) {
+    margin-bottom: 10px;
+  }
+  &:focus {
+    outline: none;
+    border-color: #707070;
+  }
+  &:active:hover {
+    background: #707070;
+    color: white;
+  }
 `;
 
 const Section = styled.section`
-  :not(:last-child) {
-    margin-right: 10px;
-  }
   min-width: 200px;
   min-height: 400px;
   max-height: calc(100vh - 400px);
   overflow: auto;
+
+  &:not(:last-child) {
+    margin-right: 10px;
+  }
 `;
 
 const Title = styled.div`

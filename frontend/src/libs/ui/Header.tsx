@@ -1,5 +1,5 @@
-import { RouteComponentProps, withRouter } from "react-router-dom";
 import { WithAuthProps, withAuth } from "src/libs/authContext";
+import { useLocation } from "react-router-dom";
 import * as zIndexes from "src/libs/zIndexes";
 import * as theme from "src/libs/theme";
 import { Link } from "react-router-dom";
@@ -7,45 +7,38 @@ import styled from "styled-components";
 import Color from "color";
 import React from "react";
 
-const withRouterAny = withRouter as any as <T extends React.ComponentType<any>>(
-  component: T
-) => T;
-
 type OwnProps = {
   color?: string;
   children?: React.ReactNode;
 };
 
-type Props = RouteComponentProps & WithAuthProps & OwnProps;
+type Props = WithAuthProps & OwnProps;
 
-class Header extends React.Component<Props> {
-  render() {
-    const isInApp = /^\/(app|board)($|\/)/.test(this.props.match.path);
-    const pageColor = this.props.color || theme.ui1;
+function Header(props: Props) {
+    const location = useLocation()
+    const isInApp = /^\/(app|board)($|\/)/.test(location.pathname);
+    const pageColor = props.color || theme.ui1;
 
     return (
       <Container $color={pageColor}>
         <UndecoratedLink to={isInApp ? "/app" : "/"}>
           <Logo pageColor={pageColor} />
         </UndecoratedLink>
-        <Children>{this.props.children}</Children>
-        {this.props.auth.status === "success" ? (
-          this.props.location.pathname === "/" ? (
+        <Children>{props.children}</Children>
+        {props.auth.status === "success" ? (
+          location.pathname === "/" ? (
             <Login to="/login">Go to dashboard</Login>
           ) : (
-            <Logout onClick={this.props.auth.logout}>Log out</Logout>
+            <Logout onClick={props.auth.logout}>Log out</Logout>
           )
         ) : (
           <Login to="/login">Log in</Login>
         )}
       </Container>
     );
-  }
 }
 
-export default withRouterAny(
-  withAuth(Header)
-) as any as React.ComponentType<OwnProps>;
+export default withAuth(Header)
 
 const UndecoratedLink = styled(Link)`
   text-decoration: none;

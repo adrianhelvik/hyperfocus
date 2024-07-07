@@ -4,7 +4,7 @@ import Card from "./Card";
 
 export type DeckParam = {
   boardId?: string;
-  deckId?: string;
+  deckId: string;
   index?: number;
   target?: Deck;
   title?: string;
@@ -24,12 +24,13 @@ class Deck {
   initialFocus?: boolean;
 
   type? = "deck" as const;
-  referencedByPortal: boolean;
-  boardTitle: string;
-  portals: Portal[];
+  referencedByPortal?: boolean;
+  boardTitle?: string;
+  portals?: Portal[];
 
   constructor(deck: DeckParam) {
     Object.assign(this, deck);
+    this.deckId = deck.deckId;
   }
 
   @action addCard(card: Card, index?: number) {

@@ -1,7 +1,7 @@
-import { useHistory } from "react-router-dom";
-import styled from "styled-components";
+import { useNavigate } from "react-router-dom";
 import { FormEvent, useState } from "react";
 import Button from "src/libs/ui/Button";
+import styled from "styled-components";
 import Input from "src/libs/ui/Input";
 import api from "src/libs/api";
 
@@ -10,7 +10,7 @@ export default function Register() {
   const [password, setPassword] = useState("");
   const [email, setEmail] = useState("");
 
-  const history = useHistory();
+  const navigate = useNavigate();
 
   const onSubmit = async (event: FormEvent) => {
     event.preventDefault();
@@ -23,8 +23,8 @@ export default function Register() {
         password,
         email,
       });
-      history.push("/login");
-    } catch (e) {
+      navigate("/login");
+    } catch (e: any) {
       console.error(e);
       alert(e.message);
     }

@@ -1,47 +1,45 @@
 import styled, { css } from "styled-components";
-import { Coord } from "src/libs/types";
-import * as theme from "src/libs/theme";
+import * as theme from "../theme";
 import Backdrop from "./Backdrop";
+import { Coord } from "../types";
 import React from "react";
 
 type Props = {
-  placement?: Coord;
+  placement?: Coord | null;
   hide: () => any;
-  width?: number;
+  width?: number | null;
   children: React.ReactNode;
   backdrop?: boolean;
 };
 
-class Modal extends React.Component<Props> {
-  render() {
-    if (this.props.placement) {
-      if (typeof this.props.placement.x !== "number")
-        throw Error("this.props.placement.x must be a number");
-      if (typeof this.props.placement.y !== "number")
-        throw Error("this.props.placement.y must be a number");
-    }
-
-    if (typeof this.props.hide !== "function")
-      throw Error("this.props.hide must be a function");
-
-    return (
-      <Backdrop
-        transparent={Boolean(this.props.placement)}
-        hide={this.props.hide}
-      >
-        <Container $position={this.props.placement} $width={this.props.width}>
-          {this.props.children}
-        </Container>
-      </Backdrop>
-    );
+function Modal(props: Props) {
+  if (props.placement) {
+    if (typeof props.placement.x !== "number")
+      throw Error("props.placement.x must be a number");
+    if (typeof props.placement.y !== "number")
+      throw Error("props.placement.y must be a number");
   }
+
+  if (typeof props.hide !== "function")
+    throw Error("props.hide must be a function");
+
+  return (
+    <Backdrop
+      transparent={Boolean(props.placement)}
+      hide={props.hide}
+    >
+      <Container $position={props.placement} $width={props.width}>
+        {props.children}
+      </Container>
+    </Backdrop>
+  );
 }
 
 export default Modal;
 
 const Container = styled.div<{
-  $position?: Coord;
-  $width?: number;
+  $position?: Coord | null;
+  $width?: number | null;
 }>`
   background-color: white;
   padding: 20px;

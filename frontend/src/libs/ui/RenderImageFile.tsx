@@ -9,7 +9,7 @@ export default function RenderImageFile({ file }: { file: File }) {
     if (!file) return;
     const reader = new FileReader();
     reader.onload = (e) => {
-      img.src = String(e.target.result);
+      if (e.target) img.src = String(e.target.result);
     };
     reader.readAsDataURL(file);
   }, [img, file]);

@@ -1,4 +1,3 @@
-import hoist from "hoist-non-react-statics";
 import React from "react";
 
 export type WithEventsProps = {
@@ -13,7 +12,7 @@ export type WithEventsProps = {
 export default function withEvents<Props>(
   WrappedComponent: React.ComponentType<Props & WithEventsProps>
 ): React.ComponentType<Props> {
-  class NewComponent extends React.Component<Props & WithEventsProps> {
+  class NewComponent extends React.Component<Props> {
     unmounted = false;
 
     listeners: Array<{
@@ -22,7 +21,7 @@ export default function withEvents<Props>(
       handler: (event: Event) => void;
     }> = [];
 
-    on = (target: Node, eventName: string, handler: (event: any) => void) => {
+    on = (target: EventTarget, eventName: string, handler: (event: any) => void) => {
       if (this.unmounted) {
         console.error(
           "Attempted to add event listener after unmounting. This is a noop"
@@ -33,7 +32,7 @@ export default function withEvents<Props>(
       target.addEventListener(eventName, handler);
     };
 
-    off = (target: Node, eventName: string) => {
+    off = (target: EventTarget, eventName: string) => {
       const listeners: Array<{
         target: EventTarget;
         eventName: string;
@@ -68,8 +67,6 @@ export default function withEvents<Props>(
       return <WrappedComponent {...this.props} on={this.on} off={this.off} />;
     }
   }
-
-  hoist(NewComponent as any, WrappedComponent as any);
 
   return NewComponent;
 }

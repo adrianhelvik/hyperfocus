@@ -23,8 +23,8 @@ class AddCardInput extends React.Component<Props> {
   @observable.ref images: File[] = [];
   @observable.ref imagesContainer: HTMLDivElement | null = null;
 
-  input: HTMLInputElement;
-  warningOpen: boolean;
+  input: HTMLInputElement | null = null;
+  warningOpen: boolean = false;
 
   @action.bound setTitle(event: { target: { value: string } }) {
     this.title = event.target.value;
@@ -43,7 +43,7 @@ class AddCardInput extends React.Component<Props> {
   onSubmit = async (event: { preventDefault: () => void }) => {
     event.preventDefault();
     this.save();
-    this.input.focus();
+    this.input?.focus();
   };
 
   save = async () => {
@@ -83,13 +83,13 @@ class AddCardInput extends React.Component<Props> {
   warn(warning: string) {
     if (this.warningOpen) return;
     this.warningOpen = true;
-    const { left, top, height } = this.input.getBoundingClientRect();
+    const { left, top, height } = this.input!.getBoundingClientRect()!;
     const duration = 3000;
     let style = {
       position: "fixed" as const,
       top: top + height + 4,
       left,
-      width: this.input.parentElement.clientWidth,
+      width: this.input?.parentElement?.clientWidth,
       backgroundColor: "#eee",
       zIndex: 1000,
       fontSize: "0.8rem",
@@ -144,7 +144,7 @@ class AddCardInput extends React.Component<Props> {
             }
             if (files.length) {
               e.preventDefault();
-              this.setImages(files);
+              this.setImages(files.filter(it => it != null));
             }
           }}
         >
@@ -159,7 +159,7 @@ class AddCardInput extends React.Component<Props> {
             type="file"
             hidden={true}
             name="image"
-            onChange={(e) => this.setImages(Array.from(e.target.files))}
+            onChange={(e) => this.setImages(Array.from(e.target.files ?? []))}
             multiple={true}
           />
           <IconButton
@@ -167,7 +167,7 @@ class AddCardInput extends React.Component<Props> {
             onClick={(e: any) => {
               console.log(e.target.previousSibling);
               e.target.previousSibling.click();
-              this.input.focus();
+              this.input?.focus();
             }}
             $color={
               this.props.isPortal
@@ -224,7 +224,7 @@ const Input = styled.input`
   border-radius: 4px;
   width: 100%;
   box-shadow: ${theme.shadows[0]};
-  :focus {
+  &:focus {
     outline: none;
   }
 `;
@@ -252,11 +252,11 @@ const IconButton = styled.button<{ $color: string }>`
   transition: color 300ms;
   cursor: pointer;
 
-  :hover {
+  &:hover {
     color: ${(p) => Color(p.$color).darken(0.1).toString()};
   }
 
-  :active:hover {
+  &:active:hover {
     color: ${(p) => Color(p.$color).darken(0.25).toString()};
   }
 `;

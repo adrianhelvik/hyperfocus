@@ -1,5 +1,5 @@
 import withEvents, { WithEventsProps } from "src/libs/util/withEvents";
-import styled, { keyframes } from "styled-components";
+import styled, { css, keyframes } from "styled-components";
 import hoist from "hoist-non-react-statics";
 import { Portal } from "react-portal";
 import { observer } from "mobx-react";
@@ -21,16 +21,16 @@ export type WithMenuProps = {
 export default function withMenu<Props>(
   WrappedComponent: React.ComponentType<Props & WithMenuProps>
 ): React.ComponentType<Props> {
-  const openMenus = [];
+  const openMenus: any[] = [];
 
   @observer
   class NewComponent extends React.Component<
-    WithEventsProps & WithMenuProps & Props
+    WithEventsProps & Props
   > {
-    @observable.ref menu = null;
-    @observable options = null;
-    @observable x = null;
-    @observable y = null;
+    @observable.ref menu: HTMLElement | null = null;
+    @observable options: any = null;
+    @observable x: number | null = null;
+    @observable y: number | null = null;
 
     showMenuTimeout?: ReturnType<typeof setTimeout>;
 
@@ -66,7 +66,6 @@ export default function withMenu<Props>(
     };
 
     closeMenu = () => {
-      console.log("closeMenu");
       this.options = null;
       this.x = null;
       this.y = null;
@@ -75,8 +74,8 @@ export default function withMenu<Props>(
     };
 
     selectItem = (e: { target: HTMLElement }) => {
-      console.log("SELECT ITEM");
       const key = e.target.getAttribute("data-key");
+      if (!key) return;
       this.options[key](e);
       this.closeMenu();
     };
@@ -87,7 +86,7 @@ export default function withMenu<Props>(
           <WrappedComponent {...this.props} showMenu={this.showMenu} />
           {this.options && (
             <PortalAny>
-              <MenuWrapper x={this.x} y={this.y} ref={(e) => (this.menu = e)}>
+              <MenuWrapper $x={this.x} $y={this.y} ref={(e) => (this.menu = e)}>
                 {Object.keys(this.options).map((key, index) => (
                   <MenuItem
                     ref={(e) => index === 0 && e && e.focus()}
@@ -112,10 +111,14 @@ export default function withMenu<Props>(
   return withEvents(NewComponent);
 }
 
-const MenuWrapper = styled.div<{ x: number; y: number }>`
+const MenuWrapper = styled.div<{ $x: number | null; $y: number | null }>`
   position: fixed;
-  top: ${(p) => p.y}px;
-  left: ${(p) => p.x}px;
+  ${p => p.$y && css`
+    top: ${p.$y}px;
+  `}
+  ${p => p.$x && css`
+    left: ${p.$x}px;
+  `}
   background: white;
   min-height: 4px;
   width: 150px;
@@ -139,19 +142,21 @@ const MenuWrapper = styled.div<{ x: number; y: number }>`
 const MenuItem = styled.div`
   padding: 10px;
   cursor: pointer;
-  :hover {
+
+  &:hover {
     background: ${theme.gray2};
   }
-  :focus {
+
+  &:focus {
     outline: none;
   }
 
-  :first-child {
+  &:first-child {
     border-top-left-radius: 4px;
     border-top-right-radius: 4px;
   }
 
-  :last-child {
+  &:last-child {
     border-bottom-left-radius: 4px;
     border-bottom-right-radius: 4px;
   }

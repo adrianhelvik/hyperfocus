@@ -24,6 +24,7 @@ export default defineConfig({
                         "@babel/plugin-proposal-class-properties",
                         { loose: true },
                     ],
+                    "babel-plugin-macros",
                 ],
             },
         }),
@@ -31,7 +32,6 @@ export default defineConfig({
     resolve: {
         alias: {
             src: "/src",
-            assert: "/src/libs/assert",
         },
     },
     server: {

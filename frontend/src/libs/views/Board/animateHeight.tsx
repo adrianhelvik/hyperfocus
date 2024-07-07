@@ -21,14 +21,15 @@ export default function animateHeight(
 
     if (progress >= 1) return;
 
+    cancelAnimationFrame(raf);
     raf = requestAnimationFrame(paint);
   }
 }
 
 function autoHeight(element: HTMLElement) {
+  const original = element.style.height;
   try {
-    var original = element.style.height;
-    element.style.height = null;
+    element.style.height = "";
     return element.offsetHeight;
   } finally {
     element.style.height = original;

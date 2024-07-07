@@ -1,62 +1,64 @@
 import withEvents, { WithEventsProps } from "src/libs/util/withEvents";
 import styled, { keyframes, css } from "styled-components";
+import React, { useEffect, useState } from "react";
 import * as theme from "src/libs/theme";
-import { observer } from "mobx-react";
-import { observable } from "mobx";
-import React from "react";
 
 type Props = WithEventsProps & {
   children: React.ReactNode;
 };
 
-@observer
-class AddCircle extends React.Component<Props> {
-  @observable mounted = false;
-  @observable open = false;
-  container: HTMLElement;
+function AddCircle(props: Props) {
+  const [mounted, setMounted] = useState(false);
+  const [open, setOpen] = useState(false);
+  const [container, setContainer] = useState<HTMLElement | null>(null);
 
-  componentDidMount() {
-    setTimeout(() => {
-      this.mounted = true;
+  useEffect(() => {
+    const timeout = setTimeout(() => {
+      setMounted(true);
     }, 400);
-    document.addEventListener("click", this.onDocumentClick);
-  }
+    return () => {
+      clearTimeout(timeout);
+    };
+  }, []);
 
-  componentWillUnmount() {
-    document.removeEventListener("click", this.onDocumentClick);
-  }
+  useEffect(() => {
+    if (!open) return;
 
-  onDocumentClick = (event: MouseEvent) => {
-    if (!(event.target instanceof Element)) {
-      return;
-    }
-    if (this.container.contains(event.target)) {
-      return;
-    }
+    const onDocumentClick = (event: MouseEvent) => {
+      if (!(event.target instanceof Element)) {
+        return;
+      }
+      if (container?.contains(event.target)) {
+        return;
+      }
 
-    this.open = false;
-  };
+      setOpen(false);
+    };
 
-  onClick = () => {
-    this.open = !this.open;
-  };
+    const timeout = setTimeout(() => {
+      document.addEventListener("click", onDocumentClick);
+    }, 500);
 
-  render() {
-    return (
-      <Container
-        onClick={this.onClick}
-        ref={(e) => (this.container = e)}
-        mounted={this.mounted}
-        open={this.open}
-      >
-        <Content open={this.open} mounted={this.mounted}>
-          {this.props.children}
-        </Content>
-        <VerticalLine mounted={this.mounted} open={this.open} />
-        <HorizontalLine mounted={this.mounted} open={this.open} />
-      </Container>
-    );
-  }
+    return () => {
+      clearTimeout(timeout);
+      document.removeEventListener("click", onDocumentClick);
+    };
+  }, []);
+
+  return (
+    <Container
+      onClick={() => setOpen(open => !open)}
+      ref={(e) => setContainer(e)}
+      $mounted={mounted}
+      $open={open}
+    >
+      <Content $open={open} $mounted={mounted}>
+        {props.children}
+      </Content>
+      <VerticalLine $mounted={mounted} $open={open} />
+      <HorizontalLine $mounted={mounted} $open={open} />
+    </Container>
+  );
 }
 
 export default withEvents(AddCircle);
@@ -65,7 +67,7 @@ const diameter = 60;
 const height = 110;
 const width = 200;
 
-const Container = styled.div<{ open: boolean; mounted: boolean }>`
+const Container = styled.div<{ $open: boolean; $mounted: boolean }>`
   background-color: ${theme.ui1};
   position: fixed;
   bottom: 20px;
@@ -74,8 +76,8 @@ const Container = styled.div<{ open: boolean; mounted: boolean }>`
   height: ${diameter}px;
   text-align: center;
   border-radius: ${diameter}px;
-  animation: ${(p) => (p.open ? openAnimation : closeAnimation)}
-    ${(p) => (p.mounted ? ".3s" : "0s")};
+  animation: ${(p) => (p.$open ? openAnimation : closeAnimation)}
+    ${(p) => (p.$mounted ? ".3s" : "0s")};
   animation-fill-mode: forwards;
   cursor: pointer;
 `;
@@ -131,15 +133,15 @@ const closeAnimation = keyframes`
 const lineHeight = 20;
 const lineWidth = 3;
 
-const Line = styled.div<{ open: boolean; mounted: boolean }>`
+const Line = styled.div<{ $open: boolean; $mounted: boolean }>`
   background: white;
   position: absolute;
   top: 50%;
   left: 50%;
   transform: translateX(-50%) translateY(-50%);
   pointer-events: none;
-  animation: ${(p) => (p.open ? lineOpen : lineClosed)}
-    ${(p) => (p.mounted ? ".3s" : "0s")};
+  animation: ${(p) => (p.$open ? lineOpen : lineClosed)}
+    ${(p) => (p.$mounted ? ".3s" : "0s")};
   animation-fill-mode: forwards;
 `;
 
@@ -171,8 +173,8 @@ const HorizontalLine = styled(Line)`
   height: ${lineWidth}px;
 `;
 
-const Content = styled.div<{ open: boolean; mounted: boolean }>`
+const Content = styled.div<{ $open: boolean; $mounted: boolean }>`
   transition: 0.3s;
-  opacity: ${(p) => (p.open ? 1 : 0)};
-  pointer-events: ${(p) => !p.open && "none"};
+  opacity: ${(p) => (p.$open ? 1 : 0)};
+  pointer-events: ${(p) => !p.$open && "none"};
 `;

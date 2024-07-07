@@ -1,4 +1,4 @@
-import { observable, computed, action } from "mobx";
+import { observable, computed, action, makeAutoObservable } from "mobx";
 import { createContext } from "react";
 import Board from "./Board";
 import { Project } from "../types";
@@ -6,12 +6,16 @@ import { Project } from "../types";
 export const StoreContext = createContext<Store | null>(null);
 
 class Store {
-  @observable uncomittedBoards = observable.array<Board>();
-  @observable isAddingProject = false;
-  @observable isAddingBoard = false;
-  @observable board: Board | null = null;
-  @observable boards = observable.array<Board>();
-  @observable projects = observable.array<Project>();
+  uncomittedBoards = observable.array<Board>();
+  isAddingProject = false;
+  isAddingBoard = false;
+  board: Board | null = null;
+  boards = observable.array<Board>();
+  projects = observable.array<Project>();
+
+  constructor() {
+    return makeAutoObservable(this);
+  }
 
   @computed get boardsById() {
     const boardsById = observable.map();
@@ -21,23 +25,23 @@ class Store {
     return boardsById;
   }
 
-  @action.bound setProjects(projects: Project[]) {
+  setProjects = (projects: Project[]) => {
     this.projects.replace(projects);
   }
 
-  @action.bound startAddingProject() {
+  startAddingProject = () => {
     this.isAddingProject = true;
   }
 
-  @action.bound startAddingBoard() {
+  startAddingBoard = () => {
     this.isAddingBoard = true;
   }
 
-  @action.bound stopAddingBoard() {
+  stopAddingBoard = () => {
     this.isAddingBoard = false;
   }
 
-  @action.bound addBoard(board: Board) {
+  addBoard = (board: Board) => {
     this.uncomittedBoards.push(board);
     this.boards.unshift(board);
   }
@@ -46,15 +50,15 @@ class Store {
     return this.boardsById.get(boardId);
   }
 
-  @action.bound setBoards(boards: Board[]) {
+  setBoards = (boards: Board[]) => {
     this.boards.replace(boards);
   }
 
-  @action setActiveBoard(board: Board) {
+  setActiveBoard(board: Board) {
     this.board = board;
   }
 
-  @action deleteBoard(boardId: string) {
+  deleteBoard(boardId: string) {
     let index = -1;
     for (let i = 0; i < this.boards.length; i++) {
       if (this.boards[i].boardId === boardId) {

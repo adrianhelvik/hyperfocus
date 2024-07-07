@@ -7,7 +7,7 @@ import styled from "styled-components";
 
 @observer
 class EditDeckTitle extends React.Component<{ deck: DeckModel }> {
-  saveTimeout: ReturnType<typeof setTimeout>;
+  saveTimeout: ReturnType<typeof setTimeout> | undefined;
 
   onChange = (event: ChangeEvent) => {
     if (!(event.target instanceof HTMLInputElement)) return;

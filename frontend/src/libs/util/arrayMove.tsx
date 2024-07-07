@@ -5,11 +5,11 @@
  *
  * Original: https://github.com/clauderic/react-sortable-hoc/blob/master/src/utils.js
  */
-export default function arrayMove(array, previousIndex, newIndex) {
+export default function arrayMove<T>(array: T[], previousIndex: number, newIndex: number): T[] {
   if (newIndex >= array.length) {
     let k = newIndex - array.length;
     while (k-- + 1) {
-      array.push(undefined);
+      array.push(undefined as any);
     }
   }
   array.splice(newIndex, 0, array.splice(previousIndex, 1)[0]);

@@ -17,7 +17,7 @@ export const elementToCard = observable.map();
 
 export type OwnProps = {
   setMoving: (moving: boolean) => void;
-  setHoverIndex: (index: number) => void;
+  setHoverIndex: (index: number | null) => void;
   getLastHoverIndex: () => number;
   hoverIndex: number | null;
   placeholderWidth: number;
@@ -36,19 +36,19 @@ export type CardProps = WithConfirmProps &
 
 @observer
 class Card extends React.Component<CardProps> {
-  @observable initialClientX = null;
-  @observable initialClientY = null;
+  @observable initialClientX = 0;
+  @observable initialClientY = 0;
   @observable noPointer = false;
-  @observable clientX = null;
-  @observable clientY = null;
+  @observable clientX = 0;
+  @observable clientY = 0;
   @observable moving = false;
-  @observable insetX = null;
-  @observable insetY = null;
+  @observable insetX = 0;
+  @observable insetY = 0;
 
-  removeElement: HTMLElement;
-  element: HTMLElement;
-  width: number;
-  height: number;
+  removeElement: HTMLElement | null = null;
+  element: HTMLElement | null = null;
+  width: number = 0;
+  height: number = 0;
 
   componentDidMount() {
     elementToCard.set(this.element, this);
@@ -70,13 +70,13 @@ class Card extends React.Component<CardProps> {
     const { clientX, clientY } = event;
 
     // extract values
-    const rect = this.element.getBoundingClientRect();
+    const rect = this.element!.getBoundingClientRect();
     this.initialClientX = this.clientX = clientX;
     this.initialClientY = this.clientY = clientY;
     this.insetX = rect.left - this.initialClientX;
     this.insetY = rect.top - this.initialClientY;
-    this.width = this.element.offsetWidth;
-    this.height = this.element.offsetHeight;
+    this.width = this.element!.offsetWidth;
+    this.height = this.element!.offsetHeight;
 
     // start moving
     this.moving = true;
@@ -96,7 +96,7 @@ class Card extends React.Component<CardProps> {
       this.noPointer = false;
 
       this.props.setHoverIndex(null);
-      const element = someParent(target, (e) => {
+      const element = someParent(target as HTMLElement, (e) => {
         return elementToDeck.has(e);
       });
       const otherDeckComponent = elementToDeck.get(element);
@@ -108,7 +108,6 @@ class Card extends React.Component<CardProps> {
 
         api.moveCard({
           cardId: card.cardId,
-          source: this.props.deck.deckId,
           target: otherDeck.deckId,
           index,
         });
@@ -268,7 +267,7 @@ const Container = styled.div<{
       box-shadow: ${theme.shadows[1]};
     `};
   cursor: move;
-  ::after {
+  &::after {
     content: ${(p) => String(p.index)};
   }
 `;

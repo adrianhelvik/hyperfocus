@@ -1,5 +1,5 @@
 import { FormEvent, useEffect, useState } from "react";
-import { Redirect } from "react-router-dom";
+import { useNavigate } from "react-router-dom";
 import { useAuth } from "../authContext";
 import * as theme from "src/libs/theme";
 import Button from "src/libs/ui/Button";
@@ -9,13 +9,12 @@ import Input from "src/libs/ui/Input";
 import sleep from "src/libs/sleep";
 import React from "react";
 
-const RedirectAny = Redirect as any as React.FC<{ to: string }>;
-
 export default observer(function Login() {
   const [username, setUsername] = useState("");
   const [password, setPassword] = useState("");
   const [message, setMessage] = useState("");
   const [error, setError] = useState("");
+  const navigate = useNavigate();
   const auth = useAuth();
 
   const onSubmit = async (event: FormEvent) => {
@@ -40,7 +39,11 @@ export default observer(function Login() {
     auth.authenticate();
   }, [auth]);
 
-  if (auth.status === "success") return <RedirectAny to="/app" />;
+  useEffect(() => {
+      if (auth.status === "success") {
+        navigate("/app");
+      }
+  }, [auth.status])
 
   return (
     <Container>

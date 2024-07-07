@@ -33,11 +33,11 @@ export default styled.button<{ $danger?: boolean; $gray?: boolean }>`
     return css`
       transition: background-color 0.3s, box-shadow 0.3s;
 
-      :hover {
+      &:hover {
         background-color: ${theme.ui2};
       }
 
-      :hover:active {
+      &:hover:active {
         background-color: ${theme.darkPurple};
       }
     `;

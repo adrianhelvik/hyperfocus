@@ -11,11 +11,11 @@ export type PortalParam = {
 class Portal {
   @observable title = "";
   @observable target: Deck | DeckParam | null = null;
-  portalId: string;
-  index: number;
+  portalId?: string;
+  index?: number;
 
   type = "portal";
-  boardTitle: string;
+  boardTitle?: string;
 
   constructor(param: PortalParam) {
     Object.assign(this, param);

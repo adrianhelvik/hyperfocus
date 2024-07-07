@@ -45,7 +45,7 @@ const Container = styled.div<{ $color: string; $isSelected: boolean }>`
       outline-offset: -2px;
     `}
 
-  :hover {
+  &:hover {
     box-shadow: ${theme.shadows[1]};
   }
 `;

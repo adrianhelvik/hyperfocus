@@ -32,7 +32,8 @@ const Icon = styled.i<{ $dark?: boolean }>`
   color: #333;
   cursor: pointer;
   box-shadow: ${theme.shadows[0]};
-  :active:hover {
+
+  &:active:hover {
     background-color: rgb(200, 200, 200);
   }
 

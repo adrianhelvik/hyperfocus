@@ -1,31 +1,26 @@
-import Store, { StoreContext } from "src/libs/store";
-import { observer } from "mobx-react";
+import { StoreContext } from "src/libs/store";
+import { useContext, useEffect } from "react";
 import { reaction } from "mobx";
 import api from "src/libs/api";
-import React from "react";
 
-@observer
-export default class Reactions extends React.Component<{
-  children?: React.ReactNode;
-}> {
-  static contextType = StoreContext;
-  declare context: Store;
+export default function Reactions(props: { children?: React.ReactNode }) {
+  const store = useContext(StoreContext)!;
 
-  componentDidMount() {
-    this.dispose = reaction(
-      () => this.context.uncomittedBoards.length,
+  useEffect(() => {
+    const dispose = reaction(
+      () => store.uncomittedBoards.length,
       (pendingBoards) => {
         if (!pendingBoards) return;
 
-        const uncomittedBoards = this.context.uncomittedBoards.slice();
-        this.context.uncomittedBoards.replace([]);
+        const uncomittedBoards = store.uncomittedBoards.slice();
+        store.uncomittedBoards.replace([]);
 
         for (const board of uncomittedBoards) {
           api.createBoard(board).catch((e: Error) => {
             console.error("Failed to create board:", board);
-            for (let i = 0; i < this.context.boards.length; i++) {
-              if (this.context.boards[i].boardId === board.boardId) {
-                this.context.boards.splice(i, 1);
+            for (let i = 0; i < store.boards.length; i++) {
+              if (store.boards[i].boardId === board.boardId) {
+                store.boards.splice(i, 1);
                 break;
               }
             }
@@ -36,19 +31,11 @@ export default class Reactions extends React.Component<{
         }
       }
     );
-  }
 
-  disposers: (() => void)[] = [];
+    return () => {
+      dispose();
+    };
+  }, [])
 
-  set dispose(disposer: () => void) {
-    this.disposers.push(disposer);
-  }
-
-  componentWillUnmount() {
-    this.disposers.forEach((dispose) => dispose());
-  }
-
-  render() {
-    return this.props.children;
-  }
+  return <>{props.children}</>
 }

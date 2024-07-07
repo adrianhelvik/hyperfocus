@@ -18,18 +18,20 @@ export type WithStatusProps = {
   ) => Promise<boolean>;
 };
 
+type TemplateType = React.ComponentType<StatusTemplateProps>;
+
 export default function withStatus<Props>(
   Component: React.ComponentType<Props & WithStatusProps>
 ): React.ComponentType<Props> {
   @observer
   class WithConfirm extends React.Component {
-    @observable Template = null;
-    @observable promise = null;
-    @observable resolve = null;
-    @observable reject = null;
+    @observable Template: TemplateType | null = null;
+    @observable promise: Promise<any> | null = null;
+    @observable resolve: any = null;
+    @observable reject: any = null;
 
     @action.bound showStatus(
-      Template: React.ComponentType<StatusTemplateProps>
+      Template: TemplateType
     ) {
       this.Template = Template;
       this.promise = new Promise((resolve, reject) => {
@@ -77,7 +79,7 @@ export default function withStatus<Props>(
 
   hoist(WithConfirm as any, Component as any);
 
-  return WithConfirm as any as React.ComponentType<Props & WithStatusProps>;
+  return WithConfirm as any;
 }
 
 const Backdrop = styled.div`
