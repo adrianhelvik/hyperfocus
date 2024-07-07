@@ -110,15 +110,7 @@ export class BoardView {
       this.root.append(this.createDeckElement(child));
     }
 
-    let isSnapping = false;
-
-    this.root.onwheel = () => {
-      if (this.cancelSnapToDeck) this.cancelSnapToDeck();
-    };
-
-    this.root.onscrollend = () => {
-      if (isSnapping) return;
-
+    this.root.ontouchend = () => {
       const screenCenter = window.innerWidth / 2;
       let minDiff: number | null = null;
       let target: HTMLElement | null = null;
@@ -143,10 +135,8 @@ export class BoardView {
       if (this.scrollSnapTimeout) clearTimeout(this.scrollSnapTimeout);
       if (this.cancelSnapToDeck) this.cancelSnapToDeck()
       this.scrollSnapTimeout = setTimeout(() => {
-        isSnapping = true;
         if (this.cancelSnapToDeck) this.cancelSnapToDeck()
         this.cancelSnapToDeck = smootScrollToCenter(this.root, target, () => {
-          isSnapping = false;
         });
       }, 500);
     };
