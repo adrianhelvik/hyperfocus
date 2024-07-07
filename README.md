@@ -1,4 +1,6 @@
-# Subtask
+# Hyperfocus
+
+The purpose of this tool is to provide a rapid way of managing tasks.
 
 ## Running in Docker
 1. Install Docker and Docker Compose (usually bundled with Docker)
