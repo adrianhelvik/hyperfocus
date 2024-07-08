@@ -1,6 +1,7 @@
 export default function createAutoGrowTextarea(): HTMLTextAreaElement {
   const element = document.createElement("textarea");
   element.style.resize = "none";
+  (element.style as any).fieldSizing = "normal";
 
   const interval = setInterval(() => {
     if (!element.parentElement) return;
