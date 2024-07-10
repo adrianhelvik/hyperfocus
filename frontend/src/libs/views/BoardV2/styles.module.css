@@ -1,0 +1,6 @@
+.boardView {
+  height: calc(100dvh - 10px);
+  display: flex;
+  flex-direction: column;
+}
+
