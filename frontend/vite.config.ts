@@ -52,8 +52,12 @@ export default defineConfig({
                         // Since the first slash adds a leading empty string,
                         // I strip the first two items.
                         //
-                        // in:  ["", "api" ...]
-                        // out: "/" + [...]
+                        //     /api/...
+                        //
+                        // is split into
+                        //
+                        //     ["", "api", ...]
+                        //
                         const rewritten = "/" + path.split("/").slice(2).join("/");
                         return rewritten;
                     }
