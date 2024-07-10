@@ -48,6 +48,12 @@ export default defineConfig({
                 target: process.env.API_URL || "https://hyperfocus.live",
                 rewrite(path: string) {
                     if (process.env.REWRITE === "true") {
+                        //
+                        // Since the first slash adds a leading empty string,
+                        // I strip the first two items.
+                        //
+                        // in:  ["", "api" ...]
+                        // out: "/" + [...]
                         const rewritten = "/" + path.split("/").slice(2).join("/");
                         return rewritten;
                     }
