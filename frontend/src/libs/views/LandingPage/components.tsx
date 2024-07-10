@@ -18,6 +18,7 @@ export const Section = styled.section`
   margin-left: auto;
   margin-right: auto;
   min-height: calc(100vh - 75px);
+  min-height: calc(100dvh - 75px);
   display: flex;
   align-items: center;
   justify-content: center;
