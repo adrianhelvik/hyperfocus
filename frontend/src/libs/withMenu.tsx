@@ -4,10 +4,11 @@ import onSelect from "src/libs/util/onSelect";
 import * as zIndexes from "src/libs/zIndexes";
 import { useAutoEffect } from "hooks.macro";
 import * as theme from "src/libs/theme";
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import { Portal } from "react-portal";
 
 const PortalAny = Portal as any;
+const MENU_WIDTH = 150;
 
 export type WithMenuProps = {
   showMenu: (
@@ -19,15 +20,24 @@ export type WithMenuProps = {
 export default function withMenu<Props>(
   WrappedComponent: React.ComponentType<Props & WithMenuProps>
 ): React.ComponentType<Props> {
-  const openMenus: any[] = [];
 
   function NewComponent(props: WithEventsProps & Props) {
     const [showMenuTimeout, setShowMenuTimeout] = useState<ReturnType<typeof setTimeout> | null>(null);
     const [menu, setMenu] = useState<HTMLElement | null>(null);
     const [options, setOptions] = useState<any>(null);
+    const [dir, setDir] = useState<"right" | "left">("right");
     const [x, setX] = useState<number | null>(null);
     const [y, setY] = useState<number | null>(null);
     const [id] = useState(() => crypto.randomUUID());
+
+    useEffect(() => {
+      if (x == null) return;
+      if (x + MENU_WIDTH > window.innerWidth) {
+        setDir("right");
+      } else {
+        setDir("left");
+      }
+    }, [x]);
 
     useAutoEffect(() => {
       props.on(document, "click", (event) => {
@@ -35,22 +45,30 @@ export default function withMenu<Props>(
       });
 
       return () => {
-        const index = openMenus.indexOf(id);
-        if (index > -1) openMenus.splice(index, 1);
-        if (showMenuTimeout) clearTimeout(showMenuTimeout);
+        if (showMenuTimeout) {
+          clearTimeout(showMenuTimeout);
+        }
       }
     });
 
+    useAutoEffect(() => {
+      const handler = (event: any) => {
+        if (event.id !== id) {
+          closeMenu();
+        }
+      };
+      window.addEventListener("hyperfocus:withMenu:showMenu", handler);
+      return () => {
+        window.removeEventListener("hyperfocus:withMenu:showMenu", handler);
+      };
+    });
 
     const showMenu = (
       event: { clientX: number; clientY: number },
       options: Record<string, (e: { target: HTMLElement }) => void>
     ) => {
       setShowMenuTimeout(setTimeout(() => {
-        openMenus.forEach((menu) => {
-          menu.closeMenu();
-        });
-        openMenus.push(id);
+        window.dispatchEvent(Object.assign(new Event("hyperfocus:withMenu:showMenu"), { id }));
         setX(event.clientX);
         setY(event.clientY);
         setOptions(options);
@@ -61,8 +79,6 @@ export default function withMenu<Props>(
       setOptions(null);
       setX(null);
       setY(null);
-      const index = openMenus.indexOf(id);
-      if (index > -1) openMenus.splice(index, 1);
     };
 
     const selectItem = (e: { target: HTMLElement }) => {
@@ -77,7 +93,7 @@ export default function withMenu<Props>(
         <WrappedComponent {...props} showMenu={showMenu} />
         {options && (
           <PortalAny>
-            <MenuWrapper $x={x} $y={y} ref={(e) => setMenu(e)}>
+            <MenuWrapper $x={x} $y={y} $dir={dir} ref={(e) => setMenu(e)}>
               {Object.keys(options).map((key, index) => (
                 <MenuItem
                   ref={(e) => index === 0 && e && e.focus()}
@@ -99,17 +115,30 @@ export default function withMenu<Props>(
   return withEvents(NewComponent);
 }
 
-const MenuWrapper = styled.div<{ $x: number | null; $y: number | null }>`
+const MenuWrapper = styled.div<{ $x: number | null; $y: number | null, $dir: "left" | "right" }>`
   position: fixed;
-  ${p => p.$y && css`
-    top: ${p.$y}px;
+
+  ${p => p.$dir === "left" && css`
+    ${p.$y && css`
+      top: ${p.$y}px;
+    `}
+    ${p.$x && css`
+      left: ${p.$x}px;
+    `}
   `}
-  ${p => p.$x && css`
-    left: ${p.$x}px;
-  `}
+
+  ${p => p.$dir === "right" && css`
+    ${p.$y && css`
+      top: ${p.$y}px;
+    `}
+    ${p.$x && css`
+      left: ${p.$x - MENU_WIDTH}px;
+    `}
+  `};
+
   background: white;
   min-height: 4px;
-  width: 150px;
+  width: ${MENU_WIDTH}px;
   box-shadow: ${theme.shadows[1]};
   font-size: 0.8rem;
   color: #707070;

@@ -15,6 +15,7 @@ type Props = {
   innerRef?: (element: HTMLInputElement) => void;
   value: string;
   placeholder?: string;
+  size?: number,
 };
 
 export default function Input(props: Props) {
@@ -64,7 +65,7 @@ export default function Input(props: Props) {
         <InputField
           onChange={props.onChange}
           value={props.value}
-          size={50}
+          size={props.size}
           ref={innerRef}
           type={showPassword ? "text" : type}
           $forPassword={props.type === "password"}

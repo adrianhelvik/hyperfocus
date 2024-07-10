@@ -248,7 +248,6 @@ export class BoardView {
     deckElement: HTMLElement;
     cleanupHooks: CleanupHooks;
   }) {
-    let editSource: "keyboard" | "mouse" = "mouse";
     let initialIndex = -1;
 
     const containerNode = document.createElement("div");
@@ -286,8 +285,6 @@ export class BoardView {
 
     const startEditingDeckTitle = (e: { clientX: number, clientY: number } | null) => {
       if (!deckTitleNode.parentNode) return;
-      if (e == null) editSource = "keyboard";
-      else editSource = "mouse";
 
       replaceWithInputAndFocusAtCaretPosition({
         sourceElement: deckTitleNode,

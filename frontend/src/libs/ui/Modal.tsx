@@ -42,6 +42,7 @@ const Container = styled.div<{
   $width?: number | null;
 }>`
   background-color: white;
+  max-width: calc(100vw - 40px);
   padding: 20px;
   border-radius: 4px;
   max-height: 100vh;

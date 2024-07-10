@@ -36,18 +36,21 @@ export default function Register() {
         <Input
           placeholder="Email"
           onChange={(e) => setEmail(e.target.value)}
+          size={40}
           value={email}
         />
         <Input
           type="password"
           placeholder="Password"
           onChange={(e) => setPassword(e.target.value)}
+          size={40}
           value={password}
         />
         <Input
           type="password"
           placeholder="Repeat password"
           onChange={(e) => setRepeatedPassword(e.target.value)}
+          size={40}
           value={repeatedPassword}
         />
         <Button type="submit">Create user</Button>

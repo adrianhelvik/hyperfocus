@@ -30,6 +30,7 @@ function AddBoardModal() {
           placeholder="Enter a name"
           onChange={setTitleFromEvent}
           value={title}
+          size={50}
           autoFocus
         />
         <ModalFooter>

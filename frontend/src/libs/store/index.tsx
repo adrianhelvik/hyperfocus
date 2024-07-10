@@ -1,4 +1,4 @@
-import { observable, computed, action, makeAutoObservable } from "mobx";
+import { observable, computed, makeAutoObservable } from "mobx";
 import { createContext } from "react";
 import Board from "./Board";
 import { Project } from "../types";
