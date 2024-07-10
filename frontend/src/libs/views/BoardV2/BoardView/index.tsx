@@ -167,8 +167,8 @@ export class BoardView {
         });
       }, 300);
     };
-    this.addEventListener(this.root, "scroll", initSnapToDeck);
-    this.addEventListener(document, "touchend", initSnapToDeck);
+    // this.addEventListener(this.root, "scroll", initSnapToDeck);
+    // this.addEventListener(document, "touchend", initSnapToDeck);
   }
 
   private createDeckElement(child: Deck | Portal) {
