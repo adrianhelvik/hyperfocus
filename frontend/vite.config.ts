@@ -47,10 +47,8 @@ export default defineConfig({
             "/api": {
                 target: process.env.API_URL || "https://hyperfocus.live",
                 rewrite(path: string) {
-                    console.log("path: " + path);
                     if (process.env.REWRITE === "true") {
                         const rewritten = "/" + path.split("/").slice(2).join("/");
-                        console.log("rewritten: " + rewritten);
                         return rewritten;
                     }
                     return path
