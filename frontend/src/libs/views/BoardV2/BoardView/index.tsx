@@ -1,7 +1,6 @@
 import { replaceWithInputAndFocusAtCaretPosition } from "./replaceWithInputAndFocusAtCaretPosition";
 import { possiblyPerformHoverSwap } from "./possiblyPerformHoverSwap";
 import createAutoGrowTextarea from "./createAutoGrowTextarea";
-import { smoothScrollToCenter } from "./smoothScrollToCenter";
 import { isKeypressElement } from "./isKeypressElement";
 import Deck, { DeckParam } from "src/libs/store/Deck";
 import { findClosestDeck } from "./findClosestDeck";
@@ -124,51 +123,6 @@ export class BoardView {
     for (const child of this.board.children) {
       this.root.append(this.createDeckElement(child));
     }
-
-    let isSnapping = false;
-
-    const endSnapToDeck = () => {
-      if (this.cancelSnapToDeck) this.cancelSnapToDeck();
-    };
-    this.addEventListener(document, "wheel", endSnapToDeck);
-    this.addEventListener(document, "touchstart", endSnapToDeck);
-
-    const initSnapToDeck = () => {
-      if (this.scrollSnapTimeout) clearTimeout(this.scrollSnapTimeout);
-      this.scrollSnapTimeout = setTimeout(() => {
-        if (isSnapping) return;
-
-        const screenCenter = window.innerWidth / 2;
-        let minDiff: number | null = null;
-        let target: HTMLElement | null = null;
-
-        for (const element of this.deckElements) {
-          const rect = element.getBoundingClientRect();
-          const center = rect.left + rect.width / 2;
-          const diff = Math.abs(screenCenter - center);
-          if (minDiff == null || diff < minDiff) {
-            minDiff = diff;
-            target = element;
-          }
-        }
-
-        if (!target) return;
-
-        // Don't snap on desktop.
-        if (target.clientWidth < .8 * window.innerWidth) {
-          return;
-        }
-
-        if (this.cancelSnapToDeck) this.cancelSnapToDeck()
-        isSnapping = true;
-        if (this.cancelSnapToDeck) this.cancelSnapToDeck()
-        this.cancelSnapToDeck = smoothScrollToCenter(this.root, target, () => {
-          isSnapping = false;
-        });
-      }, 300);
-    };
-    // this.addEventListener(this.root, "scroll", initSnapToDeck);
-    // this.addEventListener(document, "touchend", initSnapToDeck);
   }
 
   private createDeckElement(child: Deck | Portal) {
