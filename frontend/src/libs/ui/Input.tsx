@@ -77,7 +77,7 @@ export default function Input(props: Props) {
       </Label>
       {props.type === "password" && (
         <Icon
-          colored={showPassword}
+          $colored={showPassword}
           className="material-icons"
           onMouseDown={show}
         >
@@ -146,14 +146,14 @@ const LabelText = styled.div<{ $hasContent: boolean }>`
 
 const Label = styled.label``;
 
-const Icon = styled.i<{ colored: boolean }>`
+const Icon = styled.i<{ $colored: boolean }>`
   position: absolute;
   right: 5px;
   top: 50%;
   transform: translateY(-50%);
   cursor: pointer;
   ${(p) =>
-    p.colored &&
+    p.$colored &&
     css`
       color: ${theme.ui1};
     `}

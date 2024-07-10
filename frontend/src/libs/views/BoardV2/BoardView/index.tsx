@@ -1,11 +1,13 @@
 import { replaceWithInputAndFocusAtCaretPosition } from "./replaceWithInputAndFocusAtCaretPosition";
 import { possiblyPerformHoverSwap } from "./possiblyPerformHoverSwap";
 import createAutoGrowTextarea from "./createAutoGrowTextarea";
+import { smoothScrollToCenter } from "./smoothScrollToCenter";
 import { isKeypressElement } from "./isKeypressElement";
 import Deck, { DeckParam } from "src/libs/store/Deck";
 import { findClosestDeck } from "./findClosestDeck";
 import { distanceBetween } from "./distanceBetween";
 import { setLinkableText } from "./setLinkableText";
+import { NavigateFunction } from "react-router-dom";
 import { BoardParam } from "src/libs/store/Board";
 import { styleMovedCard } from "./styleMovedCard";
 import { horizontalMiddle } from "./domUtils";
@@ -17,8 +19,6 @@ import onlyOnceFn from "./onlyOnceFn";
 import animate from "./animate";
 import api from "src/libs/api";
 import Color from "color";
-import { smoothScrollToCenter as smoothScrollToCenter } from "./smoothScrollToCenter";
-import { NavigateFunction } from "react-router-dom";
 
 const AUTO_SCROLL_OFFSET = 100;
 const CARD_ANIMATION_TIME = 300;
