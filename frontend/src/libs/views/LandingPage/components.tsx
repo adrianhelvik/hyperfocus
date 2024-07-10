@@ -6,9 +6,11 @@ export const Title = styled.h1`
   text-align: center;
   font-weight: 300;
   font-size: 70px;
-  line-height: 110px;
+  line-height: 1.57;
   color: #333;
   pointer-events: none;
+
+  font-size: min(70px, 10vw);
 `;
 
 export const Section = styled.section`
