@@ -1,91 +1,65 @@
-import PortalModel, { PortalParam } from "src/libs/store/Portal";
-import DeckModel, { DeckParam } from "src/libs/store/Deck";
-import Store, { StoreContext } from "src/libs/store";
 import ModalFooter from "src/libs/ui/ModalFooter";
 import styled, { css } from "styled-components";
-import BoardModel from "src/libs/store/Board";
 import onSelect from "src/libs/util/onSelect";
-import BoardType from "src/libs/store/Board";
+import { useAutoEffect, useAutoMemo } from "hooks.macro";
 import ellipsify from "src/libs/ellipsify";
-import { observable, action } from "mobx";
-import Board from "src/libs/store/Board";
-import React, { FormEvent } from "react";
 import Button from "src/libs/ui/Button";
 import * as theme from "src/libs/theme";
-import Deck from "src/libs/store/Deck";
-import { observer } from "mobx-react";
+import { Board } from "src/libs/types";
 import Input from "src/libs/ui/Input";
 import Help from "src/libs/ui/Help";
+import { FormEvent, useState } from "react";
 import api from "src/libs/api";
 
 type Props = {
-  board: BoardType;
-  index?: number;
-  resolve?: () => void;
+  board: Board;
+  index: number | null;
+  resolve: () => void;
 };
 
-@observer
-class AddPortal extends React.Component<Props> {
-  static contextType = StoreContext;
-  declare context: Store;
+export default function AddPortal(props: Props) {
+  const [selectedBoardId, setSelectedBoardId] = useState<string | null>(null);
+  const [selectedDeckId, setSelectedDeckId] = useState<string | null>(null);
+  const [boards, setBoards] = useState<Board[]>([]);
+  const [title, setTitle] = useState("");
 
-  @observable board: Board | null = null;
-  @observable deck: Deck | null = null;
-  @observable title = "";
+  const selectedBoard = useAutoMemo(() => {
+    if (!selectedBoardId) return null;
+    if (!boards) return null;
+    return boards.find(it => it.boardId === selectedBoardId);
+  });
 
-  async componentDidMount() {
-    const { boards } = await api.ownBoards();
-    this.context.setBoards(
-      boards.map(({ children, ...board }) => {
-        return new BoardModel({
-          children: children.map((child) => {
-            if (child.type === "deck") return new DeckModel(child as DeckParam);
-            if (child.type === "portal")
-              return new PortalModel(child as PortalParam);
-            throw Error(`Invalid child type: ${child.type}`);
-          }),
-          ...board,
-        });
-      })
-    );
-  }
+  const selectedDeck = useAutoMemo(() => {
+    if (!selectedDeckId) return null;
+    if (!selectedBoard) return null;
+    return selectedBoard.decks.find(it => it.deckId === selectedDeckId);
+  });
 
-  @action setBoard(board: BoardType) {
-    this.board = board;
-    this.deck = null;
-  }
+  useAutoEffect(() => {
+    let cancelled = false;
+    api.ownBoards().then(response => {
+      if (cancelled) return;
+      setBoards(response.boards);
+    });
+    return () => {
+      cancelled = true;
+    };
+  });
 
-  @action setDeck(deck: Deck) {
-    this.deck = deck;
-  }
-
-  @action setTitle(title: string) {
-    this.title = title;
-  }
-
-  onSubmit = async (event: FormEvent) => {
+  const onSubmit = async (event: FormEvent) => {
     event.preventDefault();
-    if (!this.board || !this.deck || !this.title) return;
-    const { portalId } = await api.addPortal({
-      boardId: this.props.board.boardId!,
-      deckId: this.deck.deckId!,
-      index: this.props.index!,
-      title: this.title,
+    if (!selectedDeck || !title) return;
+    await api.addPortal({
+      boardId: props.board.boardId!,
+      deckId: selectedDeck.deckId,
+      index: props.index,
+      title: title,
     });
-    this.props.board.addPortal({
-      boardId: this.props.board.boardId!,
-      deckId: this.deck.deckId,
-      index: this.props.index,
-      target: this.deck,
-      title: this.title,
-      portalId,
-    });
-    this.props.resolve?.();
+    props.resolve();
   };
 
-  render() {
     return (
-      <form onSubmit={this.onSubmit}>
+      <form onSubmit={onSubmit}>
         <MainTitle>
           Create portal{" "}
           <Help>
@@ -97,19 +71,19 @@ class AddPortal extends React.Component<Props> {
           <Input
             placeholder="Name in this board"
             autoFocus
-            value={this.title}
-            onChange={(e) => this.setTitle(e.target.value)}
+            value={title}
+            onChange={(e) => setTitle(e.target.value)}
           />
         </InputWrapper>
         <Sections>
           <Section>
             <Title>Select board</Title>
-            {this.context.boards.map((board) => (
+            {boards.map((board) => (
               <Tile
                 key={board.boardId}
-                $selected={this.board === board}
+                $selected={board.id === selectedBoardId}
                 $empty={board.decks.length === 0}
-                {...onSelect(() => this.setBoard(board))}
+                {...onSelect(() => setSelectedBoardId(board.boardId))}
               >
                 {ellipsify(board.title || "Untitled")}
               </Tile>
@@ -117,12 +91,12 @@ class AddPortal extends React.Component<Props> {
           </Section>
           <Section>
             <Title>Select Deck</Title>
-            {this.board &&
-              this.board.decks.map((deck) => (
+            {selectedBoard &&
+              selectedBoard.decks.map((deck) => (
                 <Tile
                   key={deck.deckId}
-                  $selected={this.deck === deck}
-                  {...onSelect(() => this.setDeck(deck))}
+                  $selected={deck.deckId === selectedDeckId}
+                  {...onSelect(() => setSelectedDeckId(deck.deckId))}
                 >
                   {ellipsify(deck.title || "Untitled")}
                 </Tile>
@@ -131,19 +105,16 @@ class AddPortal extends React.Component<Props> {
         </Sections>
         <hr />
         <ModalFooter>
-          <Button $gray onClick={() => this.props.resolve?.()}>
+          <Button $gray onClick={() => props.resolve()}>
             Cancel
           </Button>
-          <Button disabled={!this.board || !this.deck || !this.title}>
+          <Button disabled={!selectedDeck || !title}>
             Create portal
           </Button>
         </ModalFooter>
       </form>
     );
-  }
 }
-
-export default AddPortal;
 
 const Sections = styled.div`
   display: grid;

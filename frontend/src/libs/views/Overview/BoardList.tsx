@@ -1,37 +1,26 @@
+import addGridKeyboardNavigation from "src/util/addGridKeyboardNavigation";
+import { useContext, useEffect, useLayoutEffect, useState } from "react";
+import { OverviewStoreContext } from "./OverviewStoreContext";
 import { AuthContext } from "src/libs/authContext";
+import { useAutoLayoutEffect } from "hooks.macro";
 import { useNavigate } from "react-router-dom";
-import { StoreContext } from "src/libs/store";
-import React, { useEffect } from "react";
-import Board from "src/libs/store/Board";
 import * as theme from "src/libs/theme";
 import ProjectTile from "./ProjectTile";
 import styled from "styled-components";
 import { Observer } from "mobx-react";
 import BoardTile from "./BoardTile";
-import api from "src/libs/api";
 
 export default function BoardList() {
-  const store = React.useContext(StoreContext)!;
-  const auth = React.useContext(AuthContext)!;
+  const [gridElement, setGridElement] = useState<HTMLDivElement | null>(null);
+  const { setIsAddingBoard, boards } = useContext(OverviewStoreContext);
+  const auth = useContext(AuthContext)!;
   const navigate = useNavigate();
 
-  React.useEffect(() => {
-    api.ownBoards().then(({ boards }) => {
-      store.setBoards(boards.map((b) => new Board(b)));
-    });
-  }, [store]);
-
-  React.useEffect(() => {
-    api.ownProjects().then(({ projects }) => {
-      store.setProjects(projects);
-    });
-  }, [store]);
-
-  React.useLayoutEffect(() => {
+  useLayoutEffect(() => {
     const onKeyDown = (e: KeyboardEvent) => {
       if (e.metaKey && /[1-9]/.test(e.key)) {
         e.preventDefault();
-        navigate(`/board/${store.boards[parseInt(e.key, 10) - 1].boardId}`);
+        navigate(`/board/${boards[parseInt(e.key, 10) - 1].boardId}`);
       }
     };
 
@@ -42,25 +31,23 @@ export default function BoardList() {
     };
   });
 
+  useAutoLayoutEffect(() => {
+    if (gridElement) {
+      return addGridKeyboardNavigation(gridElement);
+    }
+  });
+
   useEffect(() => {
     if (auth.status === "failure") {
       return navigate("/login")
     }
   }, [auth.status]);
 
-  if (!store) return null;
-
   return (
     <Observer>
       {() => {
         return (
           <Container>
-            <Header>
-              <Title>Projects</Title>
-              <PlusButton onClick={store.startAddingProject}>
-                <span className="material-symbols-outlined">add</span>
-              </PlusButton>
-            </Header>
             <Grid>
               <ProjectTile
                 project={{ title: "Personal project" }}
@@ -69,15 +56,15 @@ export default function BoardList() {
             </Grid>
             <Header>
               <Title>My boards</Title>
-              <PlusButton onClick={store.startAddingBoard}>
+              <PlusButton onClick={() => setIsAddingBoard(true)}>
                 <span className="material-symbols-outlined">add</span>
               </PlusButton>
             </Header>
-            <Grid>
-              {store.boards.map((board) => (
-                <BoardTile key={board.boardId} board={board} />
+            <Grid ref={setGridElement}>
+              {boards.map((board, i) => (
+                <BoardTile key={board.boardId} board={board} shortcut={i <= 8 ? `⌘${i + 1}` : null} />
               ))}
-              {!store.boards.length && <div>You have no boards yet</div>}
+              {!boards.length && <div>You have no boards yet</div>}
             </Grid>
           </Container>
         );

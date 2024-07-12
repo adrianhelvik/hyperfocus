@@ -27,6 +27,7 @@
   flex-direction: column;
   transition: opacity 300ms, box-shadow 300ms;
   max-height: 100%;
+  touch-action: pan-y;
 
   .isMovingCard &:not(&.hoverDeck) {
     opacity: 0.9;

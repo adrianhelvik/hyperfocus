@@ -1,12 +1,12 @@
-import { useAutoCallback, useAutoMemo } from "hooks.macro";
 import { useNavigate, useParams } from "react-router-dom";
-import Board, { BoardParam } from "src/libs/store/Board";
+import { useAutoCallback } from "hooks.macro";
 import { useState, useEffect } from "react";
 import classes from "./styles.module.css";
 import useModal from "src/libs/useModal";
 import Header from "src/libs/ui/Header";
 import * as theme from "src/libs/theme";
 import { BoardView } from "./BoardView";
+import { Board } from "src/libs/types";
 import styled from "styled-components";
 import AddCircle from "./AddCircle";
 import AddPortal from "./AddPortal";
@@ -17,18 +17,13 @@ export default function BoardV2() {
   const { boardId } = useParams<{ boardId: string }>();
   if (!boardId) throw Error("Expected boardId to be provided");
 
-  const [boardParam, setBoardParam] = useState<BoardParam | null>(null);
+  const [board, setBoard] = useState<Board | null>(null);
   const [div, setDiv] = useState<HTMLDivElement | null>(null);
   const [refreshKey, setRefreshKey] = useState(0);
   const { showModal, renderModal } = useModal();
   const navigate = useNavigate();
 
   const refresh = useAutoCallback(() => setRefreshKey(refreshKey => refreshKey + 1));
-
-  const board = useAutoMemo(() => {
-    if (!boardParam) return null;
-    return new Board(boardParam)
-  });
 
   const addDeck = async () => {
     if (!board) return;
@@ -39,7 +34,7 @@ export default function BoardV2() {
 
   const addPortal = async () => {
     if (!board) return;
-    await showModal((props) => <AddPortal {...props} board={board} />, {
+    await showModal((props) => <AddPortal {...props} board={board} index={null} />, {
       width: 700,
     });
     refresh();
@@ -49,7 +44,7 @@ export default function BoardV2() {
     let cancelled = false;
     api.getBoard({ boardId }).then((board) => {
       if (cancelled) return;
-      setBoardParam(board);
+      setBoard(board);
     });
     return () => {
       cancelled = true;
@@ -57,11 +52,25 @@ export default function BoardV2() {
   }, [boardId, refreshKey]);
 
   useEffect(() => {
-    if (!boardParam) return;
+    if (!board) return;
     if (!div) return;
-    const boardView = new BoardView(div, boardParam, navigate);
+    const boardView = new BoardView(div, board);
     return () => boardView.unmount();
-  }, [div, boardParam, navigate]);
+  }, [div, board, navigate]);
+
+  useEffect(() => {
+    const onKeyDown = (e: KeyboardEvent) => {
+      if (e.metaKey && /[1-9]/.test(e.key)) {
+        e.preventDefault();
+        return navigate("/app");
+      }
+    };
+
+    document.addEventListener("keydown", onKeyDown);
+    return () => {
+      document.removeEventListener("keydown", onKeyDown);
+    };
+  });
 
   return (
     <div className={classes.boardView}>
@@ -71,7 +80,7 @@ export default function BoardV2() {
             My boards
           </CrumbButton>
           <div>›</div>
-          <Title>{boardParam?.title}</Title>
+          <Title>{board?.title}</Title>
         </Breadcrumbs>
       </Header>
       <div ref={setDiv} />

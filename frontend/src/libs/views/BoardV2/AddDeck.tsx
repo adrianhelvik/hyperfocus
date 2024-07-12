@@ -1,11 +1,10 @@
 import ModalFooter from "src/libs/ui/ModalFooter";
-import Board from "src/libs/store/Board";
 import Button from "src/libs/ui/Button";
-import Deck from "src/libs/store/Deck";
 import styled from "styled-components";
 import Input from "src/libs/ui/Input";
 import { useState } from "react";
 import api from "src/libs/api";
+import { Board } from "src/libs/types";
 
 type Props = {
   board: Board;
@@ -25,39 +24,32 @@ function AddDeck(props: Props) {
     if (loading) return;
     setLoading(true);
     event.preventDefault();
-    const { deckId } = await api.addDeck({
-      boardId: props.board.boardId!,
+    await api.addDeck({
+      boardId: props.board.boardId,
       title: title,
       index: props.index!,
     });
-    const deck = new Deck({
-      deckId,
-      boardId: props.board.boardId!,
-      portals: [],
-      title: title,
-    });
-    deck.initialFocus = true;
-    props.board.addDeck(deck, props.index!);
+    // TODO: Add new deck to board instead of reloading in the parent component.
     props.resolve();
   };
 
-    return (
-      <Container onSubmit={onSubmit}>
-        <Title>Create a deck</Title>
-        <Input
-          autoFocus
-          placeholder="Title"
-          onChange={setTitleFromEvent}
-          value={title}
-        />
-        <ModalFooter>
-          <Button $gray type="button" onClick={() => props.resolve()}>
-            Cancel
-          </Button>
-          <Button>Create</Button>
-        </ModalFooter>
-      </Container>
-    );
+  return (
+    <Container onSubmit={onSubmit}>
+      <Title>Create a deck</Title>
+      <Input
+        autoFocus
+        placeholder="Title"
+        onChange={setTitleFromEvent}
+        value={title}
+      />
+      <ModalFooter>
+        <Button $gray type="button" onClick={() => props.resolve()}>
+          Cancel
+        </Button>
+        <Button>Create</Button>
+      </ModalFooter>
+    </Container>
+  );
 }
 
 export default AddDeck;

@@ -4,15 +4,15 @@ import withModal, { WithModalProps } from "src/libs/withModal";
 import withMenu, { WithMenuProps } from "src/libs/withMenu";
 import { CirclePicker as ColorPicker } from "react-color";
 import React, { MouseEvent, useContext } from "react";
-import { StoreContext } from "src/libs/store";
+import { useNavigate } from "react-router-dom";
 import onSelect from "src/libs/util/onSelect";
 import MenuIcon from "src/libs/ui/MenuIcon";
-import Board from "src/libs/store/Board";
 import * as theme from "src/libs/theme";
 import styled from "styled-components";
+import { Board } from "src/libs/types";
 import api from "src/libs/api";
 import Color from "color";
-import { useNavigate } from "react-router-dom";
+import { OverviewStoreContext } from "./OverviewStoreContext";
 
 const ColorPickerAny = ColorPicker as any as React.ComponentType<any>;
 
@@ -22,10 +22,11 @@ type Props = WithConfirmProps &
   WithModalProps &
   WithConfirmProps & {
     board: Board;
+    shortcut: string | null;
   };
 
 function BoardTile(props: Props) {
-  const store = useContext(StoreContext)!;
+  const { onBoardRemoved } = useContext(OverviewStoreContext);
   const navigate = useNavigate();
 
   const openBoard = () => {
@@ -33,7 +34,6 @@ function BoardTile(props: Props) {
   };
 
   const setColor = ({ hex }: { hex: string }) => {
-    props.board.color = hex;
     api.setBoardColor({
       boardId: props.board.boardId!,
       color: hex,
@@ -41,7 +41,6 @@ function BoardTile(props: Props) {
   };
 
   const rename = (title: string) => {
-    props.board.setTitle(title);
     api.setBoardTitle({
       boardId: props.board.boardId!,
       title,
@@ -99,25 +98,8 @@ function BoardTile(props: Props) {
           )))
         )
           return;
-        const boardId = props.board.boardId!;
-        try {
-          await api.deleteBoard({
-            boardId,
-          });
-          store.deleteBoard(boardId);
-        } catch (e: any) {
-          props.showStatus(() => (
-            <div>
-              Whoopsie! That caused an error!
-              <br />
-              <br />
-              <details>
-                <summary style={{ cursor: "pointer" }}>Error details</summary>
-                <pre>{e.stack}</pre>
-              </details>
-            </div>
-          ));
-        }
+        api.deleteBoard({ boardId: props.board.boardId });
+        onBoardRemoved(props.board);
       },
     });
   };
@@ -128,8 +110,13 @@ function BoardTile(props: Props) {
       $color={props.board.color || "white"}
       onContextMenu={openMenu}
     >
-      <Title>{props.board.title || <Weak>Untitled</Weak>}</Title>
-      <MenuIcon $dark={!props.board.color} onClick={openMenu} />
+      <Title>
+        {props.board.title || <Weak>Untitled</Weak>}
+      </Title>
+      <TopRight>
+        {props.shortcut != null && <ShortcutIcon>{props.shortcut}</ShortcutIcon>}
+        <MenuIcon $dark={!props.board.color} onClick={openMenu} />
+      </TopRight>
     </Container>
   );
 }
@@ -148,16 +135,17 @@ const Container = styled.button.attrs({
 
   cursor: pointer;
   padding: 10px;
+  display: flex;
   background: ${(p) => p.$color};
   color: ${(p) => (Color(p.$color).blacken(0.7).isDark() ? "white" : "black")};
   border-radius: 4px;
   margin-right: 10px;
   margin-bottom: 10px;
   position: relative;
-  display: flex;
   box-shadow: ${theme.shadows[0]};
   transition: box-shadow 0.3s;
   height: 80px;
+  transform: translate3d(0, 0, 0);
 
   &:hover {
     box-shadow: ${theme.shadows[1]};
@@ -167,8 +155,31 @@ const Container = styled.button.attrs({
 const Title = styled.div`
   overflow: hidden;
   width: 100%;
+
+  /* This will cause the text to flow around he menu and shortcut icon */
+  &::before {
+    content: "";
+    float: right;
+    width: 60px;
+    height: 27px;
+    vertical-align: top;
+  }
 `;
 
 const Weak = styled.span`
   color: ${theme.placeholderGray};
+`;
+
+const TopRight = styled.div`
+  display: flex;
+  float: right;
+  position: fixed;
+  top: 10px;
+  right: 10px;
+  align-items: center;
+`;
+
+const ShortcutIcon = styled.div`
+  color: #aaa;
+  padding: 0 5px;
 `;

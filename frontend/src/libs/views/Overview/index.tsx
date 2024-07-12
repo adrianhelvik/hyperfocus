@@ -1,29 +1,38 @@
+import { MouseEvent, useContext, useEffect, useState } from "react";
+import { OverviewStoreContext } from "./OverviewStoreContext";
 import withMenu, { WithMenuProps } from "src/libs/withMenu";
-import { MouseEvent, useContext, useEffect } from "react";
+import { useAutoCallback, useAutoMemo } from "hooks.macro";
 import { AuthContext } from "src/libs/authContext";
 import { useNavigate } from "react-router-dom";
-import { StoreContext } from "src/libs/store";
 import AddBoardModal from "./AddBoardModal";
 import classes from "./styles.module.css";
 import Header from "src/libs/ui/Header";
-import { Observer } from "mobx-react";
+import { Board } from "src/libs/types";
 import BoardList from "./BoardList";
+import api from "src/libs/api";
 
 type Props = WithMenuProps & {
   children?: React.ReactNode;
 };
 
 export default withMenu(function Overview(props: Props) {
-  const store = useContext(StoreContext)!;
+  const [isAddingBoard, setIsAddingBoard] = useState(false);
+  const [boards, setBoards] = useState<Board[]>([]);
   const auth = useContext(AuthContext)!;
   const navigate = useNavigate();
+
+  useEffect(() => {
+    api.ownBoards().then(({ boards }) => {
+      setBoards(boards);
+    });
+  }, []);
 
   const onContextMenu = (event: MouseEvent) => {
     event.preventDefault();
 
     props.showMenu(event, {
       "New board": () => {
-        store.isAddingBoard = true;
+        setIsAddingBoard(true);
       },
     });
   };
@@ -45,17 +54,29 @@ export default withMenu(function Overview(props: Props) {
     };
   }, []);
 
+  const onBoardAdded = useAutoCallback((board: Board) => {
+    setBoards(boards => [board, ...boards]);
+  });
+
+  const onBoardRemoved = useAutoCallback((board: Board) => {
+    setBoards(boards => boards.filter(it => it.boardId !== board.boardId));
+  });
+
+  const contextValue = useAutoMemo({
+    setIsAddingBoard,
+    onBoardRemoved,
+    isAddingBoard,
+    onBoardAdded,
+    boards,
+  });
+
   return (
-    <Observer>
-      {() => {
-        return (
-          <div onContextMenu={onContextMenu}>
-            <Header>My boards</Header>
-            {store.isAddingBoard && <AddBoardModal />}
-            <BoardList />
-          </div>
-        );
-      }}
-    </Observer>
+    <OverviewStoreContext.Provider value={contextValue}>
+      <div onContextMenu={onContextMenu}>
+        <Header>My boards</Header>
+        {isAddingBoard && <AddBoardModal close={() => setIsAddingBoard(false)} />}
+        <BoardList />
+      </div>
+    </OverviewStoreContext.Provider>
   );
 });

@@ -1,5 +1,5 @@
 import styled, { keyframes, css } from "styled-components";
-import React, { useEffect, useState } from "react";
+import React, { useState } from "react";
 import * as zIndexes from "../zIndexes";
 
 type Props = {
@@ -10,16 +10,6 @@ type Props = {
 
 const Backdrop = ({ hide, transparent, children }: Props) => {
   const [container, setContainer] = useState<Element | null>(null);
-
-  useEffect(() => {
-    const onKeyDown = (event: KeyboardEvent) => {
-      if (event.key === "Enter") hide(event);
-    };
-    document.addEventListener("keydown", onKeyDown);
-    return () => {
-      document.removeEventListener("keydown", onKeyDown);
-    };
-  }, [hide]);
 
   const onContainerClick = (event: React.MouseEvent) => {
     if (event.target === container && typeof hide === "function") hide(event);

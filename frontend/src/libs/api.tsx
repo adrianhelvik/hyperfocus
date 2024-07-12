@@ -1,8 +1,5 @@
-import Board, { BoardParam } from "src/libs/store/Board";
-import Portal from "src/libs/store/Portal";
-import Deck from "src/libs/store/Deck";
 import local from "src/libs/local";
-import { Project } from "./types";
+import { Board, BoardParam, Deck, Portal, Project } from "./types";
 
 let persistentHeaders = local.get("persistentHeaders", {});
 
@@ -14,7 +11,7 @@ type Api = {
   setBoardTitle(payload: { boardId: string; title: string }): Promise<void>;
   setCardTitle(payload: { cardId: string, title: string }): Promise<void>;
   ownProjects(): Promise<{ projects: Project[] }>;
-  createBoard(board: Board): Promise<void>;
+  createBoard(board: BoardParam): Promise<Board>;
   registerUser(payload: { password: string; email: string }): Promise<void>;
   deleteDeck(payload: { deckId: string }): Promise<void>;
   deletePortal(payload: { portalId: string }): Promise<void>;
@@ -43,16 +40,16 @@ type Api = {
     username: string;
     password: string;
   }): PromiseLike<{ sessionId: string }>;
-  getBoard(payload: { boardId: string }): PromiseLike<BoardParam>;
+  getBoard(payload: { boardId: string }): PromiseLike<Board>;
   deleteBoard(payload: { boardId: string }): PromiseLike<void>;
-  setBoardColor(board: Partial<BoardParam>): PromiseLike<void>;
+  setBoardColor(board: Partial<Board>): PromiseLike<void>;
   addPortal(options: {
     boardId: string;
     deckId: string;
-    index: number;
+    index: number | null;
     title: string;
   }): PromiseLike<PortalParam>;
-  ownBoards: () => PromiseLike<{ boards: BoardParam[] }>;
+  ownBoards: () => PromiseLike<{ boards: Board[] }>;
 };
 
 export async function addCardImages(cardId: string, images: File[]) {

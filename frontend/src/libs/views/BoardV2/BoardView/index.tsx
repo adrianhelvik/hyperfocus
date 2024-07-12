@@ -1,27 +1,23 @@
 import { replaceWithInputAndFocusAtCaretPosition } from "./replaceWithInputAndFocusAtCaretPosition";
 import { possiblyPerformHoverSwap } from "./possiblyPerformHoverSwap";
 import createAutoGrowTextarea from "./createAutoGrowTextarea";
+import { Board, Card, Deck, Portal } from "src/libs/types";
 import { isKeypressElement } from "./isKeypressElement";
-import Deck, { DeckParam } from "src/libs/store/Deck";
 import { findClosestDeck } from "./findClosestDeck";
 import { distanceBetween } from "./distanceBetween";
 import { setLinkableText } from "./setLinkableText";
-import { NavigateFunction } from "react-router-dom";
-import { BoardParam } from "src/libs/store/Board";
 import { styleMovedCard } from "./styleMovedCard";
 import { horizontalMiddle } from "./domUtils";
 import { CleanupHooks } from "./CleanupHooks";
-import Portal from "src/libs/store/Portal";
 import classes from "./styles.module.css";
-import Card from "src/libs/store/Card";
 import onlyOnceFn from "./onlyOnceFn";
 import animate from "./animate";
 import api from "src/libs/api";
 import Color from "color";
 
-const AUTO_SCROLL_OFFSET = 100;
 const CARD_ANIMATION_TIME = 300;
 const DECK_ANIMATION_TIME = 300;
+const AUTO_SCROLL_OFFSET = 100;
 
 export class BoardView {
   private cleanupHooks = new CleanupHooks();
@@ -30,7 +26,7 @@ export class BoardView {
   private scrollSnapTimeout: ReturnType<typeof setTimeout> | null = null;
   private cancelSnapToDeck: (() => void) | null = null;
 
-  constructor(private root: HTMLElement, private board: BoardParam, private navigate: NavigateFunction) {
+  constructor(private root: HTMLElement, private board: Board) {
     addEventListener("subtask:addDeck", this.onDeckAdded);
     this.cleanup();
     this.buildInterface();
@@ -60,11 +56,6 @@ export class BoardView {
   }
 
   private onKeydown = (e: KeyboardEvent) => {
-    if (e.metaKey && /[1-9]/.test(e.key)) {
-      e.preventDefault();
-      return this.navigate("/app");
-    }
-
     if (!isKeypressElement(e.target)) {
       if (e.key === "F" && (e.metaKey || e.ctrlKey)) {
         this.showSearchUI();
@@ -72,7 +63,7 @@ export class BoardView {
     }
 
     if (!isKeypressElement(e.target) || (e.target && 'value' in e.target && !e.target.value)) {
-      // TODO: Evaluate whether I should use these modifier keys
+      if (e.metaKey || e.ctrlKey) return;
 
       if (e.key === "ArrowRight") {
         const deckIndex = this.deckElements.findIndex(it => document.activeElement == null || it.contains(document.activeElement));
@@ -132,8 +123,8 @@ export class BoardView {
 
     const deck =
       child.type === "deck"
-        ? (child as Deck)
-        : ((child as Portal).target as Deck);
+        ? child
+        : child.target;
 
     deckElement.append(
       this.createDeckTitleNode({
@@ -449,7 +440,7 @@ export class BoardView {
   }: {
     root: HTMLElement;
     deckElement: HTMLElement;
-    deck: DeckParam;
+    deck: Deck;
     cleanupHooks: CleanupHooks;
   }) {
     const form = document.createElement("form");
@@ -473,16 +464,17 @@ export class BoardView {
         title,
         cardId,
         images: [],
-        setTitle() { },
       };
-      deckElement.querySelector("[data-cards-container]")?.append(
-        this.buildCardForDeck({
-          root,
-          card,
-          deckElement,
-          cleanupHooks,
-        })
-      );
+      const newCardElement = this.buildCardForDeck({
+        root,
+        card,
+        deckElement,
+        cleanupHooks,
+      });
+      deckElement.querySelector("[data-cards-container]")?.append(newCardElement);
+      newCardElement.scrollIntoView({
+        behavior: "smooth",
+      });
     };
 
     addCardInput.addEventListener("keydown", (e) => {

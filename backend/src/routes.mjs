@@ -28,6 +28,7 @@ import { Stream } from "stream";
 import Boom from "@hapi/boom";
 import knex from "./knex.mjs";
 import fs from "fs";
+import uuid from "./utils/uuid.mjs";
 
 export const loginRoute = {
   method: "POST",
@@ -56,12 +57,13 @@ export const createBoardRoute = {
   method: "POST",
   path: "/createBoard",
   /**
-   * @param {{ payload: { boardId: string, title: string }, headers: { authorization: string } }} request
-   * @returns {Promise<{ success: boolean }>}
+   * @param {{ payload: { title: string }, headers: { authorization: string } }} request
+   * @returns {Promise<string>}
    */
   async handler(request) {
-    const { boardId, title } = request.payload;
+    const { title } = request.payload;
     const { userId } = await authenticate(request);
+    const boardId = uuid();
 
     await assertIsVerified(request);
 
@@ -71,7 +73,7 @@ export const createBoardRoute = {
       title,
     });
 
-    return { success: true };
+    return await getDenormalizedBoard(boardId);
   },
 };
 

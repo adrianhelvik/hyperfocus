@@ -11,10 +11,6 @@ export type ModalType = {
     Template: React.ComponentType<ModalTemplateProps>,
     options?: { width?: number }
   ) => Promise<void>;
-  showModalInPlace: (
-    event: React.MouseEvent,
-    Template: React.ComponentType<ModalTemplateProps>
-  ) => void;
   renderModal: () => ReactNode;
 };
 
@@ -55,21 +51,6 @@ export default function useModal(): ModalType {
       });
       setOpenModal({
         inPlace: false,
-        Template,
-        resolve,
-        reject,
-      });
-      await promise;
-      setOpenModal(null);
-    },
-    showModalInPlace: async (Template) => {
-      let resolve: any, reject: any;
-      const promise = new Promise<void>((res, rej) => {
-        resolve = res;
-        reject = rej;
-      });
-      setOpenModal({
-        inPlace: true,
         Template,
         resolve,
         reject,
