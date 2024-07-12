@@ -48,12 +48,6 @@ export default function BoardList() {
       {() => {
         return (
           <Container>
-            <Grid>
-              <ProjectTile
-                project={{ title: "Personal project" }}
-                isSelected={true}
-              />
-            </Grid>
             <Header>
               <Title>My boards</Title>
               <PlusButton onClick={() => setIsAddingBoard(true)}>
