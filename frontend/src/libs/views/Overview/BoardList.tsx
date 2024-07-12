@@ -5,7 +5,6 @@ import { AuthContext } from "src/libs/authContext";
 import { useAutoLayoutEffect } from "hooks.macro";
 import { useNavigate } from "react-router-dom";
 import * as theme from "src/libs/theme";
-import ProjectTile from "./ProjectTile";
 import styled from "styled-components";
 import { Observer } from "mobx-react";
 import BoardTile from "./BoardTile";
