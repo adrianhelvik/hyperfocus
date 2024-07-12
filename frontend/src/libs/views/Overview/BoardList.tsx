@@ -42,6 +42,8 @@ export default function BoardList() {
     }
   }, [auth.status]);
 
+  const modifierKey = navigator.platform === "MacIntel" ? "⌘" : "ctrl ";
+
   return (
     <Observer>
       {() => {
@@ -55,7 +57,7 @@ export default function BoardList() {
             </Header>
             <Grid ref={setGridElement}>
               {boards.map((board, i) => (
-                <BoardTile key={board.boardId} board={board} shortcut={i <= 8 ? `⌘${i + 1}` : null} />
+                <BoardTile key={board.boardId} board={board} shortcut={(!("ontouchstart" in document) && i <= 8) ? `${modifierKey}${i + 1}` : null} />
               ))}
               {!boards.length && <div>You have no boards yet</div>}
             </Grid>
