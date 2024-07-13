@@ -103,5 +103,5 @@ export const Heading = styled.h1`
   text-align: center;
   margin-top: 20px;
   margin-bottom: 30px;
-  opacity: 0.6;
+  opacity: 0.7;
 `;
