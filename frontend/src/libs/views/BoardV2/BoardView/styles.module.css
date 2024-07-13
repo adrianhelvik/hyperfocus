@@ -45,6 +45,14 @@
     outline: none;
   }
 
+  .isMovingDeck &:not(.movingDeck) {
+    opacity: 0.6;
+  }
+
+  .isMovingDeck &.movingDeck * {
+    transform: rotate(102deg);
+  }
+
   /* This adds a rounded outline around portals */
   &:focus::after,
   &:focus-within::after {
@@ -210,6 +218,10 @@
   user-select: none;
   cursor: text;
   line-height: 1.5;
+
+  .isMovingCard & {
+    opacity: 0.8;
+  }
 
   &[data-edit-source="keyboard"] .cardContent:focus {
     outline: 2px solid var(--deck-black-or-white-contrast);

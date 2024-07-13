@@ -13,11 +13,12 @@ export default function addDragHandlers<Context>(options: {
   options.element.addEventListener("mousedown", onMouseDown);
   options.element.addEventListener("touchstart", onTouchStart);
 
-  const initializeDrag = (
-    initialCoords: { x: number; y: number },
-    cleanup: () => void
-  ) => {
-    return {
+  const initializeDrag = (opts: {
+    initialCoords: { x: number; y: number };
+    startNow: boolean;
+    cleanup: () => void;
+  }) => {
+    const dragContext = {
       init: null as {
         context: Context;
         stopScroll: () => void;
@@ -27,7 +28,7 @@ export default function addDragHandlers<Context>(options: {
           options.onDragMove(clientX, clientY, this.init.context);
         } else if (
           !this.init &&
-          distanceBetween({ x: clientX, y: clientY }, initialCoords) > 10
+          distanceBetween({ x: clientX, y: clientY }, opts.initialCoords) > 10
         ) {
           this.init = {
             context: options.onDragStart(clientX, clientY),
@@ -42,9 +43,18 @@ export default function addDragHandlers<Context>(options: {
         } else {
           options.onClick(clientX, clientY, target);
         }
-        cleanup();
+        opts.cleanup();
       },
     };
+
+    if (opts.startNow) {
+      dragContext.init = {
+        context: options.onDragStart(opts.initialCoords.x, opts.initialCoords.y),
+        stopScroll: startScrollWhenNearEdges(options.scrollContainer),
+      };
+    }
+
+    return dragContext;
   };
 
   function onMouseDown(e: MouseEvent) {
@@ -55,16 +65,17 @@ export default function addDragHandlers<Context>(options: {
 
     e.preventDefault();
 
-    const dragContext = initializeDrag(
-      {
+    const dragContext = initializeDrag({
+      startNow: false,
+      initialCoords: {
         x: e.clientX,
         y: e.clientY,
       },
-      () => {
+      cleanup: () => {
         document.removeEventListener("mousemove", onMouseMove);
         document.removeEventListener("mouseup", onMouseUp);
       }
-    );
+    });
 
     const onMouseMove = (e: MouseEvent) => {
       dragContext.onMove(e.clientX, e.clientY);
@@ -96,22 +107,25 @@ export default function addDragHandlers<Context>(options: {
     }
 
     function onContextMenu(contextMenuEvent: MouseEvent) {
+      contextMenuEvent.preventDefault();
+
       document.removeEventListener("contextmenu", onContextMenu);
       document.removeEventListener("touchend", onInitialTouchEnd);
 
-      contextMenuEvent.preventDefault();
-      const moveContext = initializeDrag(
-        {
+      const moveContext = initializeDrag({
+        startNow: true,
+        initialCoords: {
           x: touch.clientX,
           y: touch.clientY,
         },
-        () => {
+        cleanup: () => {
           document.removeEventListener("touchmove", onTouchMove);
           document.removeEventListener("touchend", onTouchEnd);
         }
-      );
+      });
 
       const onTouchMove = (e: TouchEvent) => {
+        e.preventDefault();
         const currentTouch = Array.from(e.touches).find(
           (it) => it.identifier === touchIdentifier
         );
@@ -138,7 +152,7 @@ export default function addDragHandlers<Context>(options: {
         );
       };
 
-      document.addEventListener("touchmove", onTouchMove);
+      document.addEventListener("touchmove", onTouchMove, { passive: false });
       document.addEventListener("touchend", onTouchEnd);
     }
   }

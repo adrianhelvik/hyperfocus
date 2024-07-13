@@ -168,6 +168,8 @@ export default function createCardElement({
   return cardElement;
 
   function onDragStart(clientX: number, clientY: number) {
+    cleanupHooks.run();
+
     root.style.scrollSnapType = "none";
 
     const {
@@ -179,8 +181,6 @@ export default function createCardElement({
 
     const insetX = clientX - left;
     const insetY = clientY - top;
-
-    cleanupHooks.run();
 
     root.classList.add(classes.isMovingCard);
     cardElement.parentElement?.parentElement?.classList.add(classes.hoverDeck);
