@@ -131,7 +131,7 @@ const Container = styled.button.attrs({
   width: 100%;
   box-sizing: border-box;
 
-  backdrop-filter: blur(5px);
+  backdrop-filter: blur(10px);
 
   cursor: pointer;
   padding: 10px;
