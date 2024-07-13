@@ -52,7 +52,7 @@ export default observer(function Login() {
             <Logo pageColor="#333" />
           </LogoWrapper>
           <Form onSubmit={onSubmit}>
-            <Heading>Hello there!</Heading>
+            <Heading>Welcome back!</Heading>
             <Input
               size={25}
               color={theme.brightBlue}
