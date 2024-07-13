@@ -109,7 +109,6 @@ const Logout = styled.button`
   border: 0;
   cursor: pointer;
   font-size: inherit;
-  background-color: ${Color(theme.baseColor).mix(Color("#000"), 0.6).hex()};
   padding: 8px 20px;
   border-radius: 5px;
 `;
