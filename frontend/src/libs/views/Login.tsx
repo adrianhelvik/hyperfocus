@@ -89,7 +89,8 @@ const LogoWrapper = styled.div`
     display: flex;
     align-items: center;
     justify-content: center;
-    margin-bottom: 50px;
+    margin-bottom: 60px;
+    margin-top: 50px;
 `;
 
 const Container = styled.div`
@@ -97,12 +98,12 @@ const Container = styled.div`
     color: white;
     height: 100dvh;
     display: flex;
-    align-items: center;
-    justify-content: center;
+    align-items: stretch;
+    justify-content: stretch;
 `;
 
 const Content = styled.div`
-  
+  margin: auto;
 `;
 
 const Form = styled.form`
