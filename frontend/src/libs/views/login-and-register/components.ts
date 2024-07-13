@@ -1,6 +1,12 @@
-import styled, { css } from "styled-components";
+import styled, { createGlobalStyle, css } from "styled-components";
 import * as theme from "src/libs/theme";
 import Color from "color";
+
+export const GlobalStyle = createGlobalStyle`
+  body {
+      background: ${theme.smoothGradient};
+  }
+`;
 
 export const LogoWrapper = styled.div`
     display: flex;
@@ -11,7 +17,6 @@ export const LogoWrapper = styled.div`
 `;
 
 export const Container = styled.div`
-    background: ${theme.smoothGradient};
     color: white;
     height: 100dvh;
     display: flex;

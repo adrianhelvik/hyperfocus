@@ -1,4 +1,4 @@
-import { Button, Container, Content, Form, Heading, LogoWrapper, Message } from "./components";
+import { Button, Container, Content, Form, GlobalStyle, Heading, LogoWrapper, Message } from "./components";
 import { FormEvent, useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { useAuth } from "../../authContext";
@@ -47,6 +47,7 @@ export default observer(function Login() {
   return (
     <>
       <Container>
+        <GlobalStyle />
         <Content>
           <LogoWrapper>
             <Logo pageColor="#333" />

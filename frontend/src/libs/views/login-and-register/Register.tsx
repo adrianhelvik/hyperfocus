@@ -1,4 +1,4 @@
-import { Button, Container, Content, Form, Heading, LogoWrapper, Message } from "./components";
+import { Button, Container, Content, Form, GlobalStyle, Heading, LogoWrapper, Message } from "./components";
 import api, { setPersistentHeader } from "src/libs/api";
 import { useNavigate } from "react-router-dom";
 import { FormEvent, useState } from "react";
@@ -41,6 +41,7 @@ export default function Register() {
 
   return (
     <Container>
+      <GlobalStyle />
       <Content>
         <LogoWrapper>
           <Logo pageColor="#333" />
