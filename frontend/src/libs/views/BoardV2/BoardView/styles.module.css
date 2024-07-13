@@ -23,6 +23,7 @@
 }
 
 .deck {
+  overflow-x: hidden;
   scroll-snap-align: center;
   flex-shrink: 0;
   width: 500px;
