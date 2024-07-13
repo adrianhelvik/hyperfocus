@@ -20,6 +20,16 @@
   &.isMovingDeck {
     scroll-snap-type: none;
   }
+
+  &:empty::after {
+    content: "Click + to get started";
+    color: rgba(255, 255, 255, 0.5);
+    font-size: 40px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 100%;
+  }
 }
 
 .deck {
