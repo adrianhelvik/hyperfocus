@@ -3,7 +3,7 @@ import Header from "src/libs/ui/Header";
 import React from "react";
 
 import {
-  LoginWrapper,
+  ExtraText,
   GlobalStyle,
   Register,
   Content,
@@ -47,10 +47,10 @@ class LandingPage extends React.Component<Props> {
               <strong>portals</strong>
             </Title>
             <Register to="/register">Get started</Register>
-            <LoginWrapper>
+            <ExtraText>
               Or <Login to="/login">log in</Login>
-            </LoginWrapper>
-            <LoginWrapper>
+            </ExtraText>
+            <ExtraText>
               Or check out on{" "}
               <Anchor
                 href="https://github.com/adrianhelvik/subtask"
@@ -58,7 +58,7 @@ class LandingPage extends React.Component<Props> {
               >
                 GitHub
               </Anchor>
-            </LoginWrapper>
+            </ExtraText>
           </Content>
         </Section>
       </>
