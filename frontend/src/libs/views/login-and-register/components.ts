@@ -36,9 +36,11 @@ export const Form = styled.form`
 export const Message = styled.div`
   color: ${theme.brightBlue};
   text-align: center;
-  margin-top: 50px;
   letter-spacing: 1px;
-  height: 30px;
+  height: 60px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
 
   & strong {
     display: block;
