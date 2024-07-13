@@ -40,10 +40,10 @@ export const bg2 = `rgb(227, 226, 229)`;
 let stars: string[] = [];
 
 const opacityDeterminant = 18;
-const radiusIncrease = 3.7;
+const radiusIncrease = 3.5;
 const baseShineHeight = 0;
 const shineHeightRand = 6;
-const max = 50;
+const max = 60;
 const i0 = 15;
 
 let radius = 15;
