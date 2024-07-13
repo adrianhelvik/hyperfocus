@@ -40,8 +40,12 @@ const Icon = styled.i<{ $dark?: boolean }>`
   ${(p) =>
     p.$dark &&
     css`
-      background: ${theme.ui1};
+      background-color: ${theme.ui2};
       color: white;
+
+      &:hover {
+        background-color: ${theme.ui1};
+      }
     `};
 `;
 

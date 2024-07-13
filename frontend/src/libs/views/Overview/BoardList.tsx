@@ -65,7 +65,6 @@ export default function BoardList() {
               <PlusButton onClick={() => setIsAddingBoard(true)}>
                 New board
                 <span className="material-symbols-outlined">add</span>
-                <ButtonShortcut>+</ButtonShortcut>
               </PlusButton>
             </Header>
             <Grid ref={setGridElement}>
@@ -118,7 +117,7 @@ const Header = styled.div`
 `;
 
 const PlusButton = styled.button`
-  background-color: ${theme.ui1};
+  background-color: ${theme.ui2};
   border: none;
   color: white;
   border-radius: 4px;
@@ -131,9 +130,11 @@ const PlusButton = styled.button`
   cursor: pointer;
   padding: 5px;
   padding-left: 10px;
+  gap: 10px;
+  padding-left: 16px;
 
   &:hover {
-    background-color: ${theme.ui2};
+    background-color: ${theme.ui1};
     box-shadow: ${theme.shadows[1]};
   }
 
@@ -142,15 +143,18 @@ const PlusButton = styled.button`
   }
 
   & .material-symbols-outlined {
-    display: none;
+    border: 1px solid white;
+    border-radius: 5px;
+    background-color: rgba(255, 255, 255, 0.3);
+    color: white !important;
   }
 
   @media (hover: none) {
-    padding-left: 5px;
-    padding-right: 12px;
-
+    gap: 5px;
+    padding-right: 7px;
     & .material-symbols-outlined {
-      display: block;
+      border: none;
+      background-color: transparent;
     }
   }
 `;
