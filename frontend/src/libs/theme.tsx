@@ -82,7 +82,7 @@ export const smoothGradient = [
 ].join(", ");
 
 export const smoothGradientMellow = [
-  ...generateStars(0.2),
+  ...generateStars(0.4),
   // `linear-gradient(${Color(brightBlue).darken(0.9).string()}, ${Color(brightBlue).alpha(0.8).string()})`,
   `linear-gradient(90deg, rgba(0,0,0,0), ${Color(brightBlue).alpha(0.1).string()})`,
   `linear-gradient(black, ${Color(brightBlue).darken(0.9).hex()})`,
