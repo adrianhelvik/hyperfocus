@@ -1,9 +1,10 @@
 import { BoardViewContext, BoardViewContextType } from "./context";
 import { useAutoCallback, useAutoMemo } from "hooks.macro";
 import { useNavigate, useParams } from "react-router-dom";
+import { useState, useEffect, useRef } from "react";
 import useOnKeyDown from "src/util/useOnKeyDown";
 import { Board, Deck } from "src/libs/types";
-import { useState, useEffect, useRef } from "react";
+import { GlobalStyle } from "./components";
 import classes from "./styles.module.css";
 import Header from "src/libs/ui/Header";
 import { BoardView } from "./BoardView";
@@ -77,6 +78,7 @@ export default function BoardV2() {
 
   return (
     <BoardViewContext.Provider value={contextValue}>
+      <GlobalStyle />
       <div className={classes.boardView}>
         <Header>
           <Breadcrumbs>

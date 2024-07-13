@@ -50,6 +50,7 @@ function generateStars(staticOpacity = 1) {
   const baseShineHeight = 0;
   const shineHeightRand = 6;
   const max = 60;
+  const jitter =  10 * Math.random();
 
   let radius = 15;
   for (let i = i0; i < max; i++) {
@@ -60,6 +61,7 @@ function generateStars(staticOpacity = 1) {
     const height = 5;
     const shineHeight = baseShineHeight + (shineHeightRand * rand1);
     radius += radiusIncrease;
+    radius += jitter;
     let opacity = (i % opacityDeterminant) / opacityDeterminant - (radius / 100);
     const x = radius * Math.cos(i) + 50;
     const y = radius * Math.sin(i) + 50;

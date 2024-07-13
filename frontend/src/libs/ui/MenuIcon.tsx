@@ -35,19 +35,15 @@ const Icon = styled.i<{ $dark?: boolean }>`
   box-shadow: ${theme.shadows[0]};
 
   &:active:hover {
-    background-color: rgb(200, 200, 200);
+    background-color: ${Color("white").alpha(0.6).string()};
   }
 
-  ${(p) =>
-    p.$dark &&
-    css`
-      background-color: ${Color("white").alpha(0.3).string()};
-      color: white;
+  background-color: ${Color("white").alpha(0.3).string()};
+  color: white;
 
-      &:hover {
-        background-color: ${theme.radiantPurple};
-      }
-    `};
+  &:hover {
+    background-color: ${Color("white").alpha(0.4).string()};
+  }
 `;
 
 export default MenuIcon;

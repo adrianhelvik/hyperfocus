@@ -118,7 +118,7 @@ const Header = styled.div`
 `;
 
 const PlusButton = styled.button`
-  background-color: ${Color(theme.baseColor).alpha(0.3).string()};
+  background-color: ${Color(theme.baseColor).alpha(0.2).string()};
   border: 0;
   color: white;
   border-radius: 4px;
@@ -134,12 +134,12 @@ const PlusButton = styled.button`
   padding-left: 16px;
 
   &:hover {
-    background-color: ${theme.radiantPurple};
+    background-color: ${Color(theme.baseColor).alpha(0.3).string()};
     box-shadow: ${theme.shadows[1]};
   }
 
   &:hover:active {
-    background-color: ${theme.darkPurple};
+    background-color: ${Color(theme.baseColor).alpha(0.4).string()};
   }
 
   & .material-symbols-outlined {

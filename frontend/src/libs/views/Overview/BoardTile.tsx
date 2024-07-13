@@ -4,7 +4,7 @@ import withModal, { WithModalProps } from "src/libs/withModal";
 import { OverviewStoreContext } from "./OverviewStoreContext";
 import withMenu, { WithMenuProps } from "src/libs/withMenu";
 import { CirclePicker as ColorPicker } from "react-color";
-import React, { MouseEvent, useContext } from "react";
+import { MouseEvent, useContext } from "react";
 import { useNavigate } from "react-router-dom";
 import onSelect from "src/libs/util/onSelect";
 import MenuIcon from "src/libs/ui/MenuIcon";
@@ -13,8 +13,6 @@ import styled from "styled-components";
 import { Board } from "src/libs/types";
 import api from "src/libs/api";
 import Color from "color";
-
-const ColorPickerAny = ColorPicker as any as React.ComponentType<any>;
 
 type Props = WithConfirmProps &
   WithStatusProps &
@@ -26,7 +24,7 @@ type Props = WithConfirmProps &
   };
 
 function BoardTile(props: Props) {
-  const { onBoardRemoved } = useContext(OverviewStoreContext);
+  const { onBoardRemoved, onBoardColorChanged } = useContext(OverviewStoreContext);
   const navigate = useNavigate();
 
   const openBoard = () => {
@@ -38,6 +36,7 @@ function BoardTile(props: Props) {
       boardId: props.board.boardId!,
       color: hex,
     });
+    onBoardColorChanged(props.board.boardId, hex);
   };
 
   const rename = (title: string) => {
@@ -79,7 +78,7 @@ function BoardTile(props: Props) {
       },
       "Change color": () => {
         props.showModalInPlace(nativeEvent, ({ resolve }) => (
-          <ColorPickerAny
+          <ColorPicker
             onChange={(color: { hex: string }) => {
               setColor(color);
               resolve();
@@ -104,16 +103,18 @@ function BoardTile(props: Props) {
     });
   };
 
+  const color = props.board.color || Color(theme.baseColor).alpha(0.2).string();
+
   return (
     <Container
       {...onSelect(openBoard)}
-      $color={props.board.color || Color(theme.baseColor).alpha(0.2).string()}
+      $color={color}
       onContextMenu={openMenu}
     >
       <Title>{props.board.title || <Weak>Untitled</Weak>}</Title>
       <TopRight>
         {props.shortcut != null && (
-          <ShortcutIcon>{props.shortcut}</ShortcutIcon>
+          <ShortcutIcon $color={color}>{props.shortcut}</ShortcutIcon>
         )}
         <MenuIcon $dark={!props.board.color} onClick={openMenu} />
       </TopRight>
@@ -125,20 +126,19 @@ export default withModal(withConfirm(withStatus(withMenu(BoardTile))));
 
 const Container = styled.button.attrs({
   type: "button",
-})<{ $color: string }>`
+}) <{ $color: string }>`
   all: unset;
   outline: revert;
   width: 100%;
   box-sizing: border-box;
 
-  -webkit-backdrop-filter: blur(5px);
   backdrop-filter: blur(5px);
 
   cursor: pointer;
   padding: 10px;
   display: flex;
   background: ${(p) => p.$color};
-  color: white;
+  color: ${p => Color(p.$color).darken(0.7).isDark() ? "white" : "black"};
   border-radius: 4px;
   margin-right: 10px;
   margin-bottom: 10px;
@@ -181,8 +181,8 @@ const TopRight = styled.div`
   gap: 7px;
 `;
 
-const ShortcutIcon = styled.div`
-  color: #aaa;
+const ShortcutIcon = styled.div<{ $color: string }>`
+  color: ${p => Color(p.$color).darken(0.7).isDark() ? "white" : "black"};
   padding: 4px 5px;
   border: 1px solid #ddd;
   border-radius: 5px;

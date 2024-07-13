@@ -5,6 +5,7 @@ export const OverviewStoreContext = createContext({
   onBoardRemoved(_board: Board) {},
   onBoardAdded(_board: Board) {},
   setIsAddingBoard(_input: boolean) {},
+  onBoardColorChanged(_boardId: string, _input: string) {},
   isAddingBoard: false,
   boards: [] as Board[],
 });
