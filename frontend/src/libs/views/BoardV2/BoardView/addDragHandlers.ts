@@ -96,28 +96,51 @@ export default function addDragHandlers<Context>(options: {
 
     if (options.shouldIgnoreStart(touch.target)) return;
 
+    const initialCoords = {
+      x: touch.clientX,
+      y: touch.clientY,
+    };
+
     const touchIdentifier = touch.identifier;
 
-    document.addEventListener("contextmenu", onContextMenu);
-    document.addEventListener("touchend", onInitialTouchEnd);
+    const timeout = setTimeout(() => {
+      onDelayedTouchStart();
+    }, 400);
 
-    function onInitialTouchEnd() {
-      document.removeEventListener("contextmenu", onContextMenu);
-      document.removeEventListener("touchend", onInitialTouchEnd);
+    const preventDefault = (e: MouseEvent) => {
+      e.preventDefault();
+    };
+
+    const removeContextMenuListener = () => {
+      document.removeEventListener("contextmenu", preventDefault);
+      document.removeEventListener("touchend", removeContextMenuListener);
+    };
+
+    document.addEventListener("contextmenu", preventDefault);
+    document.addEventListener("touchmove", onInitialTouchMove);
+    document.addEventListener("touchend", removeContextMenuListener);
+
+    function stopInitialListener() {
+      document.removeEventListener("touchmove", onInitialTouchMove);
+      document.removeEventListener("touchend", stopInitialListener);
+      clearTimeout(timeout);
     }
 
-    function onContextMenu(contextMenuEvent: MouseEvent) {
-      contextMenuEvent.preventDefault();
+    function onInitialTouchMove(e: TouchEvent) {
+      const currentTouch = Array.from(e.touches).find(
+        (it) => it.identifier === touchIdentifier
+      );
+      if (!currentTouch || distanceBetween(initialCoords, { x: currentTouch.clientX, y: currentTouch.clientY }) > 5) {
+        stopInitialListener();
+      }
+    }
 
-      document.removeEventListener("contextmenu", onContextMenu);
-      document.removeEventListener("touchend", onInitialTouchEnd);
+    function onDelayedTouchStart() {
+      stopInitialListener();
 
       const moveContext = initializeDrag({
         startNow: true,
-        initialCoords: {
-          x: touch.clientX,
-          y: touch.clientY,
-        },
+        initialCoords,
         cleanup: () => {
           document.removeEventListener("touchmove", onTouchMove);
           document.removeEventListener("touchend", onTouchEnd);
