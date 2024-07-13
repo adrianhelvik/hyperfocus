@@ -1,12 +1,12 @@
+import { Button, Container, Content, Form, Heading, LogoWrapper, Message } from "./components";
 import { FormEvent, useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { useAuth } from "../../authContext";
+import { Logo } from "src/libs/ui/Header";
 import * as theme from "src/libs/theme";
-import { Logo } from "../../ui/Header";
 import { observer } from "mobx-react";
 import Input from "src/libs/ui/Input";
 import sleep from "src/libs/sleep";
-import { Button, Container, Content, Form, LogoWrapper, Message } from "./components";
 
 export default observer(function Login() {
   const [username, setUsername] = useState("");
@@ -52,6 +52,7 @@ export default observer(function Login() {
             <Logo pageColor="#333" />
           </LogoWrapper>
           <Form onSubmit={onSubmit}>
+            <Heading>Hello there!</Heading>
             <Input
               size={25}
               color={theme.brightBlue}

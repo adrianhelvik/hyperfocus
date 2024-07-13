@@ -1,4 +1,4 @@
-import { Button, Container, Content, Form, LogoWrapper, Message } from "./components";
+import { Button, Container, Content, Form, Heading, LogoWrapper, Message } from "./components";
 import api, { setPersistentHeader } from "src/libs/api";
 import { useNavigate } from "react-router-dom";
 import { FormEvent, useState } from "react";
@@ -46,6 +46,7 @@ export default function Register() {
           <Logo pageColor="#333" />
         </LogoWrapper>
         <Form onSubmit={onSubmit}>
+          <Heading>Nice to meet you!</Heading>
           <Input
             color={theme.brightBlue}
             placeholder="Email"

@@ -6,7 +6,7 @@ export const LogoWrapper = styled.div`
     display: flex;
     align-items: center;
     justify-content: center;
-    margin-bottom: 60px;
+    margin-bottom: 30px;
     margin-top: 50px;
 `;
 
@@ -91,3 +91,10 @@ export const Button = styled.button<{ $secondary?: boolean }>`
   `}
 `;
 
+export const Heading = styled.h1`
+  font-size: 16px;
+  font-weight: 600;
+  letter-spacing: 1px;
+  text-align: center;
+  opacity: 0.8;
+`;
