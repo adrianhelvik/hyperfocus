@@ -36,7 +36,6 @@
 }
 
 .deck {
-  color: black;
   overflow-x: hidden;
   scroll-snap-align: center;
   flex-shrink: 0;
@@ -239,6 +238,7 @@
 
 .card {
   background-color: transparent;
+  color: black;
   cursor: text;
   line-height: 1.5;
 
