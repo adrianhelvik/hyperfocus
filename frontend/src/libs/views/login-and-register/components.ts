@@ -4,7 +4,12 @@ import Color from "color";
 
 export const GlobalStyle = createGlobalStyle`
   body {
-      background: ${theme.smoothGradient};
+      background: ${theme.smoothGradientMellow};
+  }
+  @media (hover: none) {
+    body {
+        background: ${theme.smoothGradient};
+    }
   }
 `;
 

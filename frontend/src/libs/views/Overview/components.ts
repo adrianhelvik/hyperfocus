@@ -5,6 +5,6 @@ console.log(theme.smoothGradient);
 
 export const GlobalStyle = createGlobalStyle`
     body {
-        background: ${theme.smoothGradient};
+        background: ${theme.smoothGradientMellow};
     }
 `;
