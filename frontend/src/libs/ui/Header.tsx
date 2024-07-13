@@ -16,7 +16,7 @@ type Props = {
 export default function Header(props: Props) {
   const location = useLocation();
   const isInApp = /^\/(app|board)($|\/)/.test(location.pathname);
-  const pageColor = props.color || theme.radiantPurple;
+  const pageColor = props.color || theme.baseColor;
   const auth = useAuth();
 
   useAutoEffect(() => {

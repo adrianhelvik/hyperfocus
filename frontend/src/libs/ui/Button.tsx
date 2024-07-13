@@ -2,7 +2,7 @@ import styled, { css } from "styled-components";
 import * as theme from "src/libs/theme";
 
 export default styled.button<{ $danger?: boolean; $gray?: boolean }>`
-  background-color: ${theme.radiantPurple};
+  background-color: ${theme.baseColor};
   border-radius: 4px;
   padding: 7px 10px;
   color: white;

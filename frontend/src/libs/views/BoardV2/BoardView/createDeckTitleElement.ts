@@ -26,7 +26,6 @@ export default function createDeckTitleElement({
   deckElement: HTMLElement;
   child: Deck | Portal;
 }) {
-  let dragInProgress = false;
   let initialIndex = -1;
 
   let deckTitleNode: HTMLHeadingElement;
@@ -136,7 +135,6 @@ export default function createDeckTitleElement({
   function onDragStart(clientX: number, clientY: number) {
     cleanupHooks.run();
 
-    dragInProgress = true;
     root.classList.add(classes.isMovingDeck);
 
     const rect = deckElement.getBoundingClientRect();
@@ -244,7 +242,6 @@ export default function createDeckTitleElement({
           deckElement.style.removeProperty("width");
           deckElement.style.removeProperty("height");
           root.classList.remove(classes.isMovingDeck);
-          dragInProgress = false;
         }),
         values: {
           x: [x, placeholderRect.left],

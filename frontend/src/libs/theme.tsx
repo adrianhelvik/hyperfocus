@@ -1,6 +1,6 @@
 import Color from "color";
 
-export const radiantPurple = `rgb(114, 32, 222)`;
+// export const baseColor = `rgb(114, 32, 222)`;
 export const ui2 = `rgb(150, 84, 236)`;
 export const ui3 = `rgb(241, 216, 44)`;
 

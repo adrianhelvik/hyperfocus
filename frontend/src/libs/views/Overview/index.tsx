@@ -55,7 +55,14 @@ export default withMenu(function Overview(props: Props) {
     setBoards((boards) => boards.filter((it) => it.boardId !== board.boardId));
   });
 
+  const onBoardColorChanged = () => {
+    api.ownBoards().then(({ boards }) => {
+      setBoards(boards);
+    });
+  };
+
   const contextValue = useAutoMemo({
+    onBoardColorChanged,
     setIsAddingBoard,
     onBoardRemoved,
     isAddingBoard,
