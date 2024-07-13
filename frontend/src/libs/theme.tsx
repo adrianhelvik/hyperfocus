@@ -42,7 +42,7 @@ let stars: string[] = [];
 const opacityDeterminant = 18;
 const radiusIncrease = 3.7;
 const baseShineHeight = 0;
-const shineHeightRand = 4;
+const shineHeightRand = 6;
 const max = 50;
 const i0 = 15;
 
