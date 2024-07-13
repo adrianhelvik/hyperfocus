@@ -16,7 +16,7 @@ type Props = {
 export default function Header(props: Props) {
   const location = useLocation();
   const isInApp = /^\/(app|board)($|\/)/.test(location.pathname);
-  const pageColor = props.color || theme.ui1;
+  const pageColor = props.color || theme.radiantPurple;
   const auth = useAuth();
 
   useAutoEffect(() => {
@@ -45,8 +45,8 @@ const UndecoratedLink = styled(Link)`
 `;
 
 const Container = styled.div<{ $color: string }>`
-  background-color: ${(p) => p.$color};
-  color: ${(p) => (Color(p.$color).isDark() ? "white" : "black")};
+  background-color: transparent;
+  color: white;
   position: sticky;
   top: 0;
   padding: 15px;

@@ -114,7 +114,7 @@ const height = 140;
 const width = 200;
 
 const Container = styled.div<{ $open: boolean; $mounted: boolean }>`
-  background-color: ${theme.ui1};
+  background-color: ${theme.radiantPurple};
   position: fixed;
   bottom: 20px;
   right: 20px;

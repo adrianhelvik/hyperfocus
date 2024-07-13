@@ -23,7 +23,7 @@ type Props = {
 export default function Input(props: Props) {
   const [showPassword, setShowPassword] = useState(false);
   const [element, setElement] = useState<HTMLInputElement>();
-  const color = props.color ?? theme.ui1;
+  const color = props.color ?? theme.radiantPurple;
 
   const type = useMemo(() => {
     if (showPassword) return "text";
@@ -112,11 +112,11 @@ const InputField = styled.input<{ $forPassword: boolean; $colored: boolean, $col
   width: 100%;
   &:focus {
     outline: none;
-    border-color: ${p => p.$color || theme.ui1};
+    border-color: ${p => p.$color || theme.radiantPurple};
   }
   &:focus + * {
     transform: translateY(calc(-100% - 7px)) scale(0.7) translateX(-5px);
-    color: ${p => p.$color || theme.ui1};
+    color: ${p => p.$color || theme.radiantPurple};
   }
   ${(p) =>
     p.$forPassword &&
@@ -126,7 +126,7 @@ const InputField = styled.input<{ $forPassword: boolean; $colored: boolean, $col
   ${(p) =>
     p.$colored &&
     css`
-      border-color: ${p.$color || theme.ui1};
+      border-color: ${p.$color || theme.radiantPurple};
     `}
 `;
 
@@ -165,6 +165,6 @@ const Icon = styled.i<{ $colored: boolean, $color: string }>`
   ${(p) =>
     p.$colored &&
     css`
-      color: ${p.$color || theme.ui1};
+      color: ${p.$color || theme.radiantPurple};
     `}
 `;

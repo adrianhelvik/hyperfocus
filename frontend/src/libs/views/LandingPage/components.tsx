@@ -1,13 +1,21 @@
 import { Link } from "react-router-dom";
-import styled from "styled-components";
+import styled, { createGlobalStyle } from "styled-components";
 import * as theme from "../../theme";
+import Color from "color";
+
+export const GlobalStyle = createGlobalStyle`
+  body {
+    background: ${theme.smoothGradient};
+    color: ${Color(theme.brightBlue).mix(Color("#555"), 0.2).hex()};
+  }
+`
 
 export const Title = styled.h1`
   text-align: center;
   font-weight: 300;
   font-size: 70px;
   line-height: 1.57;
-  color: #333;
+  color: white;
   pointer-events: none;
 
   font-size: min(70px, 10vw);
@@ -37,9 +45,9 @@ export const Particles = styled.div`
 
 export const Register = styled(Link)`
   font-size: 30px;
-  background-color: ${theme.ui1};
-  border: 4px solid ${theme.ui1};
-  color: white;
+  background-color: ${Color(theme.brightBlue).mix(Color("black"), 0.1).hex()};
+  border: 4px solid ${theme.brightBlue};
+  color: ${Color(theme.brightBlue).darken(0.9).string()};
   border: 0;
   border-radius: 4px;
   padding: 10px 20px;
@@ -52,7 +60,6 @@ export const Register = styled(Link)`
 `;
 
 export const Content = styled.div`
-  background: radial-gradient(rgba(255, 255, 255, 1), rgba(255, 255, 255, 0));
   padding: 60px;
   padding-bottom: 120px;
 `;
@@ -64,6 +71,11 @@ export const LoginWrapper = styled.div`
 `;
 
 export const Login = styled(Link)`
-  color: ${theme.ui1};
+  color: white;
+  pointer-events: auto;
+`;
+
+export const Anchor = styled.a`
+  color: white;
   pointer-events: auto;
 `;

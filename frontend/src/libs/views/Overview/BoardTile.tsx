@@ -107,7 +107,7 @@ function BoardTile(props: Props) {
   return (
     <Container
       {...onSelect(openBoard)}
-      $color={props.board.color || Color("white").alpha(0.3).string()}
+      $color={props.board.color || Color("white").alpha(0.2).string()}
       onContextMenu={openMenu}
     >
       <Title>{props.board.title || <Weak>Untitled</Weak>}</Title>

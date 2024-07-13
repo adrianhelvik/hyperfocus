@@ -1,6 +1,6 @@
 import Color from "color";
 
-export const ui1 = `rgb(114, 32, 222)`;
+export const radiantPurple = `rgb(114, 32, 222)`;
 export const ui2 = `rgb(150, 84, 236)`;
 export const ui3 = `rgb(241, 216, 44)`;
 
@@ -40,7 +40,7 @@ export const bg2 = `rgb(227, 226, 229)`;
 let stars: string[] = [];
 
 const opacityDeterminant = 18;
-const radiusIncrease = 3.5;
+const radiusIncrease = 1;
 const baseShineHeight = 0;
 const shineHeightRand = 6;
 const max = 60;
@@ -67,6 +67,7 @@ for (let i = i0; i < max; i++) {
 
 export const smoothGradient = [
   ...stars,
+  // `linear-gradient(${Color(brightBlue).darken(0.9).string()}, ${Color(brightBlue).darken(0.0).string()})`,
   `linear-gradient(90deg, rgba(0,0,0,0), ${Color(brightBlue).alpha(0.1).string()})`,
   `linear-gradient(black, ${Color(brightBlue).darken(0.9).hex()})`,
 ].join(", ");

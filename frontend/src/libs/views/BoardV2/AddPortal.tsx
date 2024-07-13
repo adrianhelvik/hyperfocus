@@ -155,7 +155,7 @@ const Tile = styled.button.attrs({
   ${(p) =>
     p.$selected &&
     css`
-      background: ${theme.ui1};
+      background: ${theme.radiantPurple};
       color: white;
     `};
 

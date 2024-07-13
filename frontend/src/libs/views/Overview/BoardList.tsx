@@ -92,7 +92,7 @@ export default function BoardList() {
 const Container = styled.div`
   max-width: 960px;
   margin: 0 auto;
-  margin-top: 40px;
+  margin-top: 25px;
 `;
 
 const Grid = styled.div`
@@ -134,7 +134,7 @@ const PlusButton = styled.button`
   padding-left: 16px;
 
   &:hover {
-    background-color: ${theme.ui1};
+    background-color: ${theme.radiantPurple};
     box-shadow: ${theme.shadows[1]};
   }
 
@@ -161,7 +161,7 @@ const PlusButton = styled.button`
 const Title = styled.h2`
   margin: 0;
   font-weight: 400;
-  font-size: 25px;
+  font-size: 20px;
   color: white;
   letter-spacing: 0.1rem;
 `;

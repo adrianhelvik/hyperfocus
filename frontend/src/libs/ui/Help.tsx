@@ -69,7 +69,7 @@ const FloatingHelp = styled.div`
   padding: 10px;
   box-shadow: ${theme.shadows[1]};
   border-radius: 4px;
-  background-color: ${theme.ui1};
+  background-color: ${theme.radiantPurple};
   color: white;
   z-index: ${zIndexes.tooltip};
 
@@ -84,6 +84,6 @@ const FloatingHelp = styled.div`
 const Icon = styled.span`
   cursor: help;
   &:hover {
-    color: ${theme.ui1};
+    color: ${theme.radiantPurple};
   }
 `;

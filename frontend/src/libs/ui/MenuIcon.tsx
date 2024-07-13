@@ -44,7 +44,7 @@ const Icon = styled.i<{ $dark?: boolean }>`
       color: white;
 
       &:hover {
-        background-color: ${theme.ui1};
+        background-color: ${theme.radiantPurple};
       }
     `};
 `;

@@ -4,15 +4,19 @@ import React from "react";
 
 import {
   LoginWrapper,
-  Particles,
+  GlobalStyle,
   Register,
   Content,
   Section,
+  Anchor,
   Login,
   Title,
 } from "./components";
+import Color from "color";
 
 type Props = WithAuthProps;
+
+(window as any).Color = Color;
 
 class LandingPage extends React.Component<Props> {
   particles = React.createRef();
@@ -22,7 +26,7 @@ class LandingPage extends React.Component<Props> {
       (window as any).particlesJS.load(
         "particles-js",
         "particles.json",
-        function () {
+        function() {
           console.log("callback - particles.js config loaded");
         }
       );
@@ -33,8 +37,8 @@ class LandingPage extends React.Component<Props> {
 
   render() {
     return (
-      <React.Fragment>
-        <Particles id="particles-js" />
+      <>
+        <GlobalStyle />
         <Header />
         <Section>
           <Content>
@@ -48,16 +52,16 @@ class LandingPage extends React.Component<Props> {
             </LoginWrapper>
             <LoginWrapper>
               Or check out on{" "}
-              <a
+              <Anchor
                 href="https://github.com/adrianhelvik/subtask"
                 style={{ pointerEvents: "auto" }}
               >
                 GitHub
-              </a>
+              </Anchor>
             </LoginWrapper>
           </Content>
         </Section>
-      </React.Fragment>
+      </>
     );
   }
 }
