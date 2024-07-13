@@ -2,6 +2,7 @@ const AUTO_SCROLL_OFFSET = 100;
 
 export default function startScrollWhenNearEdges(root: HTMLElement) {
   let scrollDirection: "NONE" | "LEFT" | "RIGHT" = "NONE";
+  let multiplier = 1;
 
   const updateDirection = (clientX: number) => {
     if (clientX < AUTO_SCROLL_OFFSET) scrollDirection = "LEFT";
@@ -12,6 +13,7 @@ export default function startScrollWhenNearEdges(root: HTMLElement) {
 
   const onMouseMove = (e: MouseEvent) => {
     updateDirection(e.clientX);
+    multiplier = 3;
   };
 
   const onTouchMove = (e: TouchEvent) => {
@@ -20,6 +22,7 @@ export default function startScrollWhenNearEdges(root: HTMLElement) {
     } else {
       scrollDirection = "NONE";
     }
+    multiplier = 1;
   };
 
   document.addEventListener("mousemove", onMouseMove);
@@ -27,10 +30,10 @@ export default function startScrollWhenNearEdges(root: HTMLElement) {
 
   const scrollInterval = setInterval(() => {
     if (scrollDirection === "LEFT") {
-      root.scrollBy({ left: -3 });
+      root.scrollBy({ left: -multiplier });
     }
     if (scrollDirection === "RIGHT") {
-      root.scrollBy({ left: 2 });
+      root.scrollBy({ left: multiplier });
     }
   });
 
