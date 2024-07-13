@@ -1,6 +1,8 @@
 import { distanceBetween } from "./distanceBetween";
 import startScrollWhenNearEdges from "./startScrollWhenNearEdges";
 
+let bodyUserSelectNoneTimeout: ReturnType<typeof setTimeout> | null = null;
+
 export default function addDragHandlers<Context>(options: {
   scrollContainer: HTMLElement;
   element: HTMLElement;
@@ -110,6 +112,13 @@ export default function addDragHandlers<Context>(options: {
     const preventDefault = (e: MouseEvent) => {
       e.preventDefault();
     };
+
+    document.body.style.userSelect = "none";
+
+    if (bodyUserSelectNoneTimeout) clearTimeout(bodyUserSelectNoneTimeout);
+    bodyUserSelectNoneTimeout = setTimeout(() => {
+      document.body.style.userSelect = "";
+    }, 2000);
 
     const afterInitialTouch = () => {
       document.removeEventListener("contextmenu", preventDefault);
