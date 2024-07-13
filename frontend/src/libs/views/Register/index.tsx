@@ -121,7 +121,7 @@ const Message = styled.div`
   text-align: center;
   margin-top: 30px;
   letter-spacing: 1px;
-  height: 40px;
+  height: 30px;
 
   & strong {
     display: block;
