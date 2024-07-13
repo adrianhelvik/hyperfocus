@@ -1,6 +1,7 @@
 import clamp from "src/util/clamp";
 
 const AUTO_SCROLL_OFFSET = 100;
+const MULTIPLIER = 5;
 
 export default function startScrollWhenNearEdges(root: HTMLElement) {
   let scrollDirection: "NONE" | "LEFT" | "RIGHT" = "NONE";
@@ -8,10 +9,10 @@ export default function startScrollWhenNearEdges(root: HTMLElement) {
 
   const updateDirection = (clientX: number) => {
     if (clientX < AUTO_SCROLL_OFFSET) {
-      multiplier = clamp(clientX, 0, AUTO_SCROLL_OFFSET) / AUTO_SCROLL_OFFSET;
+      multiplier = (clamp(AUTO_SCROLL_OFFSET - clientX, 0, AUTO_SCROLL_OFFSET) / AUTO_SCROLL_OFFSET) ** 2 * MULTIPLIER;
       scrollDirection = "LEFT";
     } else if (clientX >= window.innerWidth - AUTO_SCROLL_OFFSET) {
-      multiplier = clamp(window.innerWidth - clientX, 0, AUTO_SCROLL_OFFSET) / AUTO_SCROLL_OFFSET;
+      multiplier = (clamp(AUTO_SCROLL_OFFSET - (window.innerWidth - clientX), 0, AUTO_SCROLL_OFFSET) / AUTO_SCROLL_OFFSET) ** 2 * MULTIPLIER;
       scrollDirection = "RIGHT";
     } else {
       scrollDirection = "NONE";
@@ -20,7 +21,6 @@ export default function startScrollWhenNearEdges(root: HTMLElement) {
 
   const onMouseMove = (e: MouseEvent) => {
     updateDirection(e.clientX);
-    multiplier = 3;
   };
 
   const onTouchMove = (e: TouchEvent) => {
@@ -29,7 +29,6 @@ export default function startScrollWhenNearEdges(root: HTMLElement) {
     } else {
       scrollDirection = "NONE";
     }
-    multiplier = 1;
   };
 
   document.addEventListener("mousemove", onMouseMove);
@@ -42,6 +41,7 @@ export default function startScrollWhenNearEdges(root: HTMLElement) {
     if (scrollDirection === "RIGHT") {
       root.scrollBy({ left: multiplier });
     }
+    console.log(multiplier);
   });
 
   return () => {
