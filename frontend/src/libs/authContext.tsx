@@ -52,17 +52,19 @@ export function ProvideAuth(props: { children: ReactNode }) {
     }
   });
 
-  const login = useAutoCallback(async (payload: { username: string; password: string }) => {
-    setStatus("pending");
-    const { sessionId } = await api.login(payload);
-    setPersistentHeader("Authorization", `Bearer ${sessionId}`);
-    await authenticate();
-  });
+  const login = useAutoCallback(
+    async (payload: { username: string; password: string }) => {
+      setStatus("pending");
+      const { sessionId } = await api.login(payload);
+      setPersistentHeader("Authorization", `Bearer ${sessionId}`);
+      await authenticate();
+    }
+  );
 
   const logout = async (): Promise<void> => {
     await api.logout();
     window.location.href = "/";
-  }
+  };
 
   const auth = useAutoMemo({
     authenticate,
@@ -72,8 +74,6 @@ export function ProvideAuth(props: { children: ReactNode }) {
   });
 
   return (
-    <AuthContext.Provider value={auth}>
-      {props.children}
-    </AuthContext.Provider>
+    <AuthContext.Provider value={auth}>{props.children}</AuthContext.Provider>
   );
 }

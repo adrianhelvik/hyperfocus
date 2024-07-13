@@ -5,6 +5,7 @@ import Input from "src/libs/ui/Input";
 import { useState } from "react";
 import api from "src/libs/api";
 import { Board } from "src/libs/types";
+import { useEmitBoardChildAdded } from "./context";
 
 type Props = {
   board: Board;
@@ -16,6 +17,8 @@ function AddDeck(props: Props) {
   const [loading, setLoading] = useState(false);
   const [title, setTitle] = useState("");
 
+  const emitBoardChildAdded = useEmitBoardChildAdded();
+
   const setTitleFromEvent = (event: { target: { value: string } }) => {
     setTitle(event.target.value);
   };
@@ -24,13 +27,13 @@ function AddDeck(props: Props) {
     if (loading) return;
     setLoading(true);
     event.preventDefault();
-    await api.addDeck({
+    const deck = await api.addDeck({
       boardId: props.board.boardId,
       title: title,
       index: props.index!,
     });
-    // TODO: Add new deck to board instead of reloading in the parent component.
     props.resolve();
+    emitBoardChildAdded(deck);
   };
 
   return (
@@ -54,8 +57,7 @@ function AddDeck(props: Props) {
 
 export default AddDeck;
 
-const Container = styled.form`
-`;
+const Container = styled.form``;
 
 const Title = styled.h2`
   margin: 0;

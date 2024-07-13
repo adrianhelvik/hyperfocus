@@ -14,7 +14,7 @@ type Props = {
 };
 
 export default function Header(props: Props) {
-  const location = useLocation()
+  const location = useLocation();
   const isInApp = /^\/(app|board)($|\/)/.test(location.pathname);
   const pageColor = props.color || theme.ui1;
   const auth = useAuth();
@@ -35,9 +35,7 @@ export default function Header(props: Props) {
       {auth.status === "success" && location.pathname === "/app" && (
         <Logout onClick={auth.logout}>Log out</Logout>
       )}
-      {auth.status === "failure" && (
-        <Login to="/login">Log in</Login>
-      )}
+      {auth.status === "failure" && <Login to="/login">Log in</Login>}
     </Container>
   );
 }

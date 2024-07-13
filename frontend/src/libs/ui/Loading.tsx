@@ -1,9 +1,12 @@
 import * as theme from "../theme";
 import React from "react";
 
-const style = (e: HTMLElement | undefined | null, s: Partial<CSSStyleDeclaration>) => {
+const style = (
+  e: HTMLElement | undefined | null,
+  s: Partial<CSSStyleDeclaration>
+) => {
   if (e) Object.assign(e.style, s);
-  }
+};
 
 class Loading extends React.Component {
   element: HTMLDivElement | null = null;

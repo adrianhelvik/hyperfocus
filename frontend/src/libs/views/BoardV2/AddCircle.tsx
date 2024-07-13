@@ -1,17 +1,56 @@
-import withEvents, { WithEventsProps } from "src/libs/util/withEvents";
 import styled, { keyframes, css } from "styled-components";
+import useOnKeyDown from "src/util/useOnKeyDown";
 import { useAutoEffect } from "hooks.macro";
-import React, { useState } from "react";
+import useModal from "src/libs/useModal";
 import * as theme from "src/libs/theme";
+import { useBoard } from "./context";
+import AddPortal from "./AddPortal";
+import { useState } from "react";
+import AddDeck from "./AddDeck";
 
-type Props = WithEventsProps & {
-  children: React.ReactNode;
-};
-
-function AddCircle(props: Props) {
+export default function AddCircle() {
+  const [container, setContainer] = useState<HTMLElement | null>(null);
+  const { showModal, renderModal } = useModal();
   const [mounted, setMounted] = useState(false);
   const [open, setOpen] = useState(false);
-  const [container, setContainer] = useState<HTMLElement | null>(null);
+  const board = useBoard();
+
+  const addDeck = async () => {
+    if (!board) return;
+    showModal((props) => <AddDeck {...props} board={board} />);
+  };
+
+  const addPortal = async () => {
+    if (!board) return;
+    await showModal((props) => <AddPortal {...props} index={null} />, {
+      width: 700,
+    });
+  };
+
+  useOnKeyDown((e) => {
+    if (open) {
+      if (e.key === "Escape") {
+        setOpen(false);
+      }
+      if (!e.ctrlKey && !e.metaKey && e.key === "d") {
+        e.preventDefault();
+        setOpen(false);
+        addDeck();
+      }
+      if (!e.ctrlKey && !e.metaKey && e.key === "p") {
+        e.preventDefault();
+        setOpen(false);
+        addPortal();
+      }
+    } else {
+      if (e.target instanceof HTMLInputElement) return;
+      if (e.target instanceof HTMLTextAreaElement) return;
+
+      if (!e.ctrlKey && !e.metaKey && e.key === "+") {
+        setOpen(true);
+      }
+    }
+  });
 
   useAutoEffect(() => {
     const timeout = setTimeout(() => {
@@ -26,7 +65,6 @@ function AddCircle(props: Props) {
     if (!open) return;
 
     const onDocumentClick = (event: MouseEvent) => {
-      console.log("odc");
       if (!(event.target instanceof Element)) {
         return;
       }
@@ -49,24 +87,30 @@ function AddCircle(props: Props) {
 
   return (
     <Container
-      onClick={() => setOpen(open => !open)}
+      onClick={() => setOpen((open) => !open)}
       ref={(e) => setContainer(e)}
       $mounted={mounted}
       $open={open}
     >
       <Content $open={open} $mounted={mounted}>
-        {props.children}
+        <AddItem onClick={addDeck}>
+          <AddItemText>Add deck</AddItemText>
+          <AddItemShortcut>d</AddItemShortcut>
+        </AddItem>
+        <AddItem onClick={addPortal}>
+          <AddItemText>Add portal</AddItemText>
+          <AddItemShortcut>p</AddItemShortcut>
+        </AddItem>
       </Content>
       <VerticalLine $mounted={mounted} $open={open} />
       <HorizontalLine $mounted={mounted} $open={open} />
+      {renderModal()}
     </Container>
   );
 }
 
-export default withEvents(AddCircle);
-
 const diameter = 60;
-const height = 110;
+const height = 140;
 const width = 200;
 
 const Container = styled.div<{ $open: boolean; $mounted: boolean }>`
@@ -179,4 +223,35 @@ const Content = styled.div<{ $open: boolean; $mounted: boolean }>`
   transition: 0.3s;
   opacity: ${(p) => (p.$open ? 1 : 0)};
   pointer-events: ${(p) => !p.$open && "none"};
+  padding: 10px;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+`;
+
+const AddItem = styled.div`
+  color: white;
+  background-color: rgba(255, 255, 255, 0.1);
+  cursor: pointer;
+  transition: 0.3s;
+  padding: 10px;
+  height: 55px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  border-radius: 5px;
+
+  &:hover {
+    background: ${theme.ui2};
+  }
+`;
+
+const AddItemText = styled.div``;
+
+const AddItemShortcut = styled.div`
+  background-color: rgba(255, 255, 255, 0.3);
+  border: 1px solid white;
+  border-radius: 5px;
+  padding: 5px 10px;
+  font-weight: 100;
 `;

@@ -28,8 +28,11 @@ export default function withConfirm<Props extends Record<string, any>>(
 ): React.ComponentType<Props> {
   function WithConfirm(props: Props) {
     const [placement, setPlacement] = useState<null | Coord>(null);
-    const [Template, setTemplate] = useState<null | React.ComponentType<ConfirmTemplateProps>>(null);
-    const [resolve, setResolve] = useState<((result: boolean) => void) | null>(null);
+    const [Template, setTemplate] =
+      useState<null | React.ComponentType<ConfirmTemplateProps>>(null);
+    const [resolve, setResolve] = useState<((result: boolean) => void) | null>(
+      null
+    );
 
     const confirm = (Template: React.ComponentType<ConfirmTemplateProps>) => {
       setTemplate(() => Template);
@@ -37,7 +40,7 @@ export default function withConfirm<Props extends Record<string, any>>(
         setResolve(() => resolve);
       });
       return promise;
-    }
+    };
 
     const confirmInPlace = (
       event: MouseEvent,
@@ -53,26 +56,26 @@ export default function withConfirm<Props extends Record<string, any>>(
         y: event.clientY,
       });
       return promise;
-    }
+    };
 
     const yes = () => {
       if (!resolve) return;
       resolve(true);
       setTemplate(null);
       setPlacement(null);
-    }
+    };
 
     const no = () => {
       if (!resolve) return;
       resolve(false);
       setTemplate(null);
       setPlacement(null);
-    }
+    };
 
     return (
       <>
         <Component
-          {...(props)}
+          {...props}
           confirm={confirm}
           confirmInPlace={confirmInPlace}
         />

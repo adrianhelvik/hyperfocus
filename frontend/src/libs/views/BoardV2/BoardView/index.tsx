@@ -1,7 +1,11 @@
 import { replaceWithInputAndFocusAtCaretPosition } from "./replaceWithInputAndFocusAtCaretPosition";
+import { getDeckColorCSSVariables } from "./getDeckColorCSSVariables";
 import { possiblyPerformHoverSwap } from "./possiblyPerformHoverSwap";
+import startScrollWhenNearEdges from "./startScrollWhenNearEdges";
+import { makeTextAreaAutoGrow } from "./makeTextAreaAutoGrow";
 import createAutoGrowTextarea from "./createAutoGrowTextarea";
 import { Board, Card, Deck, Portal } from "src/libs/types";
+import createDeckTitleNode from "./createDeckTitleNode";
 import { isKeypressElement } from "./isKeypressElement";
 import { findClosestDeck } from "./findClosestDeck";
 import { distanceBetween } from "./distanceBetween";
@@ -11,13 +15,10 @@ import { horizontalMiddle } from "./domUtils";
 import { CleanupHooks } from "./CleanupHooks";
 import classes from "./styles.module.css";
 import onlyOnceFn from "./onlyOnceFn";
-import animate from "./animate";
 import api from "src/libs/api";
-import Color from "color";
+import { el } from "./el";
 
 const CARD_ANIMATION_TIME = 300;
-const DECK_ANIMATION_TIME = 300;
-const AUTO_SCROLL_OFFSET = 100;
 
 export class BoardView {
   private cleanupHooks = new CleanupHooks();
@@ -26,16 +27,10 @@ export class BoardView {
   private scrollSnapTimeout: ReturnType<typeof setTimeout> | null = null;
   private cancelSnapToDeck: (() => void) | null = null;
 
-  constructor(private root: HTMLElement, private board: Board) {
-    addEventListener("subtask:addDeck", this.onDeckAdded);
+  constructor(private root: HTMLElement, private readonly board: Board) {
     this.cleanup();
     this.buildInterface();
     document.addEventListener("keydown", this.onKeydown);
-  }
-
-  onDeckAdded = () => {
-    this.cleanup();
-    this.buildInterface();
   }
 
   unmount() {
@@ -43,8 +38,6 @@ export class BoardView {
   }
 
   private cleanup() {
-    removeEventListener("subtask:addDeck", this.onDeckAdded);
-
     this.onDestroyCallbacks.forEach((fn) => fn());
     this.onDestroyCallbacks = [];
     this.root.innerHTML = "";
@@ -52,7 +45,7 @@ export class BoardView {
     document.body.classList.remove(classes.body);
     document.removeEventListener("keydown", this.onKeydown);
     if (this.scrollSnapTimeout) clearTimeout(this.scrollSnapTimeout);
-    if (this.cancelSnapToDeck) this.cancelSnapToDeck()
+    if (this.cancelSnapToDeck) this.cancelSnapToDeck();
   }
 
   private onKeydown = (e: KeyboardEvent) => {
@@ -62,17 +55,28 @@ export class BoardView {
       }
     }
 
-    if (!isKeypressElement(e.target) || (e.target && 'value' in e.target && !e.target.value)) {
+    if (
+      !isKeypressElement(e.target) ||
+      (e.target && "value" in e.target && !e.target.value)
+    ) {
       if (e.metaKey || e.ctrlKey) return;
 
       if (e.key === "ArrowRight") {
-        const deckIndex = this.deckElements.findIndex(it => document.activeElement == null || it.contains(document.activeElement));
+        const deckIndex = this.deckElements.findIndex(
+          (it) =>
+            document.activeElement == null ||
+            it.contains(document.activeElement)
+        );
         const sibling = this.deckElements[deckIndex + 1];
         this.focusAddCardInputInDeck(sibling);
       }
 
       if (e.key === "ArrowLeft") {
-        let deckIndex = this.deckElements.findIndex(it => document.activeElement == null || it.contains(document.activeElement));
+        let deckIndex = this.deckElements.findIndex(
+          (it) =>
+            document.activeElement == null ||
+            it.contains(document.activeElement)
+        );
         if (deckIndex === -1) deckIndex = this.deckElements.length - 1;
         const sibling = this.deckElements[deckIndex - 1];
         this.focusAddCardInputInDeck(sibling);
@@ -86,7 +90,7 @@ export class BoardView {
         // TODO
       }
     }
-  }
+  };
 
   private showSearchUI() {
     // TODO: Implement this
@@ -112,58 +116,63 @@ export class BoardView {
     document.body.classList.add(classes.body);
 
     for (const child of this.board.children) {
-      this.root.append(this.createDeckElement(child));
+      const element = this.createDeckElement(child);
+      this.appendDeckElement(element);
     }
   }
 
+  onDeckAdded(deck: Deck) {
+    const element = this.createDeckElement(deck);
+    this.appendDeckElement(element);
+    element.scrollIntoView({
+      behavior: "smooth",
+      inline: "center",
+    });
+  }
+
+  private appendDeckElement(element: HTMLDivElement) {
+    this.root.append(element);
+    this.deckElements.push(element);
+  }
+
   private createDeckElement(child: Deck | Portal) {
-    const deckElement = document.createElement("div");
-    this.deckElements.push(deckElement);
-    deckElement.className = classes.deck;
+    const deck = child.type === "deck" ? child : child.target;
 
-    const deck =
-      child.type === "deck"
-        ? child
-        : child.target;
+    const deckElement = el("div", {
+      className: classes.deck,
+      dataset: {
+        deckId: deck.deckId,
+        childType: child.type,
+      },
+      style: getDeckColorCSSVariables(child),
+    });
 
-    deckElement.append(
-      this.createDeckTitleNode({
+    const deckContentElement = el("div", {
+      className: classes.deckContent,
+    });
+    deckElement.append(deckContentElement);
+
+    deckContentElement.append(
+      createDeckTitleNode({
+        root: this.root,
         deckElement,
         child,
         cleanupHooks: this.cleanupHooks,
+        deckElements: this.deckElements,
       })
     );
 
-    let deckColor = deck.color || "#757575";
-
-    const isDark = Color(deckColor).darken(0.2).isDark();
-    const isVeryDark = Color(deckColor).lighten(0.2).isDark();
-
-    deckElement.style.setProperty("--deck-color", deckColor);
-    if (deck.color) deckElement.style.setProperty("--deck-color-or-unset", deckColor);
-    deckElement.style.setProperty(
-      "--deck-text-color",
-      isDark ? "white" : "black"
-    );
-    deckElement.style.setProperty(
-      "--deck-text-color",
-      isDark ? "white" : "black"
-    );
-    deckElement.style.setProperty(
-      "--deck-black-or-white-contrast",
-      isVeryDark ? "white" : "black"
-    );
-
-    deckElement.dataset.deckId = deck.deckId;
-
-    const cardsContainer = document.createElement("div");
-    cardsContainer.dataset.cardsContainer = deck.deckId;
-    cardsContainer.className = classes.cardsContainer;
-    deckElement.append(cardsContainer);
+    const cardsContainer = el("div", {
+      dataset: {
+        cardsContainer: deck.deckId,
+      },
+      className: classes.cardsContainer,
+    });
+    deckContentElement.append(cardsContainer);
 
     for (const card of deck?.cards ?? []) {
       cardsContainer.append(
-        this.buildCardForDeck({
+        this.createCardElement({
           root: this.root,
           card,
           deckElement,
@@ -172,7 +181,7 @@ export class BoardView {
       );
     }
 
-    deckElement.append(
+    deckContentElement.append(
       this.createAddCardInput({
         root: this.root,
         deckElement,
@@ -182,254 +191,6 @@ export class BoardView {
     );
 
     return deckElement;
-  }
-
-  private createDeckTitleNode({
-    child,
-    deckElement,
-    cleanupHooks,
-  }: {
-    child: Deck | Portal;
-    deckElement: HTMLElement;
-    cleanupHooks: CleanupHooks;
-  }) {
-    let initialIndex = -1;
-
-    const containerNode = document.createElement("div");
-    containerNode.className = classes.deckTitleContainer;
-
-    const deckTitleNode = document.createElement("h2");
-    deckTitleNode.tabIndex = 0;
-    deckTitleNode.className = classes.deckTitle;
-    setLinkableText(deckTitleNode, child.title);
-    containerNode.append(deckTitleNode);
-
-    deckTitleNode.onkeydown = e => {
-      if (e.key === "Enter") {
-        e.preventDefault();
-        startEditingDeckTitle(null);
-      }
-    };
-
-    const menuNode = document.createElement("button");
-    menuNode.type = "button";
-    menuNode.className = classes.deckTitleMenu;
-    containerNode.append(menuNode);
-
-    menuNode.onclick = () => {
-      // TODO: Show menu.
-    };
-
-    const iconNode = document.createElement("i");
-    iconNode.className = "material-icons";
-    iconNode.textContent = "menu";
-    menuNode.append(iconNode);
-
-    const titleInput = createAutoGrowTextarea();
-    titleInput.className = classes.deckTitleInput;
-
-    const startEditingDeckTitle = (e: { clientX: number, clientY: number } | null) => {
-      if (!deckTitleNode.parentNode) return;
-
-      replaceWithInputAndFocusAtCaretPosition({
-        sourceElement: deckTitleNode,
-        inputElement: titleInput,
-        clientX: e ? e.clientX : null,
-        clientY: e ? e.clientY : null,
-      });
-    };
-
-    const commitDeckTitleEdits = () => {
-      if (!titleInput.parentNode) return;
-      titleInput.parentNode.replaceChild(
-        deckTitleNode,
-        titleInput,
-      );
-      child.title = titleInput.value.replace(/\n/g, "");
-      titleInput.value = child.title;
-      if ('portalId' in child && child.portalId) {
-        api.setPortalTitle({
-          portalId: child.portalId,
-          title: titleInput.value,
-        });
-      } else if ('deckId' in child && child.deckId) {
-        api.setDeckTitle({
-          deckId: child.deckId,
-          title: titleInput.value,
-        });
-      }
-      setLinkableText(deckTitleNode, titleInput.value);
-    };
-
-    titleInput.onblur = () => {
-      commitDeckTitleEdits();
-    };
-
-    titleInput.onkeydown = (e) => {
-      if (e.key === "Enter" || e.key === "Escape") {
-        titleInput.blur();
-        deckTitleNode.focus();
-      }
-    };
-
-    const leftByElement = new Map<HTMLElement, number>();
-
-    let placeholder: HTMLElement;
-
-    let insetX = 0;
-    let insetY = 0;
-
-    let x = 0;
-    let y = 0;
-
-    const renderFloatingDeck = () => {
-      deckElement.style.transform = `translateX(${x}px) translateY(${y}px)`;
-    };
-
-    const setPosition = (e: MouseEvent) => {
-      x = e.clientX - insetX;
-      y = e.clientY - insetY;
-    };
-
-    let didMove = false;
-
-    const onMouseMove = (e: MouseEvent) => {
-      setPosition(e);
-      renderFloatingDeck();
-
-      didMove = true;
-
-      const ownIndex = this.deckElements.indexOf(deckElement);
-
-      const prevElement = placeholder.previousElementSibling as HTMLElement;
-      const nextElement = placeholder.nextElementSibling as HTMLElement;
-
-      const prevRect = prevElement?.getBoundingClientRect();
-      const nextRect = nextElement?.getBoundingClientRect();
-
-      const x =
-        e.clientX - insetX + placeholder.getBoundingClientRect().width / 2;
-
-      if (prevRect && prevRect.left + prevRect.width > x) {
-        placeholder.remove();
-        prevElement.parentNode?.insertBefore(placeholder, prevElement);
-        this.deckElements.splice(ownIndex, 1);
-        this.deckElements.splice(ownIndex - 1, 0, deckElement);
-      } else if (nextRect && nextRect.left < x) {
-        placeholder.remove();
-        nextElement.parentNode?.insertBefore(
-          placeholder,
-          nextElement.nextElementSibling
-        );
-        this.deckElements.splice(ownIndex, 1);
-        this.deckElements.splice(ownIndex + 1, 0, deckElement);
-      }
-    };
-
-    const onMouseUp = (e: MouseEvent) => {
-      if (!didMove) {
-        if ((e.target instanceof HTMLElement) && e.target.tagName === "A") {
-          e.target.click();
-        } else {
-          deckElement.style.transform = "";
-          deckElement.style.position = "";
-          placeholder.replaceWith(deckElement);
-          startEditingDeckTitle(e);
-        }
-      } else {
-        setPosition(e);
-        renderFloatingDeck();
-
-        const placeholderRect = placeholder.getBoundingClientRect();
-
-        const index = this.deckElements.indexOf(deckElement);
-        if (initialIndex !== index) {
-          api.moveBoardChildToIndex({
-            boardId: this.board.boardId,
-            index,
-            item: child,
-          });
-        }
-
-        cleanupHooks.add(
-          animate({
-            onComplete: onlyOnceFn(() => {
-              placeholder.replaceWith(deckElement);
-              deckElement.style.transform = "";
-              deckElement.style.position = "";
-            }),
-            values: {
-              x: [x, placeholderRect.left],
-              y: [y, placeholderRect.top],
-            },
-            time: DECK_ANIMATION_TIME,
-            fn: (pos) => {
-              x = pos.x;
-              y = pos.y;
-              renderFloatingDeck();
-            },
-          })
-        );
-      }
-
-      document.removeEventListener("mousemove", onMouseMove);
-      document.removeEventListener("mouseup", onMouseUp);
-    };
-
-    containerNode.onmousedown = (e) => {
-      if ((e.target instanceof Node) && menuNode.contains(e.target)) return;
-
-      e.preventDefault();
-      cleanupHooks.run();
-      didMove = false;
-
-      for (const element of this.deckElements) {
-        leftByElement.set(element, element.getBoundingClientRect().left);
-      }
-
-      const rect = deckElement.getBoundingClientRect();
-      placeholder = document.createElement("div");
-      placeholder.className = classes.deckPlaceholder;
-      placeholder.style.width = `${rect.width}px`;
-      placeholder.style.height = `${rect.height}px`;
-      deckElement.replaceWith(placeholder);
-      deckElement.style.position = "fixed";
-      deckElement.style.width = `${rect.width}px`;
-      deckElement.style.height = `${rect.height}px`;
-      deckElement.classList.add(classes.movingDeck);
-      document.body.append(deckElement);
-
-      this.deckElements.forEach((e) => {
-        if (e !== deckElement) {
-          e.style.transition = "transform 300ms";
-        }
-      });
-
-      cleanupHooks.add(() => {
-        this.deckElements.forEach((e) => {
-          e.style.transition = "";
-          e.style.transform = "";
-          e.style.position = "";
-          deckElement.classList.remove(classes.movingDeck);
-        });
-        placeholder.replaceWith(deckElement);
-      });
-
-      initialIndex = this.deckElements.indexOf(deckElement);
-
-      insetX = e.clientX - rect.left;
-      insetY = e.clientY - rect.top;
-      x = e.clientX - insetX;
-      y = e.clientY - insetY;
-
-      setPosition(e);
-      renderFloatingDeck();
-
-      document.addEventListener("mousemove", onMouseMove);
-      document.addEventListener("mouseup", onMouseUp);
-    };
-
-    return containerNode;
   }
 
   private createAddCardInput({
@@ -443,14 +204,20 @@ export class BoardView {
     deck: Deck;
     cleanupHooks: CleanupHooks;
   }) {
-    const form = document.createElement("form");
-    form.classList.add(classes.newCardContainer);
+    const form = el("form", {
+      className: classes.newCardContainer
+    });
 
-    const addCardInput = createAutoGrowTextarea();
-    addCardInput.dataset.addCardInput = deck.deckId;
-    addCardInput.required = true;
-    addCardInput.classList.add(classes.newCardInput);
-    addCardInput.placeholder = "Add card";
+    const addCardInput = el("textarea", {
+      dataset: {
+        addCardInput: deck.deckId,
+      },
+      required: true,
+      className: classes.newCardInput,
+      placeholder: "Add card",
+    });
+
+    cleanupHooks.add(makeTextAreaAutoGrow(addCardInput))
     form.append(addCardInput);
 
     const submit = async () => {
@@ -458,20 +225,22 @@ export class BoardView {
       addCardInput.value = "";
       const { cardId } = await api.addCard({
         title,
-        deckId: deck.deckId!,
+        deckId: deck.deckId,
       });
       const card = {
         title,
         cardId,
         images: [],
       };
-      const newCardElement = this.buildCardForDeck({
+      const newCardElement = this.createCardElement({
         root,
         card,
         deckElement,
         cleanupHooks,
       });
-      deckElement.querySelector("[data-cards-container]")?.append(newCardElement);
+      deckElement
+        .querySelector("[data-cards-container]")
+        ?.append(newCardElement);
       newCardElement.scrollIntoView({
         behavior: "smooth",
       });
@@ -499,7 +268,7 @@ export class BoardView {
   }
 
   private focusAddCardInputInDeck(sibling: HTMLElement | null) {
-    if (!sibling) return
+    if (!sibling) return;
     const addCardInput = sibling.querySelector("[data-add-card-input]");
     if (addCardInput instanceof HTMLElement) {
       addCardInput.focus();
@@ -510,7 +279,7 @@ export class BoardView {
     }
   }
 
-  private buildCardForDeck({
+  private createCardElement({
     root,
     card,
     deckElement,
@@ -530,12 +299,12 @@ export class BoardView {
     const cardInputElement = createAutoGrowTextarea();
     cardInputElement.className = classes.cardInput;
 
-    cardInputElement.onmousedown = e => {
+    cardInputElement.onmousedown = (e) => {
       e.stopPropagation();
     };
 
     const switchToInput = (e: MouseEvent | null) => {
-      if (e) editSource = "mouse"
+      if (e) editSource = "mouse";
       else editSource = "keyboard";
       cardElement.dataset.editSource = editSource;
 
@@ -547,10 +316,10 @@ export class BoardView {
       });
     };
 
-    cardInputElement.onkeydown = e => {
+    cardInputElement.onkeydown = (e) => {
       if (e.key === "Enter" && !e.shiftKey) {
-        cardInputElement.value = cardInputElement.value.trim()
-        e.preventDefault()
+        cardInputElement.value = cardInputElement.value.trim();
+        e.preventDefault();
         cardInputElement.blur();
       }
     };
@@ -561,11 +330,11 @@ export class BoardView {
       if (cardInputElement.value === "") {
         cardElement.remove();
         api.deleteCard({
-          cardId: card.cardId!,
+          cardId: card.cardId,
         });
-        this.board.children.find(it => {
+        this.board.children.find((it) => {
           if ("deckId" in it && it.deckId === deckElement.dataset.deckId) {
-            const index = it.cards.findIndex(it => it.cardId === card.cardId);
+            const index = it.cards.findIndex((it) => it.cardId === card.cardId);
 
             if (index !== -1) {
               it.cards.splice(index, 1);
@@ -575,7 +344,7 @@ export class BoardView {
         });
       } else {
         api.setCardTitle({
-          cardId: card.cardId!,
+          cardId: card.cardId,
           title: cardInputElement.value,
         });
         if (editSource === "keyboard") {
@@ -590,7 +359,7 @@ export class BoardView {
     setLinkableText(cardContentElement, card.title);
     cardElement.append(cardContentElement);
 
-    cardContentElement.onkeydown = e => {
+    cardContentElement.onkeydown = (e) => {
       if (!(e.target instanceof HTMLElement)) return;
 
       switch (e.key) {
@@ -633,8 +402,6 @@ export class BoardView {
 
       event.preventDefault();
 
-      let scrollInterval: ReturnType<typeof setInterval>;
-
       const {
         top,
         left,
@@ -645,7 +412,7 @@ export class BoardView {
       const insetX = event.clientX - left;
       const insetY = event.clientY - top;
 
-      let scrollDirection: "NONE" | "LEFT" | "RIGHT" = "NONE";
+      let stopScroll: (() => void) | null = null;
 
       const onMoveBegin = () => {
         didMove = true;
@@ -653,18 +420,11 @@ export class BoardView {
         cleanupHooks.run();
 
         root.classList.add(classes.isMovingCard);
-        cardElement.parentElement?.parentElement?.classList.add(classes.hoverDeck);
+        cardElement.parentElement?.parentElement?.classList.add(
+          classes.hoverDeck
+        );
 
-        scrollInterval = setInterval(() => {
-          if (scrollDirection === "LEFT") {
-            this.root.scrollBy({ left: -3 });
-            if (prevMoveCoords) onMouseMove(prevMoveCoords);
-          }
-          if (scrollDirection === "RIGHT") {
-            this.root.scrollBy({ left: 2 });
-            if (prevMoveCoords) onMouseMove(prevMoveCoords);
-          }
-        });
+        stopScroll = startScrollWhenNearEdges(this.root);
 
         cardElement.replaceWith(placeholderNode);
         document.body.appendChild(cardElement);
@@ -692,7 +452,7 @@ export class BoardView {
 
         if (!didMove) {
           // Ignore clicks on links inside the card
-          if ((e.target instanceof HTMLElement) && e.target.tagName === "A") {
+          if (e.target instanceof HTMLElement && e.target.tagName === "A") {
             e.target.click();
           } else {
             switchToInput(e);
@@ -700,11 +460,11 @@ export class BoardView {
           return;
         }
 
-        clearInterval(scrollInterval);
+        if (stopScroll) stopScroll();
 
-        const index = Array.from(placeholderNode.parentNode?.children ?? []).findIndex(
-          (e) => e === placeholderNode
-        );
+        const index = Array.from(
+          placeholderNode.parentNode?.children ?? []
+        ).findIndex((e) => e === placeholderNode);
         root.classList.remove(classes.isMovingCard);
         const targetRect = placeholderNode.getBoundingClientRect();
 
@@ -755,7 +515,10 @@ export class BoardView {
       }) => {
         prevMoveCoords = { clientX, clientY };
 
-        if (!didMove && distanceBetween({ x: clientX, y: clientY }, initialCoords) > 10) {
+        if (
+          !didMove &&
+          distanceBetween({ x: clientX, y: clientY }, initialCoords) > 10
+        ) {
           onMoveBegin();
           didMove = true;
         }
@@ -790,11 +553,6 @@ export class BoardView {
           );
           hoverDeck.classList.add(classes.hoverDeck);
         }
-
-        if (clientX < AUTO_SCROLL_OFFSET) scrollDirection = "LEFT";
-        else if (clientX >= window.innerWidth - AUTO_SCROLL_OFFSET)
-          scrollDirection = "RIGHT";
-        else scrollDirection = "NONE";
       };
 
       document.addEventListener("mouseup", onMouseUp);

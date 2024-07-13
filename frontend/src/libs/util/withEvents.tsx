@@ -21,7 +21,11 @@ export default function withEvents<Props>(
       handler: (event: Event) => void;
     }> = [];
 
-    on = (target: EventTarget, eventName: string, handler: (event: any) => void) => {
+    on = (
+      target: EventTarget,
+      eventName: string,
+      handler: (event: any) => void
+    ) => {
       if (this.unmounted) {
         console.error(
           "Attempted to add event listener after unmounting. This is a noop"

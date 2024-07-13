@@ -20,9 +20,10 @@ export type WithMenuProps = {
 export default function withMenu<Props>(
   WrappedComponent: React.ComponentType<Props & WithMenuProps>
 ): React.ComponentType<Props> {
-
   function NewComponent(props: WithEventsProps & Props) {
-    const [showMenuTimeout, setShowMenuTimeout] = useState<ReturnType<typeof setTimeout> | null>(null);
+    const [showMenuTimeout, setShowMenuTimeout] = useState<ReturnType<
+      typeof setTimeout
+    > | null>(null);
     const [menu, setMenu] = useState<HTMLElement | null>(null);
     const [options, setOptions] = useState<any>(null);
     const [dir, setDir] = useState<"right" | "left">("right");
@@ -48,7 +49,7 @@ export default function withMenu<Props>(
         if (showMenuTimeout) {
           clearTimeout(showMenuTimeout);
         }
-      }
+      };
     });
 
     useAutoEffect(() => {
@@ -67,12 +68,16 @@ export default function withMenu<Props>(
       event: { clientX: number; clientY: number },
       options: Record<string, (e: { target: HTMLElement }) => void>
     ) => {
-      setShowMenuTimeout(setTimeout(() => {
-        window.dispatchEvent(Object.assign(new Event("hyperfocus:withMenu:showMenu"), { id }));
-        setX(event.clientX);
-        setY(event.clientY);
-        setOptions(options);
-      }, 100));
+      setShowMenuTimeout(
+        setTimeout(() => {
+          window.dispatchEvent(
+            Object.assign(new Event("hyperfocus:withMenu:showMenu"), { id })
+          );
+          setX(event.clientX);
+          setY(event.clientY);
+          setOptions(options);
+        }, 100)
+      );
     };
 
     const closeMenu = () => {
@@ -115,26 +120,38 @@ export default function withMenu<Props>(
   return withEvents(NewComponent);
 }
 
-const MenuWrapper = styled.div<{ $x: number | null; $y: number | null, $dir: "left" | "right" }>`
+const MenuWrapper = styled.div<{
+  $x: number | null;
+  $y: number | null;
+  $dir: "left" | "right";
+}>`
   position: fixed;
 
-  ${p => p.$dir === "left" && css`
-    ${p.$y && css`
-      top: ${p.$y}px;
+  ${(p) =>
+    p.$dir === "left" &&
+    css`
+      ${p.$y &&
+      css`
+        top: ${p.$y}px;
+      `}
+      ${p.$x &&
+      css`
+        left: ${p.$x}px;
+      `}
     `}
-    ${p.$x && css`
-      left: ${p.$x}px;
-    `}
-  `}
 
-  ${p => p.$dir === "right" && css`
-    ${p.$y && css`
-      top: ${p.$y}px;
-    `}
-    ${p.$x && css`
-      left: ${p.$x - MENU_WIDTH}px;
-    `}
-  `};
+  ${(p) =>
+    p.$dir === "right" &&
+    css`
+      ${p.$y &&
+      css`
+        top: ${p.$y}px;
+      `}
+      ${p.$x &&
+      css`
+        left: ${p.$x - MENU_WIDTH}px;
+      `}
+    `};
 
   background: white;
   min-height: 4px;

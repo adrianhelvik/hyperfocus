@@ -3,13 +3,9 @@ import { Board, BoardParam, Deck, Portal, Project } from "./types";
 
 let persistentHeaders = local.get("persistentHeaders", {});
 
-type PortalParam = {
-  portalId: any;
-};
-
 type Api = {
   setBoardTitle(payload: { boardId: string; title: string }): Promise<void>;
-  setCardTitle(payload: { cardId: string, title: string }): Promise<void>;
+  setCardTitle(payload: { cardId: string; title: string }): Promise<void>;
   ownProjects(): Promise<{ projects: Project[] }>;
   createBoard(board: BoardParam): Promise<Board>;
   registerUser(payload: { password: string; email: string }): Promise<void>;
@@ -28,7 +24,7 @@ type Api = {
     boardId: string;
     title: string;
     index: number;
-  }): PromiseLike<{ deckId: string }>;
+  }): PromiseLike<Deck>;
   setDeckColor(payload: { deckId: string; color: string }): unknown;
   addCard(payload: {
     title: string;
@@ -48,7 +44,7 @@ type Api = {
     deckId: string;
     index: number | null;
     title: string;
-  }): PromiseLike<PortalParam>;
+  }): PromiseLike<Portal>;
   ownBoards: () => PromiseLike<{ boards: Board[] }>;
 };
 

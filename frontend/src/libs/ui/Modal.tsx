@@ -24,10 +24,7 @@ function Modal(props: Props) {
     throw Error("props.hide must be a function");
 
   return (
-    <Backdrop
-      transparent={Boolean(props.placement)}
-      hide={props.hide}
-    >
+    <Backdrop transparent={Boolean(props.placement)} hide={props.hide}>
       <Container $position={props.placement} $width={props.width}>
         {props.children}
       </Container>

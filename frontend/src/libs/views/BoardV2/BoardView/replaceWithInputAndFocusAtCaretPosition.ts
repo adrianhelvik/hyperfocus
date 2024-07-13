@@ -1,14 +1,15 @@
 import getCaretPositionAndNodeFromPoint from "./getCaretPositionAndNodeFromPoint";
 
 export function replaceWithInputAndFocusAtCaretPosition(opts: {
-  clientX: number | null,
-  clientY: number | null,
-  sourceElement: HTMLElement,
-  inputElement: HTMLInputElement | HTMLTextAreaElement,
+  clientX: number | null;
+  clientY: number | null;
+  sourceElement: HTMLElement;
+  inputElement: HTMLInputElement | HTMLTextAreaElement;
 }) {
-  const result = opts.clientX != null && opts.clientY != null
-    ? getCaretPositionAndNodeFromPoint(opts.clientX, opts.clientY)
-    : null;
+  const result =
+    opts.clientX != null && opts.clientY != null
+      ? getCaretPositionAndNodeFromPoint(opts.clientX, opts.clientY)
+      : null;
 
   opts.inputElement.value = opts.sourceElement.textContent ?? "";
   opts.sourceElement.replaceWith(opts.inputElement);

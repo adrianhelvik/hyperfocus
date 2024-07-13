@@ -55,11 +55,11 @@ export default withMenu(function Overview(props: Props) {
   }, []);
 
   const onBoardAdded = useAutoCallback((board: Board) => {
-    setBoards(boards => [board, ...boards]);
+    setBoards((boards) => [board, ...boards]);
   });
 
   const onBoardRemoved = useAutoCallback((board: Board) => {
-    setBoards(boards => boards.filter(it => it.boardId !== board.boardId));
+    setBoards((boards) => boards.filter((it) => it.boardId !== board.boardId));
   });
 
   const contextValue = useAutoMemo({
@@ -74,7 +74,7 @@ export default withMenu(function Overview(props: Props) {
     <OverviewStoreContext.Provider value={contextValue}>
       <div onContextMenu={onContextMenu}>
         <Header>My boards</Header>
-        {isAddingBoard && <AddBoardModal close={() => setIsAddingBoard(false)} />}
+        {isAddingBoard && <AddBoardModal />}
         <BoardList />
       </div>
     </OverviewStoreContext.Provider>

@@ -30,9 +30,7 @@ export default function withStatus<Props>(
     @observable resolve: any = null;
     @observable reject: any = null;
 
-    @action.bound showStatus(
-      Template: TemplateType
-    ) {
+    @action.bound showStatus(Template: TemplateType) {
       this.Template = Template;
       this.promise = new Promise((resolve, reject) => {
         this.resolve = resolve;

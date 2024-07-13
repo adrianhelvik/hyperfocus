@@ -12,10 +12,7 @@ export function horizontalMiddle(element: HTMLElement): number {
   return rect.left + rect.width / 2;
 }
 
-export function findCardAt(
-  x: number,
-  y: number,
-): HTMLElement | undefined {
+export function findCardAt(x: number, y: number): HTMLElement | undefined {
   const cardElements = Array.from(document.querySelectorAll("[data-card-id]"));
   for (const element of cardElements) {
     // Typescript assertion
@@ -58,7 +55,10 @@ const debugElementInfo = new Map<
   { timeouts: Array<ReturnType<typeof setTimeout>>; element: Element }
 >();
 
-export function debugElement(element: Element | null | undefined, color = "red") {
+export function debugElement(
+  element: Element | null | undefined,
+  color = "red"
+) {
   if (!DEBUG_ENABLED) return;
   if (!element) return;
   const rect = element.getBoundingClientRect();

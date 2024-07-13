@@ -18,17 +18,19 @@ import authenticate from "./domain/authenticate.mjs";
 import createBoard from "./domain/createBoard.mjs";
 import createUser from "./domain/createUser.mjs";
 import deleteCard from "./domain/deleteCard.mjs";
+import getPortal from "./domain/getPortal.mjs";
 import addPortal from "./domain/addPortal.mjs";
 import moveCard from "./domain/moveCard.mjs";
 import addDeck from "./domain/addDeck.mjs";
+import getDeck from "./domain/getDeck.mjs";
 import addCard from "./domain/addCard.mjs";
 import getCard from "./domain/getCard.mjs";
 import login from "./domain/login.mjs";
+import uuid from "./utils/uuid.mjs";
 import { Stream } from "stream";
 import Boom from "@hapi/boom";
 import knex from "./knex.mjs";
 import fs from "fs";
-import uuid from "./utils/uuid.mjs";
 
 export const loginRoute = {
   method: "POST",
@@ -150,7 +152,7 @@ export const addDeckRoute = {
 
     const deckId = await addDeck({ boardId, title, index });
 
-    return { deckId };
+    return await getDeck(deckId);
   },
 };
 
@@ -159,7 +161,7 @@ export const addPortalRoute = {
   path: "/addPortal",
   /**
    * @param {{ payload: { boardId: string, title: string, index: number, deckId: string }, headers: { authorization: string } }} request
-   * @returns {Promise<{ portalId: string }>}
+   * @returns {Promise<any>}
    */
   async handler(request) {
     const { boardId, title, index, deckId } = request.payload;
@@ -171,7 +173,7 @@ export const addPortalRoute = {
 
     const portalId = await addPortal({ boardId, title, index, deckId });
 
-    return { portalId };
+    return await getPortal(portalId);
   },
 };
 

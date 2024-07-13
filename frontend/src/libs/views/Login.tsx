@@ -40,10 +40,10 @@ export default observer(function Login() {
   }, [auth]);
 
   useEffect(() => {
-      if (auth.status === "success") {
-        navigate("/app");
-      }
-  }, [auth.status])
+    if (auth.status === "success") {
+      navigate("/app");
+    }
+  }, [auth.status]);
 
   return (
     <Container>

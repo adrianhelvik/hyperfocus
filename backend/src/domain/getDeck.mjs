@@ -10,6 +10,7 @@ export default async function getDeck(deckId) {
   if (!deck) return null;
 
   deck.cards = await knex("cards").where({ deckId }).orderBy("index", "asc");
+  deck.type = "deck";
 
   await Promise.all(
     deck.cards.map(async (card) => {

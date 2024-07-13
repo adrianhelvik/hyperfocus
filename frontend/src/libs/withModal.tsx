@@ -27,7 +27,9 @@ export default function withModal<Props>(
     const [placement, setPlacement] = useState<null | Coord>(null);
     const [width, setWidth] = useState<number | null>(null);
     const [backdrop, setBackdrop] = useState(true);
-    const [Template, setTemplate] = useState<React.ComponentType<any> | null>(null);
+    const [Template, setTemplate] = useState<React.ComponentType<any> | null>(
+      null
+    );
     const [resolve, setResolve] = useState<(() => void) | null>(null);
 
     const showModal = (
@@ -40,7 +42,7 @@ export default function withModal<Props>(
         setWidth(options.width || null);
       });
       return promise;
-    }
+    };
 
     const showModalInPlace = (event: any, Template: any) => {
       showModal(Template);
@@ -50,7 +52,7 @@ export default function withModal<Props>(
       });
       setBackdrop(false);
       setWidth(null);
-    }
+    };
 
     const hide = () => {
       if (resolve) resolve();
@@ -59,7 +61,7 @@ export default function withModal<Props>(
       setTemplate(null);
       setResolve(null);
       setWidth(null);
-    }
+    };
 
     return (
       <>

@@ -110,24 +110,22 @@ function BoardTile(props: Props) {
       $color={props.board.color || "white"}
       onContextMenu={openMenu}
     >
-      <Title>
-        {props.board.title || <Weak>Untitled</Weak>}
-      </Title>
+      <Title>{props.board.title || <Weak>Untitled</Weak>}</Title>
       <TopRight>
-        {props.shortcut != null && <ShortcutIcon>{props.shortcut}</ShortcutIcon>}
+        {props.shortcut != null && (
+          <ShortcutIcon>{props.shortcut}</ShortcutIcon>
+        )}
         <MenuIcon $dark={!props.board.color} onClick={openMenu} />
       </TopRight>
     </Container>
   );
 }
 
-export default withModal(
-  withConfirm(withStatus(withMenu(BoardTile)))
-);
+export default withModal(withConfirm(withStatus(withMenu(BoardTile))));
 
 const Container = styled.button.attrs({
   type: "button",
-}) <{ $color: string }>`
+})<{ $color: string }>`
   all: unset;
   outline: revert;
   width: 100%;
@@ -177,9 +175,12 @@ const TopRight = styled.div`
   top: 10px;
   right: 10px;
   align-items: center;
+  gap: 5px;
 `;
 
 const ShortcutIcon = styled.div`
   color: #aaa;
-  padding: 0 5px;
+  padding: 2px 5px;
+  border: 1px solid #ddd;
+  border-radius: 5px;
 `;

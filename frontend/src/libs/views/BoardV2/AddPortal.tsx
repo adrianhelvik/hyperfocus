@@ -1,18 +1,18 @@
+import { useBoard, useEmitBoardChildAdded } from "./context";
+import { useAutoEffect, useAutoMemo } from "hooks.macro";
 import ModalFooter from "src/libs/ui/ModalFooter";
 import styled, { css } from "styled-components";
 import onSelect from "src/libs/util/onSelect";
-import { useAutoEffect, useAutoMemo } from "hooks.macro";
+import { FormEvent, useState } from "react";
 import ellipsify from "src/libs/ellipsify";
 import Button from "src/libs/ui/Button";
 import * as theme from "src/libs/theme";
 import { Board } from "src/libs/types";
 import Input from "src/libs/ui/Input";
 import Help from "src/libs/ui/Help";
-import { FormEvent, useState } from "react";
 import api from "src/libs/api";
 
 type Props = {
-  board: Board;
   index: number | null;
   resolve: () => void;
 };
@@ -22,22 +22,30 @@ export default function AddPortal(props: Props) {
   const [selectedDeckId, setSelectedDeckId] = useState<string | null>(null);
   const [boards, setBoards] = useState<Board[]>([]);
   const [title, setTitle] = useState("");
+  const board = useBoard();
+
+  const emitDeckAdded = useEmitBoardChildAdded();
 
   const selectedBoard = useAutoMemo(() => {
     if (!selectedBoardId) return null;
     if (!boards) return null;
-    return boards.find(it => it.boardId === selectedBoardId);
+    return boards.find((it) => it.boardId === selectedBoardId);
   });
 
   const selectedDeck = useAutoMemo(() => {
     if (!selectedDeckId) return null;
     if (!selectedBoard) return null;
-    return selectedBoard.decks.find(it => it.deckId === selectedDeckId);
+    for (const child of selectedBoard.children) {
+      if (child.type === "deck" && child.deckId === selectedDeckId) {
+        return child;
+      }
+    }
+    return null;
   });
 
-  useAutoEffect(() => {
+  useAutoEffect(() => {
     let cancelled = false;
-    api.ownBoards().then(response => {
+    api.ownBoards().then((response) => {
       if (cancelled) return;
       setBoards(response.boards);
     });
@@ -48,51 +56,54 @@ export default function AddPortal(props: Props) {
 
   const onSubmit = async (event: FormEvent) => {
     event.preventDefault();
-    if (!selectedDeck || !title) return;
-    await api.addPortal({
-      boardId: props.board.boardId!,
+    if (!selectedDeck || !title || !board) return;
+    const portal = await api.addPortal({
+      boardId: board.boardId,
       deckId: selectedDeck.deckId,
       index: props.index,
       title: title,
     });
     props.resolve();
+    emitDeckAdded(portal);
   };
 
-    return (
-      <form onSubmit={onSubmit}>
-        <MainTitle>
-          Create portal{" "}
-          <Help>
-            A portal is a link to a deck from another board. With portals it
-            becomes easier to move cards from one board to another.
-          </Help>
-        </MainTitle>
-        <InputWrapper>
-          <Input
-            placeholder="Name in this board"
-            autoFocus
-            value={title}
-            onChange={(e) => setTitle(e.target.value)}
-          />
-        </InputWrapper>
-        <Sections>
-          <Section>
-            <Title>Select board</Title>
-            {boards.map((board) => (
-              <Tile
-                key={board.boardId}
-                $selected={board.id === selectedBoardId}
-                $empty={board.decks.length === 0}
-                {...onSelect(() => setSelectedBoardId(board.boardId))}
-              >
-                {ellipsify(board.title || "Untitled")}
-              </Tile>
-            ))}
-          </Section>
-          <Section>
-            <Title>Select Deck</Title>
-            {selectedBoard &&
-              selectedBoard.decks.map((deck) => (
+  return (
+    <form onSubmit={onSubmit}>
+      <MainTitle>
+        Create portal{" "}
+        <Help>
+          A portal is a link to a deck from another board. With portals it
+          becomes easier to move cards from one board to another.
+        </Help>
+      </MainTitle>
+      <InputWrapper>
+        <Input
+          placeholder="Name in this board"
+          autoFocus
+          value={title}
+          onChange={(e) => setTitle(e.target.value)}
+        />
+      </InputWrapper>
+      <Sections>
+        <Section>
+          <Title>Select board</Title>
+          {boards.map((board) => (
+            <Tile
+              key={board.boardId}
+              $selected={board.boardId === selectedBoardId}
+              $empty={board.children.length === 0}
+              {...onSelect(() => setSelectedBoardId(board.boardId))}
+            >
+              {ellipsify(board.title || "Untitled")}
+            </Tile>
+          ))}
+        </Section>
+        <Section>
+          <Title>Select Deck</Title>
+          {selectedBoard &&
+            selectedBoard.children
+              .filter((it) => it.type === "deck")
+              .map((deck) => (
                 <Tile
                   key={deck.deckId}
                   $selected={deck.deckId === selectedDeckId}
@@ -101,19 +112,17 @@ export default function AddPortal(props: Props) {
                   {ellipsify(deck.title || "Untitled")}
                 </Tile>
               ))}
-          </Section>
-        </Sections>
-        <hr />
-        <ModalFooter>
-          <Button $gray onClick={() => props.resolve()}>
-            Cancel
-          </Button>
-          <Button disabled={!selectedDeck || !title}>
-            Create portal
-          </Button>
-        </ModalFooter>
-      </form>
-    );
+        </Section>
+      </Sections>
+      <hr />
+      <ModalFooter>
+        <Button $gray onClick={() => props.resolve()}>
+          Cancel
+        </Button>
+        <Button disabled={!selectedDeck || !title}>Create portal</Button>
+      </ModalFooter>
+    </form>
+  );
 }
 
 const Sections = styled.div`

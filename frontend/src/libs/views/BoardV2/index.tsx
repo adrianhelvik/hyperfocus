@@ -1,44 +1,23 @@
+import { BoardViewContext, BoardViewContextType } from "./context";
+import { useAutoCallback, useAutoMemo } from "hooks.macro";
 import { useNavigate, useParams } from "react-router-dom";
-import { useAutoCallback } from "hooks.macro";
-import { useState, useEffect } from "react";
+import useOnKeyDown from "src/util/useOnKeyDown";
+import { Board, Deck } from "src/libs/types";
+import { useState, useEffect, useRef } from "react";
 import classes from "./styles.module.css";
-import useModal from "src/libs/useModal";
 import Header from "src/libs/ui/Header";
-import * as theme from "src/libs/theme";
 import { BoardView } from "./BoardView";
-import { Board } from "src/libs/types";
 import styled from "styled-components";
 import AddCircle from "./AddCircle";
-import AddPortal from "./AddPortal";
-import AddDeck from "./AddDeck";
 import api from "src/libs/api";
 
 export default function BoardV2() {
   const { boardId } = useParams<{ boardId: string }>();
   if (!boardId) throw Error("Expected boardId to be provided");
-
-  const [board, setBoard] = useState<Board | null>(null);
+  const [boardView, setBoardView] = useState<BoardView | null>(null);
   const [div, setDiv] = useState<HTMLDivElement | null>(null);
-  const [refreshKey, setRefreshKey] = useState(0);
-  const { showModal, renderModal } = useModal();
+  const [board, setBoard] = useState<Board | null>(null);
   const navigate = useNavigate();
-
-  const refresh = useAutoCallback(() => setRefreshKey(refreshKey => refreshKey + 1));
-
-  const addDeck = async () => {
-    if (!board) return;
-    await showModal((props) => <AddDeck {...props} board={board} />);
-    dispatchEvent(new Event("subtask:addDeck"));
-    refresh();
-  };
-
-  const addPortal = async () => {
-    if (!board) return;
-    await showModal((props) => <AddPortal {...props} board={board} index={null} />, {
-      width: 700,
-    });
-    refresh();
-  };
 
   useEffect(() => {
     let cancelled = false;
@@ -49,51 +28,69 @@ export default function BoardV2() {
     return () => {
       cancelled = true;
     };
-  }, [boardId, refreshKey]);
+  }, [boardId]);
+
+  // We don't want to remount the BoardView whenever
+  // the board updates. The BoardView is responsible
+  // for maintaining its own internal structures.
+
+  const hasBoard = board != null;
+  const boardRef = useRef<Board | null>(board);
+  boardRef.current = board;
 
   useEffect(() => {
-    if (!board) return;
+    if (!hasBoard) return;
     if (!div) return;
-    const boardView = new BoardView(div, board);
-    return () => boardView.unmount();
-  }, [div, board, navigate]);
-
-  useEffect(() => {
-    const onKeyDown = (e: KeyboardEvent) => {
-      if (e.metaKey && /[1-9]/.test(e.key)) {
-        e.preventDefault();
-        return navigate("/app");
-      }
-    };
-
-    document.addEventListener("keydown", onKeyDown);
+    const boardView = new BoardView(div, boardRef.current!);
+    setBoardView(boardView);
     return () => {
-      document.removeEventListener("keydown", onKeyDown);
+      return boardView.unmount();
     };
+  }, [div, hasBoard, navigate, boardId]);
+
+  useOnKeyDown((e) => {
+    if (e.metaKey && /[1-9]/.test(e.key)) {
+      e.preventDefault();
+      return navigate("/app");
+    }
+  });
+
+  const emitDeckAdded = useAutoCallback((deck: Deck) => {
+    if (!deck) throw Error("Called emitDeckAdded without a deck");
+    if (!boardView) return;
+
+    setBoard((board) => {
+      if (!board) return null;
+      return {
+        ...board,
+        children: [...board.children, deck],
+      };
+    });
+
+    boardView.onDeckAdded(deck);
+  });
+
+  const contextValue = useAutoMemo<BoardViewContextType>({
+    emitBoardChildAdded: emitDeckAdded,
+    board,
   });
 
   return (
-    <div className={classes.boardView}>
-      <Header>
-        <Breadcrumbs>
-          <CrumbButton onClick={() => navigate("/app")}>
-            My boards
-          </CrumbButton>
-          <div>›</div>
-          <Title>{board?.title}</Title>
-        </Breadcrumbs>
-      </Header>
-      <div ref={setDiv} />
-      <AddCircle>
-        <AddItem onClick={addDeck}>
-          <AddItemText>Add Deck</AddItemText>
-        </AddItem>
-        <AddItem onClick={addPortal}>
-          <AddItemText>Add portal</AddItemText>
-        </AddItem>
-      </AddCircle>
-      {renderModal()}
-    </div>
+    <BoardViewContext.Provider value={contextValue}>
+      <div className={classes.boardView}>
+        <Header>
+          <Breadcrumbs>
+            <CrumbButton onClick={() => navigate("/app")}>
+              My boards
+            </CrumbButton>
+            <div>›</div>
+            <Title>{board?.title}</Title>
+          </Breadcrumbs>
+        </Header>
+        <div ref={setDiv} />
+        <AddCircle />
+      </div>
+    </BoardViewContext.Provider>
   );
 }
 
@@ -119,26 +116,4 @@ const CrumbButton = styled.button`
 
 const Title = styled.div`
   display: inline-block;
-`;
-
-const AddItem = styled.div`
-  background: ${theme.ui1};
-  cursor: pointer;
-  transition: 0.3s;
-  &:hover {
-    background: ${theme.ui2};
-  }
-  padding: 10px;
-  height: 55px;
-  display: flex;
-  align-items: flex-start;
-
-  &:first-child {
-    border-top-left-radius: 4px;
-  }
-`;
-
-const AddItemText = styled.div`
-  margin: auto;
-  color: white;
 `;

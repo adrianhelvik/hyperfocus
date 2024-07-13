@@ -11,13 +11,14 @@ export type Project = {
 };
 
 export type Card = {
-  title: string,
-  cardId: string,
+  title: string;
+  cardId: string;
   images: Array<string>;
 };
 
 export type Deck = {
   type: "deck";
+  boardId: string;
   title: string;
   color: string;
   cards: Card[];
@@ -26,6 +27,7 @@ export type Deck = {
 
 export type Portal = {
   type: "portal";
+  boardId: string;
   portalId: string;
   title: string;
   target: Deck;
@@ -35,10 +37,11 @@ export type BoardParam = {
   title: string;
 };
 
+export type BoardChild = Deck | Portal;
+
 export type Board = {
-    children: (Deck | Portal)[];
-    color: string;
-    title: string;
-    boardId: string;
-    decks: Deck[];
+  children: BoardChild[];
+  color: string;
+  title: string;
+  boardId: string;
 };

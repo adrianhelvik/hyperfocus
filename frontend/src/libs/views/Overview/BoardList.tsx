@@ -11,15 +11,26 @@ import BoardTile from "./BoardTile";
 
 export default function BoardList() {
   const [gridElement, setGridElement] = useState<HTMLDivElement | null>(null);
-  const { setIsAddingBoard, boards } = useContext(OverviewStoreContext);
+  const { setIsAddingBoard, isAddingBoard, boards } =
+    useContext(OverviewStoreContext);
   const auth = useContext(AuthContext)!;
   const navigate = useNavigate();
 
   useLayoutEffect(() => {
+    if (isAddingBoard) return;
+
     const onKeyDown = (e: KeyboardEvent) => {
+      if (e.target instanceof HTMLInputElement) return;
+      if (e.target instanceof HTMLTextAreaElement) return;
+
       if (e.metaKey && /[1-9]/.test(e.key)) {
         e.preventDefault();
         navigate(`/board/${boards[parseInt(e.key, 10) - 1].boardId}`);
+      }
+
+      if (!e.ctrlKey && !e.metaKey && e.key === "+") {
+        e.preventDefault();
+        setIsAddingBoard(true);
       }
     };
 
@@ -38,11 +49,11 @@ export default function BoardList() {
 
   useEffect(() => {
     if (auth.status === "failure") {
-      return navigate("/login")
+      return navigate("/login");
     }
   }, [auth.status]);
 
-  const modifierKey = navigator.platform === "MacIntel" ? "⌘" : "ctrl ";
+  const modifierKey = navigator.userAgent.includes(" Mac ") ? "⌘" : "ctrl ";
 
   return (
     <Observer>
@@ -52,12 +63,21 @@ export default function BoardList() {
             <Header>
               <Title>My boards</Title>
               <PlusButton onClick={() => setIsAddingBoard(true)}>
-                <span className="material-symbols-outlined">add</span>
+                New board
+                <ButtonShortcut>+</ButtonShortcut>
               </PlusButton>
             </Header>
             <Grid ref={setGridElement}>
               {boards.map((board, i) => (
-                <BoardTile key={board.boardId} board={board} shortcut={(!("ontouchstart" in document) && i <= 8) ? `${modifierKey}${i + 1}` : null} />
+                <BoardTile
+                  key={board.boardId}
+                  board={board}
+                  shortcut={
+                    !("ontouchstart" in document) && i <= 8
+                      ? `${modifierKey}${i + 1}`
+                      : null
+                  }
+                />
               ))}
               {!boards.length && <div>You have no boards yet</div>}
             </Grid>
@@ -92,18 +112,14 @@ const Grid = styled.div`
 const Header = styled.div`
   display: flex;
   align-items: center;
-  margin-left: 20px;
-  margin-bottom: 0;
-  margin-top: 20px;
-  gap: 10px;
+  padding: 0 20px;
+  justify-content: space-between;
 `;
 
 const PlusButton = styled.button`
   background-color: ${theme.ui1};
   border: none;
   color: white;
-  width: 30px;
-  height: 30px;
   border-radius: 4px;
   display: flex;
   justify-content: center;
@@ -111,6 +127,8 @@ const PlusButton = styled.button`
   transition: background-color 0.3s, box-shadow 0.3s;
   box-shadow: ${theme.shadows[0]};
   cursor: pointer;
+  padding: 5px;
+  padding-left: 10px;
 
   &:hover {
     background-color: ${theme.ui2};
@@ -128,4 +146,16 @@ const Title = styled.h2`
   font-size: 25px;
   color: ${theme.ui1};
   letter-spacing: 0.1rem;
+`;
+
+const ButtonShortcut = styled.div`
+  color: white;
+  background-color: rgba(255, 255, 255, 0.3);
+  padding: 3px 8px;
+  border-radius: 5px;
+  border: 1px solid #ddd;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin-left: 8px;
 `;

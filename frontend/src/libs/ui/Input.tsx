@@ -15,7 +15,7 @@ type Props = {
   innerRef?: (element: HTMLInputElement) => void;
   value: string;
   placeholder?: string;
-  size?: number,
+  size?: number;
 };
 
 export default function Input(props: Props) {

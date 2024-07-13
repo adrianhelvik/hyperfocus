@@ -16,18 +16,14 @@
 
 .deck {
   scroll-snap-align: center;
-  background-color: #ddd;
-  border-radius: 4px;
   flex-shrink: 0;
   width: 500px;
   max-width: calc(100vw - 40px);
   height: fit-content;
-  gap: 7px;
-  display: flex;
-  flex-direction: column;
   transition: opacity 300ms, box-shadow 300ms;
   max-height: 100%;
   touch-action: pan-y;
+  transform: translate3d(0, 0, 0);
 
   .isMovingCard &:not(&.hoverDeck) {
     opacity: 0.9;
@@ -35,6 +31,30 @@
 
   &.movingDeck {
     box-shadow: var(--shadows-2);
+  }
+
+  /* This adds a rounded outline around portals */
+  &[data-child-type="portal"]::after {
+    content: "";
+    display: block;
+    border-radius: 5px;
+    border: 2px solid rgb(114, 32, 222, 1);
+    width: calc(100% + 10px);
+    height: calc(100% + 10px);
+    margin-left: -5px;
+    margin-top: -5px;
+    position: fixed;
+    top: 0;
+    left: 0;
+    pointer-events: none;
+  }
+
+  & .deckContent {
+    display: flex;
+    flex-direction: column;
+    gap: 7px;
+    background-color: #ddd;
+    border-radius: 4px;
   }
 }
 
@@ -46,7 +66,9 @@
   padding: 7px;
   gap: 7px;
 
-  --input-bg: color-mix(in srgb, var(--deck-color, #aaa) 80%, var(--deck-black-or-white-contrast));
+  --input-bg: color-mix(in srgb,
+      var(--deck-color, #aaa) 80%,
+      var(--deck-black-or-white-contrast));
 
   & .deckTitle {
     flex-basis: 100%;
@@ -90,7 +112,9 @@
     width: 45px;
     appearance: none;
     border: 0;
-    background: color-mix(in srgb, var(--deck-color, #aaa) 60%, var(--deck-black-or-white-contrast));
+    background: color-mix(in srgb,
+        var(--deck-color, #aaa) 60%,
+        var(--deck-black-or-white-contrast));
     border-radius: 4px;
     flex-shrink: 0;
     display: flex;
@@ -102,11 +126,15 @@
     height: 35px;
 
     &:hover {
-      background: color-mix(in srgb, var(--deck-color, #aaa) 50%, var(--deck-black-or-white-contrast));
+      background: color-mix(in srgb,
+          var(--deck-color, #aaa) 50%,
+          var(--deck-black-or-white-contrast));
     }
 
     &:active:hover {
-      background: color-mix(in srgb, var(--deck-color, #aaa) 30%, var(--deck-black-or-white-contrast));
+      background: color-mix(in srgb,
+          var(--deck-color, #aaa) 30%,
+          var(--deck-black-or-white-contrast));
     }
 
     &:focus {
@@ -125,7 +153,9 @@
   &[data-edit-source="keyboard"] .cardContent:focus {
     outline: 2px solid var(--deck-black-or-white-contrast);
     outline-offset: -2px;
-    background-color: color-mix(in srgb, var(--deck-color-or-unset, white) 20%, white);
+    background-color: color-mix(in srgb,
+        var(--deck-color-or-unset, white) 20%,
+        white);
   }
 
   & .cardContent {
@@ -227,7 +257,7 @@
   min-height: 40px;
   overflow-y: auto;
 
-  & > * {
+  &>* {
     flex-shrink: 0;
   }
 
