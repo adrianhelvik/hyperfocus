@@ -28,7 +28,7 @@ const Icon = styled.i<{ $dark?: boolean }>`
   font-size: 15px;
   background-color: white;
   border-radius: 5px;
-  padding: 4px;
+  padding: 7px;
   color: #333;
   cursor: pointer;
   box-shadow: ${theme.shadows[0]};

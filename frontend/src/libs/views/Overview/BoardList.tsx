@@ -63,6 +63,7 @@ export default function BoardList() {
             <Header>
               <Title>My boards</Title>
               <PlusButton onClick={() => setIsAddingBoard(true)}>
+                <span className="material-symbols-outlined">add</span>
                 New board
                 <ButtonShortcut>+</ButtonShortcut>
               </PlusButton>
@@ -126,6 +127,7 @@ const PlusButton = styled.button`
   align-items: center;
   transition: background-color 0.3s, box-shadow 0.3s;
   box-shadow: ${theme.shadows[0]};
+  font-size: inherit;
   cursor: pointer;
   padding: 5px;
   padding-left: 10px;
@@ -137,6 +139,19 @@ const PlusButton = styled.button`
 
   &:hover:active {
     background-color: ${theme.darkPurple};
+  }
+
+  & .material-symbols-outlined {
+    display: none;
+  }
+
+  @media (hover: none) {
+    padding-left: 5px;
+    padding-right: 12px;
+
+    & .material-symbols-outlined {
+      display: block;
+    }
   }
 `;
 
@@ -158,4 +173,8 @@ const ButtonShortcut = styled.div`
   align-items: center;
   justify-content: center;
   margin-left: 8px;
+
+  @media (hover: none) {
+    display: none;
+  }
 `;

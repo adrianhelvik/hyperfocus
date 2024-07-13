@@ -28,7 +28,7 @@ export default function Header(props: Props) {
       <UndecoratedLink to={isInApp ? "/app" : "/"}>
         <Logo pageColor={pageColor} />
       </UndecoratedLink>
-      <Children>{props.children}</Children>
+      <DesktopOnlyTitle>{props.children}</DesktopOnlyTitle>
       {auth.status === "success" && location.pathname === "/" && (
         <Login to="/login">Go to dashboard</Login>
       )}
@@ -54,6 +54,10 @@ const Container = styled.div<{ $color: string }>`
   grid-template-columns: auto 1fr auto;
   align-items: center;
   z-index: ${zIndexes.header};
+
+  @media (max-width: 800px) {
+    grid-template-columns: 1fr auto;
+  }
 `;
 
 const Logo = ({ pageColor }: { pageColor: string }) => (
@@ -101,13 +105,20 @@ const Login = styled(Link)`
 
 const Logout = styled.button`
   color: inherit;
-  text-decoration: underline;
   background-color: transparent;
   border: 0;
   cursor: pointer;
+  font-size: inherit;
+  background-color: rgba(255, 255, 255, 0.3);
+  padding: 5px 10px;
+  border-radius: 5px;
 `;
 
-const Children = styled.div`
+const DesktopOnlyTitle = styled.div`
   color: inherit;
   margin-left: 20px;
+
+  @media (max-width: 800px) {
+    display: none;
+  }
 `;

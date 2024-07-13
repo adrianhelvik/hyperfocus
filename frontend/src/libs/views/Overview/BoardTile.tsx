@@ -1,6 +1,7 @@
 import withConfirm, { WithConfirmProps } from "src/libs/withConfirm";
 import withStatus, { WithStatusProps } from "src/libs/withStatus";
 import withModal, { WithModalProps } from "src/libs/withModal";
+import { OverviewStoreContext } from "./OverviewStoreContext";
 import withMenu, { WithMenuProps } from "src/libs/withMenu";
 import { CirclePicker as ColorPicker } from "react-color";
 import React, { MouseEvent, useContext } from "react";
@@ -12,7 +13,6 @@ import styled from "styled-components";
 import { Board } from "src/libs/types";
 import api from "src/libs/api";
 import Color from "color";
-import { OverviewStoreContext } from "./OverviewStoreContext";
 
 const ColorPickerAny = ColorPicker as any as React.ComponentType<any>;
 
@@ -183,4 +183,8 @@ const ShortcutIcon = styled.div`
   padding: 2px 5px;
   border: 1px solid #ddd;
   border-radius: 5px;
+
+  @media (hover: none) {
+    display: none;
+  }
 `;
