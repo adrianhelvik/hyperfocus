@@ -23,7 +23,10 @@
 
   &:empty::after {
     content: "Click + to get started";
+    text-align: center;
+    padding: 20px;
     color: rgba(255, 255, 255, 0.5);
+    line-height: 1.5;
     font-size: 40px;
     display: flex;
     align-items: center;
