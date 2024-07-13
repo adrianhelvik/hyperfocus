@@ -94,7 +94,7 @@ export default function Input(props: Props) {
 }
 
 const padding = "7px 5px";
-const fontSize = "1rem";
+const fontSize = "1.1rem";
 
 const Container = styled.div`
   position: relative;
@@ -138,6 +138,7 @@ const LabelText = styled.div<{ $hasContent: boolean, $color: string }>`
   transform: translateY(-50%);
   transform-origin: 0 0;
   transition: 0.3s;
+  font-weight: 300;
   ${(props) =>
     props.$hasContent &&
     css`

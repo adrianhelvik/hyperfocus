@@ -72,7 +72,6 @@ export default observer(function Login() {
               {message}
               {error && (
                 <React.Fragment>
-                  <strong>An error occurred</strong>
                   {error}
                 </React.Fragment>
               )}
@@ -118,6 +117,7 @@ const Message = styled.div`
   color: ${theme.logo1};
   text-align: center;
   margin-top: 30px;
+  letter-spacing: 1px;
   height: 80px;
 
   & strong {
