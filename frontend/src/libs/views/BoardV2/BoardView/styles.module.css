@@ -218,12 +218,14 @@
   cursor: text;
   line-height: 1.5;
 
-  -webkit-touch-callout: none;
-  -webkit-tap-highlight-color: transparent;
-  -moz-user-select: -moz-none;
-  -webkit-user-select: none;
-  -ms-user-select: none;
-  user-select: none;
+  @media (hover: none) {
+    -webkit-touch-callout: none;
+    -webkit-tap-highlight-color: transparent;
+    -moz-user-select: -moz-none;
+    -webkit-user-select: none;
+    -ms-user-select: none;
+    user-select: none;
+  }
 
   .isMovingCard & {
     opacity: 0.8;
