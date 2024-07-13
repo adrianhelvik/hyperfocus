@@ -60,7 +60,7 @@ const Container = styled.div<{ $color: string }>`
   }
 `;
 
-const Logo = ({ pageColor }: { pageColor: string }) => (
+export const Logo = ({ pageColor }: { pageColor: string }) => (
   <Logo.Container>
     <Logo.Text1 $pageColor={pageColor}>
       Hyper

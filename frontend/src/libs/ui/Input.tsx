@@ -7,6 +7,7 @@ import {
 } from "react";
 import styled, { css } from "styled-components";
 import * as theme from "../theme";
+import Color from "color";
 
 type Props = {
   onChange: ChangeEventHandler<HTMLInputElement>;
@@ -16,11 +17,13 @@ type Props = {
   value: string;
   placeholder?: string;
   size?: number;
+  color?: string;
 };
 
 export default function Input(props: Props) {
   const [showPassword, setShowPassword] = useState(false);
   const [element, setElement] = useState<HTMLInputElement>();
+  const color = props.color ?? theme.ui1;
 
   const type = useMemo(() => {
     if (showPassword) return "text";
@@ -63,6 +66,7 @@ export default function Input(props: Props) {
     <Container>
       <Label>
         <InputField
+          $color={color}
           onChange={props.onChange}
           value={props.value}
           size={props.size}
@@ -71,12 +75,13 @@ export default function Input(props: Props) {
           $forPassword={props.type === "password"}
           $colored={showPassword}
         />
-        <LabelText $hasContent={Boolean(props.value)}>
+        <LabelText $hasContent={Boolean(props.value)} $color={color}>
           {props.placeholder}
         </LabelText>
       </Label>
       {props.type === "password" && (
         <Icon
+          $color={color}
           $colored={showPassword}
           className="material-icons"
           onMouseDown={show}
@@ -93,10 +98,9 @@ const fontSize = "1rem";
 
 const Container = styled.div`
   position: relative;
-  margin-top: 15px;
 `;
 
-const InputField = styled.input<{ $forPassword: boolean; $colored: boolean }>`
+const InputField = styled.input<{ $forPassword: boolean; $colored: boolean, $color: string }>`
   font-size: ${fontSize};
   padding: ${padding};
   border: 1px solid ${theme.gray1};
@@ -105,11 +109,11 @@ const InputField = styled.input<{ $forPassword: boolean; $colored: boolean }>`
   width: 100%;
   &:focus {
     outline: none;
-    border-color: ${theme.ui1};
+    border-color: ${p => p.$color || theme.ui1};
   }
   &:focus + * {
     transform: translateY(calc(-100% - 7px)) scale(0.7) translateX(-5px);
-    color: ${theme.ui1};
+    color: ${p => p.$color || theme.ui1};
   }
   ${(p) =>
     p.$forPassword &&
@@ -119,16 +123,16 @@ const InputField = styled.input<{ $forPassword: boolean; $colored: boolean }>`
   ${(p) =>
     p.$colored &&
     css`
-      border-color: ${theme.ui1};
+      border-color: ${p.$color || theme.ui1};
     `}
 `;
 
-const LabelText = styled.div<{ $hasContent: boolean }>`
+const LabelText = styled.div<{ $hasContent: boolean, $color: string }>`
   position: absolute;
   font-size: ${fontSize};
   padding: ${padding};
   pointer-events: none;
-  color: ${theme.gray1};
+  color: ${p => Color(p.$color).mix(Color("#999"), 0.7).hex()};
   top: 50%;
   left: 3px;
   transform: translateY(-50%);
@@ -146,7 +150,7 @@ const LabelText = styled.div<{ $hasContent: boolean }>`
 
 const Label = styled.label``;
 
-const Icon = styled.i<{ $colored: boolean }>`
+const Icon = styled.i<{ $colored: boolean, $color: string }>`
   position: absolute;
   right: 5px;
   top: 50%;
@@ -155,6 +159,6 @@ const Icon = styled.i<{ $colored: boolean }>`
   ${(p) =>
     p.$colored &&
     css`
-      color: ${theme.ui1};
+      color: ${p.$color || theme.ui1};
     `}
 `;
