@@ -51,7 +51,7 @@ export default function Register() {
             color={theme.brightBlue}
             placeholder="Email"
             onChange={(e) => setEmail(e.target.value)}
-            size={20}
+            size={25}
             value={email}
           />
           <Input
@@ -59,7 +59,7 @@ export default function Register() {
             type="password"
             placeholder="Password"
             onChange={(e) => setPassword(e.target.value)}
-            size={20}
+            size={25}
             value={password}
           />
           <Input
@@ -67,7 +67,7 @@ export default function Register() {
             type="password"
             placeholder="Repeat password"
             onChange={(e) => setRepeatedPassword(e.target.value)}
-            size={20}
+            size={25}
             value={repeatedPassword}
           />
           <Button type="submit">Register</Button>

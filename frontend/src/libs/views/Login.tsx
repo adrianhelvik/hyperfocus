@@ -54,14 +54,14 @@ export default observer(function Login() {
           </LogoWrapper>
           <Form onSubmit={onSubmit}>
             <Input
-              size={20}
+              size={25}
               color={theme.brightBlue}
               placeholder="Username"
               onChange={(e) => setUsername(e.target.value)}
               value={username}
             />
             <Input
-              size={20}
+              size={25}
               color={theme.brightBlue}
               placeholder="Password"
               onChange={(e) => setPassword(e.target.value)}
