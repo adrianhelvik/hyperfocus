@@ -118,7 +118,7 @@ const Form = styled.form`
 const Message = styled.div`
   color: ${theme.brightBlue};
   text-align: center;
-  margin-top: 30px;
+  margin-top: 50px;
   letter-spacing: 1px;
   height: 30px;
 
