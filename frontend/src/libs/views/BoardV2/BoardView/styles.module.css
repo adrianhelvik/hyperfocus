@@ -36,6 +36,7 @@
 }
 
 .deck {
+  color: black;
   overflow-x: hidden;
   scroll-snap-align: center;
   flex-shrink: 0;
