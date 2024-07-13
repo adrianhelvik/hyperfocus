@@ -111,6 +111,11 @@ const Logout = styled.button`
   font-size: inherit;
   padding: 8px 20px;
   border-radius: 5px;
+  transition: background-color 300ms;
+
+  &:hover {
+    background-color: ${Color(theme.baseColor).mix(Color("#000"), 0.6).hex()};
+  }
 `;
 
 const DesktopOnlyTitle = styled.div`
