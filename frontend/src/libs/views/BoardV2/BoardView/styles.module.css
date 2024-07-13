@@ -53,6 +53,10 @@
     transform: rotate(102deg);
   }
 
+  & * {
+    user-select: none;
+  }
+
   /* This adds a rounded outline around portals */
   &:focus::after,
   &:focus-within::after {
