@@ -107,7 +107,7 @@ export default function addDragHandlers<Context>(options: {
 
     const timeout = setTimeout(() => {
       onDelayedTouchStart();
-    }, 400);
+    }, 1000);
 
     const preventDefault = (e: MouseEvent) => {
       e.preventDefault();
