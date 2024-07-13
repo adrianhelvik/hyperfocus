@@ -87,47 +87,60 @@ export default function addDragHandlers<Context>(options: {
 
     const touchIdentifier = touch.identifier;
 
-    e.preventDefault();
-    const moveContext = initializeDrag(
-      {
-        x: touch.clientX,
-        y: touch.clientY,
-      },
-      () => {
-        document.removeEventListener("touchmove", onTouchMove);
-        document.removeEventListener("touchend", onTouchEnd);
-      }
-    );
+    document.addEventListener("contextmenu", onContextMenu);
+    document.addEventListener("touchend", onInitialTouchEnd);
 
-    const onTouchMove = (e: TouchEvent) => {
-      const currentTouch = Array.from(e.touches).find(
-        (it) => it.identifier === touchIdentifier
-      );
-      if (currentTouch) {
-        touch = currentTouch;
-        moveContext.onMove(currentTouch.clientX, currentTouch.clientY);
-      } else {
-        moveContext.onEnd(touch.clientX, touch.clientY, touch.target);
-      }
-    };
+    function onInitialTouchEnd() {
+      document.removeEventListener("contextmenu", onContextMenu);
+      document.removeEventListener("touchend", onInitialTouchEnd);
+    }
 
-    const onTouchEnd = (e: TouchEvent) => {
-      let currentTouch = Array.from(e.changedTouches).find(
-        (it) => it.identifier === touchIdentifier
-      );
-      if (!currentTouch) {
-        console.error("Failed to find touch in touchend event");
-        currentTouch = touch;
-      }
-      moveContext.onEnd(
-        currentTouch.clientX,
-        currentTouch.clientY,
-        currentTouch.target
-      );
-    };
+    function onContextMenu(contextMenuEvent: MouseEvent) {
+      document.removeEventListener("contextmenu", onContextMenu);
+      document.removeEventListener("touchend", onInitialTouchEnd);
 
-    document.addEventListener("touchmove", onTouchMove);
-    document.addEventListener("touchend", onTouchEnd);
+      contextMenuEvent.preventDefault();
+      const moveContext = initializeDrag(
+        {
+          x: touch.clientX,
+          y: touch.clientY,
+        },
+        () => {
+          document.removeEventListener("touchmove", onTouchMove);
+          document.removeEventListener("touchend", onTouchEnd);
+        }
+      );
+
+      const onTouchMove = (e: TouchEvent) => {
+        const currentTouch = Array.from(e.touches).find(
+          (it) => it.identifier === touchIdentifier
+        );
+        if (currentTouch) {
+          touch = currentTouch;
+          moveContext.onMove(currentTouch.clientX, currentTouch.clientY);
+        } else {
+          moveContext.onEnd(touch.clientX, touch.clientY, touch.target);
+        }
+      };
+
+      const onTouchEnd = (e: TouchEvent) => {
+        let currentTouch = Array.from(e.changedTouches).find(
+          (it) => it.identifier === touchIdentifier
+        );
+        if (!currentTouch) {
+          console.error("Failed to find touch in touchend event");
+          currentTouch = touch;
+        }
+        moveContext.onEnd(
+          currentTouch.clientX,
+          currentTouch.clientY,
+          currentTouch.target
+        );
+      };
+
+      document.addEventListener("touchmove", onTouchMove);
+      document.addEventListener("touchend", onTouchEnd);
+    }
   }
 
   return () => {
