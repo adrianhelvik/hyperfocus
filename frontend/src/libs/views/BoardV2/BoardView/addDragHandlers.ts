@@ -94,6 +94,10 @@ export default function addDragHandlers<Context>(options: {
   function onTouchStart(e: TouchEvent) {
     if (e.touches.length !== 1) return;
 
+    document.querySelectorAll("*").forEach(e => {
+      if (e instanceof HTMLElement) e.style.userSelect = "none";
+    });
+
     let touch = e.touches[0];
 
     if (options.shouldIgnoreStart(touch.target)) return;
