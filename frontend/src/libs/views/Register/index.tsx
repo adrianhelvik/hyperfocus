@@ -1,7 +1,7 @@
 import { useNavigate } from "react-router-dom";
 import { FormEvent, useState } from "react";
 import * as theme from "src/libs/theme";
-import styled from "styled-components";
+import styled, { css } from "styled-components";
 import Input from "src/libs/ui/Input";
 import api, { setPersistentHeader } from "src/libs/api";
 import { Logo } from "src/libs/ui/Header";
@@ -70,7 +70,8 @@ export default function Register() {
             size={20}
             value={repeatedPassword}
           />
-          <Button type="submit">Create user</Button>
+          <Button type="submit">Register</Button>
+          <Button type="button" onClick={() => navigate("/login")} $secondary>Log in</Button>
           <Message>
             {message}
             {error && (
@@ -128,7 +129,7 @@ const Message = styled.div`
 `;
 
 const Button = styled.button<{ $secondary?: boolean }>`
-  background-color: white;
+  background-color: ${theme.brightBlue};
   border-radius: 4px;
   padding: 7px 10px;
   font-weight: bold;

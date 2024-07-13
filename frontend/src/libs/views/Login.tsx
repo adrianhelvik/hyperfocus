@@ -127,7 +127,7 @@ const Message = styled.div`
 `;
 
 const Button = styled.button<{ $secondary?: boolean }>`
-  background-color: white;
+  background-color: ${theme.brightBlue};
   border-radius: 4px;
   padding: 7px 10px;
   font-weight: bold;
