@@ -80,19 +80,19 @@ Logo.Container = styled.div`
 
 Logo.Text1 = styled.span<{ $pageColor: string }>`
   color: ${(p) =>
-    Color(p.$pageColor).isDark() ? theme.logo1 : theme.logo1Dark};
+    Color(p.$pageColor).isDark() ? theme.brightBlue : theme.logo1Dark};
   position: relative;
 `;
 
 Logo.Text2 = styled.span<{ $pageColor: string }>`
   color: ${(p) =>
-    Color(p.$pageColor).isDark() ? theme.logo2 : theme.logo2Dark};
+    Color(p.$pageColor).isDark() ? theme.useWhiteInstead : theme.logo2Dark};
 `;
 
 const UnderLine = styled.div<{ $pageColor: string }>`
   height: 4px;
   background-color: ${(p) =>
-    Color(p.$pageColor).isDark() ? theme.logo1 : theme.logo1Dark};
+    Color(p.$pageColor).isDark() ? theme.brightBlue : theme.logo1Dark};
   width: calc(100% - 3px);
   position: absolute;
   top: 100%;

@@ -93,8 +93,8 @@ export default function Input(props: Props) {
   );
 }
 
-const padding = "7px 5px";
-const fontSize = "1.1rem";
+const padding = "10px 7px";
+const fontSize = "1.2rem";
 
 const Container = styled.div`
   position: relative;

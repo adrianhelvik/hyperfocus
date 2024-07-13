@@ -2,12 +2,11 @@ import { FormEvent, useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { useAuth } from "../authContext";
 import * as theme from "src/libs/theme";
-import styled, { css } from "styled-components";
+import styled from "styled-components";
 import { observer } from "mobx-react";
 import Input from "src/libs/ui/Input";
 import { Logo } from "../ui/Header";
 import sleep from "src/libs/sleep";
-import React from "react";
 import Color from "color";
 
 export default observer(function Login() {
@@ -55,13 +54,15 @@ export default observer(function Login() {
           </LogoWrapper>
           <Form onSubmit={onSubmit}>
             <Input
-              color={theme.logo1}
+              size={20}
+              color={theme.brightBlue}
               placeholder="Username"
               onChange={(e) => setUsername(e.target.value)}
               value={username}
             />
             <Input
-              color={theme.logo1}
+              size={20}
+              color={theme.brightBlue}
               placeholder="Password"
               onChange={(e) => setPassword(e.target.value)}
               value={password}
@@ -71,9 +72,9 @@ export default observer(function Login() {
             <Message>
               {message}
               {error && (
-                <React.Fragment>
+                <>
                   {error}
-                </React.Fragment>
+                </>
               )}
             </Message>
           </Form>
@@ -91,9 +92,7 @@ const LogoWrapper = styled.div`
 `;
 
 const Container = styled.div`
-    background:
-      linear-gradient(90deg, rgba(0,0,0,0), ${Color(theme.logo1).alpha(0.1).string()}),
-      linear-gradient(black, ${Color(theme.logo1).darken(0.9).hex()});
+    background: ${theme.smoothGradient};
     color: white;
     height: 100dvh;
     display: flex;
@@ -111,10 +110,11 @@ const Form = styled.form`
   display: grid;
   grid-auto-flow: row;
   gap: 25px;
+  max-width: calc(100vw - 60px);
 `;
 
 const Message = styled.div`
-  color: ${theme.logo1};
+  color: ${theme.brightBlue};
   text-align: center;
   margin-top: 30px;
   letter-spacing: 1px;
@@ -129,7 +129,8 @@ const Button = styled.button`
   background-color: white;
   border-radius: 4px;
   padding: 7px 10px;
-  color: #333;
+  font-weight: bold;
+  color: ${Color(theme.brightBlue).mix(Color("black"), 0.8).hex()};
   text-align: center;
   cursor: pointer;
   display: block;
@@ -140,16 +141,16 @@ const Button = styled.button`
   transition: background-color 0.3s, box-shadow 0.3s;
 
   &:hover {
-    background-color: ${theme.logo1};
+    background-color: ${theme.brightBlue};
   }
 
   &:focus {
-    background-color: ${theme.logo1};
+    background-color: ${theme.brightBlue};
     outline: none;
   }
 
   &:focus-visible {
-    outline: 2px solid ${theme.logo1};
+    outline: 2px solid ${theme.brightBlue};
     outline-offset: 2px;
   }
 

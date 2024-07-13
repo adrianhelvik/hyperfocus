@@ -1,3 +1,5 @@
+import Color from "color";
+
 export const ui1 = `rgb(114, 32, 222)`;
 export const ui2 = `rgb(150, 84, 236)`;
 export const ui3 = `rgb(241, 216, 44)`;
@@ -22,8 +24,8 @@ export const shadows = [
   `0 1px 4px 1px rgba(0, 0, 0, 0.25)`,
 ];
 
-export const logo1 = `rgb(198, 249, 255)`;
-export const logo2 = `rgb(255, 255, 255)`;
+export const brightBlue = `rgb(198, 249, 255)`;
+export const useWhiteInstead = `rgb(255, 255, 255)`;
 
 export const logo1Dark = `rgb(90, 90, 90)`;
 export const logo2Dark = `rgb(0, 0, 0)`;
@@ -34,3 +36,8 @@ export const defaultDeckColor = "rgb(200, 200, 200)";
 
 export const bg1 = `rgb(26, 20, 33)`;
 export const bg2 = `rgb(227, 226, 229)`;
+
+export const smoothGradient = [
+    `linear-gradient(90deg, rgba(0,0,0,0), ${Color(brightBlue).alpha(0.1).string()})`,
+    `linear-gradient(black, ${Color(brightBlue).darken(0.9).hex()})`,
+].join(", ");
