@@ -47,7 +47,7 @@ export const Register = styled(Link)`
   font-size: 30px;
   background-color: ${Color(theme.baseColor).mix(Color("black"), 0.1).mix(Color("white"), 0.4).hex()};
   border: 4px solid ${theme.baseColor};
-  color: ${Color(theme.baseColor).mix(Color("black"), 0.6).string()};
+  color: ${Color(theme.baseColor).mix(Color("black"), 0.8).string()};
   border: 0;
   border-radius: 4px;
   padding: 10px 20px;
@@ -58,6 +58,7 @@ export const Register = styled(Link)`
   text-align: center;
   text-decoration: none;
   margin-bottom: 60px;
+  font-weight: 600;
 `;
 
 export const Content = styled.div`
