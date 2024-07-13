@@ -1,6 +1,7 @@
 .body {
   background-color: rgb(26, 20, 33);
   display: flex;
+  user-select: none;
 }
 
 .board {
