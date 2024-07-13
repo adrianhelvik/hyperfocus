@@ -38,6 +38,7 @@ const Container = styled.div<{
   $position?: Coord | null;
   $width?: number | null;
 }>`
+  color: black;
   background-color: white;
   max-width: calc(100vw - 40px);
   padding: 20px;
