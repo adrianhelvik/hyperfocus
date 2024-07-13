@@ -46,7 +46,7 @@ class LandingPage extends React.Component<Props> {
               <strong>Open source</strong> kanban boards with{" "}
               <strong>portals</strong>
             </Title>
-            <Register to="/register">Register</Register>
+            <Register to="/register">Get started</Register>
             <LoginWrapper>
               Or <Login to="/login">log in</Login>
             </LoginWrapper>

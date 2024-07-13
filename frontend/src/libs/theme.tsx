@@ -67,7 +67,7 @@ for (let i = i0; i < max; i++) {
 
 export const smoothGradient = [
   ...stars,
-  // `linear-gradient(${Color(brightBlue).darken(0.9).string()}, ${Color(brightBlue).darken(0.0).string()})`,
+  `linear-gradient(${Color(brightBlue).darken(0.9).string()}, ${Color(brightBlue).alpha(0.8).string()})`,
   `linear-gradient(90deg, rgba(0,0,0,0), ${Color(brightBlue).alpha(0.1).string()})`,
   `linear-gradient(black, ${Color(brightBlue).darken(0.9).hex()})`,
 ].join(", ");

@@ -47,7 +47,7 @@ export const Register = styled(Link)`
   font-size: 30px;
   background-color: ${Color(theme.brightBlue).mix(Color("black"), 0.1).hex()};
   border: 4px solid ${theme.brightBlue};
-  color: ${Color(theme.brightBlue).darken(0.9).string()};
+  color: ${Color(theme.brightBlue).mix(Color("black"), 0.6).string()};
   border: 0;
   border-radius: 4px;
   padding: 10px 20px;
@@ -57,6 +57,7 @@ export const Register = styled(Link)`
   width: fit-content;
   text-align: center;
   text-decoration: none;
+  margin-bottom: 60px;
 `;
 
 export const Content = styled.div`
@@ -64,7 +65,7 @@ export const Content = styled.div`
   padding-bottom: 120px;
 `;
 
-export const LoginWrapper = styled.div`
+export const ExtraText = styled.div`
   text-align: center;
   margin-top: 20px;
   font-size: 20px;
