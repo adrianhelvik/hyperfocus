@@ -14,8 +14,4 @@ RUN yarn
 
 COPY ./frontend/src src
 
-RUN yarn build
-RUN cp -r dist /app/
-
-FROM codecentric/single-page-application-server:latest-nginx-stable-alpine
-COPY --from=build /frontend/dist /app
+CMD ["yarn", "start"]
