@@ -1,21 +1,22 @@
 import { distanceBetween } from "./distanceBetween";
 import startScrollWhenNearEdges from "./startScrollWhenNearEdges";
 
-export default function addDragHandlers<Context>(
-  options: {
-    scrollContainer: HTMLElement,
-    element: HTMLElement,
-    shouldIgnoreStart(target: EventTarget | null): boolean;
-    onDragStart(clientX: number, clientY: number): Context;
-    onDragMove(clientX: number, clientY: number, context: Context): void;
-    onDragEnd(clientX: number, clientY: number, context: Context): void;
-    onClick(clientX: number, clientY: number, target: EventTarget | null): void;
-  }
-) {
+export default function addDragHandlers<Context>(options: {
+  scrollContainer: HTMLElement;
+  element: HTMLElement;
+  shouldIgnoreStart(target: EventTarget | null): boolean;
+  onDragStart(clientX: number, clientY: number): Context;
+  onDragMove(clientX: number, clientY: number, context: Context): void;
+  onDragEnd(clientX: number, clientY: number, context: Context): void;
+  onClick(clientX: number, clientY: number, target: EventTarget | null): void;
+}) {
   options.element.addEventListener("mousedown", onMouseDown);
   options.element.addEventListener("touchstart", onTouchStart);
 
-  const initializeDrag = (initialCoords: { x: number, y: number }, cleanup: () => void) => {
+  const initializeDrag = (
+    initialCoords: { x: number; y: number },
+    cleanup: () => void
+  ) => {
     return {
       init: null as {
         context: Context;
@@ -54,13 +55,16 @@ export default function addDragHandlers<Context>(
 
     e.preventDefault();
 
-    const dragContext = initializeDrag({
-      x: e.clientX,
-      y: e.clientY,
-    }, () => {
-      document.removeEventListener("mousemove", onMouseMove);
-      document.removeEventListener("mouseup", onMouseUp);
-    });
+    const dragContext = initializeDrag(
+      {
+        x: e.clientX,
+        y: e.clientY,
+      },
+      () => {
+        document.removeEventListener("mousemove", onMouseMove);
+        document.removeEventListener("mouseup", onMouseUp);
+      }
+    );
 
     const onMouseMove = (e: MouseEvent) => {
       dragContext.onMove(e.clientX, e.clientY);
@@ -68,7 +72,7 @@ export default function addDragHandlers<Context>(
 
     const onMouseUp = (e: MouseEvent) => {
       dragContext.onEnd(e.clientX, e.clientY, e.target);
-    }
+    };
 
     document.addEventListener("mousemove", onMouseMove);
     document.addEventListener("mouseup", onMouseUp);
@@ -84,16 +88,21 @@ export default function addDragHandlers<Context>(
     const touchIdentifier = touch.identifier;
 
     e.preventDefault();
-    const moveContext = initializeDrag({
-      x: touch.clientX,
-      y: touch.clientY,
-    }, () => {
-      document.removeEventListener("touchmove", onTouchMove);
-      document.removeEventListener("touchend", onTouchEnd);
-    });
+    const moveContext = initializeDrag(
+      {
+        x: touch.clientX,
+        y: touch.clientY,
+      },
+      () => {
+        document.removeEventListener("touchmove", onTouchMove);
+        document.removeEventListener("touchend", onTouchEnd);
+      }
+    );
 
     const onTouchMove = (e: TouchEvent) => {
-      const currentTouch = Array.from(e.touches).find(it => it.identifier === touchIdentifier);
+      const currentTouch = Array.from(e.touches).find(
+        (it) => it.identifier === touchIdentifier
+      );
       if (currentTouch) {
         touch = currentTouch;
         moveContext.onMove(currentTouch.clientX, currentTouch.clientY);
@@ -103,12 +112,18 @@ export default function addDragHandlers<Context>(
     };
 
     const onTouchEnd = (e: TouchEvent) => {
-      let currentTouch = Array.from(e.changedTouches).find(it => it.identifier === touchIdentifier);
+      let currentTouch = Array.from(e.changedTouches).find(
+        (it) => it.identifier === touchIdentifier
+      );
       if (!currentTouch) {
         console.error("Failed to find touch in touchend event");
         currentTouch = touch;
       }
-      moveContext.onEnd(currentTouch.clientX, currentTouch.clientY, currentTouch.target);
+      moveContext.onEnd(
+        currentTouch.clientX,
+        currentTouch.clientY,
+        currentTouch.target
+      );
     };
 
     document.addEventListener("touchmove", onTouchMove);

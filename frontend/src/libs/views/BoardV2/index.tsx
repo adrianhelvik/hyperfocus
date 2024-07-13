@@ -12,7 +12,7 @@ import AddCircle from "./AddCircle";
 import api from "src/libs/api";
 
 export default function BoardV2() {
-  const { boardId } = useParams<{ boardId: string }>();
+  const { boardId } = useParams<{ boardId: string, deckId?: string }>();
   if (!boardId) throw Error("Expected boardId to be provided");
   const [boardView, setBoardView] = useState<BoardView | null>(null);
   const [div, setDiv] = useState<HTMLDivElement | null>(null);

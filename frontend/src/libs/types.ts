@@ -25,12 +25,16 @@ export type Deck = {
   deckId: string;
 };
 
+export type PortalTarget = Deck & {
+  boardTitle: string;
+};
+
 export type Portal = {
   type: "portal";
   boardId: string;
   portalId: string;
   title: string;
-  target: Deck;
+  target: PortalTarget;
 };
 
 export type BoardParam = {

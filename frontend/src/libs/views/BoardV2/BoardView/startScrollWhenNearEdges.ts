@@ -8,7 +8,7 @@ export default function startScrollWhenNearEdges(root: HTMLElement) {
     else if (clientX >= window.innerWidth - AUTO_SCROLL_OFFSET)
       scrollDirection = "RIGHT";
     else scrollDirection = "NONE";
-  }
+  };
 
   const onMouseMove = (e: MouseEvent) => {
     updateDirection(e.clientX);
@@ -33,7 +33,6 @@ export default function startScrollWhenNearEdges(root: HTMLElement) {
       root.scrollBy({ left: 2 });
     }
   });
-
 
   return () => {
     clearInterval(scrollInterval);

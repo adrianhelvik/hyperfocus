@@ -1,6 +1,6 @@
 import { getDeckColorCSSVariables } from "./getDeckColorCSSVariables";
 import { makeTextAreaAutoGrow } from "./makeTextAreaAutoGrow";
-import createDeckTitleNode from "./createDeckTitleNode";
+import createDeckTitleElement from "./createDeckTitleElement";
 import { isKeypressElement } from "./isKeypressElement";
 import { Board, Deck, Portal } from "src/libs/types";
 import createCardElement from "./createCardElement";
@@ -15,10 +15,12 @@ export class BoardView {
   private onDestroyCallbacks: Array<() => void> = [];
   private scrollSnapTimeout: ReturnType<typeof setTimeout> | null = null;
   private cancelSnapToDeck: (() => void) | null = null;
+  private focusDeckTimeout?: ReturnType<typeof setTimeout>;
 
   constructor(private root: HTMLElement, private readonly board: Board) {
     this.cleanup();
     this.buildInterface();
+    this.possiblyFocusDeck();
     document.addEventListener("keydown", this.onKeydown);
   }
 
@@ -27,6 +29,7 @@ export class BoardView {
   }
 
   private cleanup() {
+    clearTimeout(this.focusDeckTimeout);
     this.onDestroyCallbacks.forEach((fn) => fn());
     this.onDestroyCallbacks = [];
     this.root.innerHTML = "";
@@ -81,6 +84,30 @@ export class BoardView {
     }
   };
 
+  private possiblyFocusDeck() {
+    const params = new URLSearchParams(location.search);
+    const focusDeckId = params.get("focusDeck");
+
+    if (focusDeckId) {
+      const deckElement = this.deckElements.find(it => it.dataset.deckId === focusDeckId)
+
+      if (deckElement) {
+        deckElement.scrollIntoView({
+          block: "center",
+        });
+
+        params.delete("focusDeck");
+
+        const newUrl = new URL(location.href);
+        newUrl.search = params.toString();
+
+        history.replaceState({}, "", newUrl.toString());
+
+        deckElement.focus();
+      }
+    }
+  }
+
   private showSearchUI() {
     // TODO: Implement this
   }
@@ -129,6 +156,7 @@ export class BoardView {
 
     const deckElement = el("div", {
       className: classes.deck,
+      tabIndex: 0,
       dataset: {
         deckId: deck.deckId,
         childType: child.type,
@@ -142,7 +170,7 @@ export class BoardView {
     deckElement.append(deckContentElement);
 
     deckContentElement.append(
-      createDeckTitleNode({
+      createDeckTitleElement({
         root: this.root,
         deckElement,
         child,
@@ -196,7 +224,7 @@ export class BoardView {
     cleanupHooks: CleanupHooks;
   }) {
     const form = el("form", {
-      className: classes.newCardContainer
+      className: classes.newCardContainer,
     });
 
     const addCardInput = el("textarea", {
@@ -208,7 +236,7 @@ export class BoardView {
       placeholder: "Add card",
     });
 
-    cleanupHooks.add(makeTextAreaAutoGrow(addCardInput))
+    cleanupHooks.add(makeTextAreaAutoGrow(addCardInput));
     form.append(addCardInput);
 
     const submit = async () => {

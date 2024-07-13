@@ -28,7 +28,7 @@ export default function createCardElement({
   cleanupHooks: CleanupHooks;
   deckElement: HTMLElement;
   root: HTMLElement;
-  board: Board,
+  board: Board;
   card: Card;
 }) {
   let editSource: "keyboard" | "mouse" = "mouse";
@@ -53,7 +53,7 @@ export default function createCardElement({
   // const cleanupAutoGrow =
   makeTextAreaAutoGrow(cardInputElement);
 
-  const switchToInput = (e: { clientX: number, clientY: number } | null) => {
+  const switchToInput = (e: { clientX: number; clientY: number } | null) => {
     if (e) editSource = "mouse";
     else editSource = "keyboard";
     cardElement.dataset.editSource = editSource;
@@ -183,9 +183,7 @@ export default function createCardElement({
     cleanupHooks.run();
 
     root.classList.add(classes.isMovingCard);
-    cardElement.parentElement?.parentElement?.classList.add(
-      classes.hoverDeck
-    );
+    cardElement.parentElement?.parentElement?.classList.add(classes.hoverDeck);
 
     cardElement.replaceWith(placeholderNode);
     document.body.appendChild(cardElement);
@@ -213,7 +211,11 @@ export default function createCardElement({
     };
   }
 
-  function onDragEnd(clientX: number, clientY: number, context: { insetX: number, insetY: number }) {
+  function onDragEnd(
+    clientX: number,
+    clientY: number,
+    context: { insetX: number; insetY: number }
+  ) {
     cleanupHooks.run();
 
     const index = Array.from(
@@ -234,28 +236,30 @@ export default function createCardElement({
 
     const initialScrollLeft = root.scrollLeft;
 
-    cleanupHooks.add(animate({
-      values: {
-        x: [clientX - context.insetX, targetX],
-        y: [clientY - context.insetY, targetY],
-      },
-      fn(pos) {
-        const scrollXDelta = initialScrollLeft - root.scrollLeft;
-        const x = pos.x + scrollXDelta;
-        const y = pos.y;
-        cardElement.style.transform = `translateX(${x}px) translateY(${y}px)`;
-      },
-      time: CARD_ANIMATION_TIME,
-      onComplete() {
-        cardElement.style.transform = "";
-        cardElement.style.position = "";
-        cardElement.style.width = "";
-        root.style.scrollSnapType = "";
-        cardElement.remove();
-        placeholderNode.replaceWith(cardElement);
-        cardElement.classList.remove(classes.movingCard);
-      },
-    }));
+    cleanupHooks.add(
+      animate({
+        values: {
+          x: [clientX - context.insetX, targetX],
+          y: [clientY - context.insetY, targetY],
+        },
+        fn(pos) {
+          const scrollXDelta = initialScrollLeft - root.scrollLeft;
+          const x = pos.x + scrollXDelta;
+          const y = pos.y;
+          cardElement.style.transform = `translateX(${x}px) translateY(${y}px)`;
+        },
+        time: CARD_ANIMATION_TIME,
+        onComplete() {
+          cardElement.style.transform = "";
+          cardElement.style.position = "";
+          cardElement.style.width = "";
+          root.style.scrollSnapType = "";
+          cardElement.remove();
+          placeholderNode.replaceWith(cardElement);
+          cardElement.classList.remove(classes.movingCard);
+        },
+      })
+    );
 
     deckElements.forEach((e) => e.classList.remove(classes.hoverDeck));
 
@@ -264,10 +268,13 @@ export default function createCardElement({
       target: hoverDeck.dataset.deckId,
       index,
     });
+  }
 
-  };
-
-  function onDragMove(clientX: number, clientY: number, context: { insetX: number, insetY: number, cardHeight: number }) {
+  function onDragMove(
+    clientX: number,
+    clientY: number,
+    context: { insetX: number; insetY: number; cardHeight: number }
+  ) {
     styleMovedCard({
       clientX,
       clientY,
@@ -276,10 +283,7 @@ export default function createCardElement({
       insetY: context.insetY,
     });
 
-    hoverDeck = findClosestDeck(
-      deckElements,
-      horizontalMiddle(cardElement)
-    );
+    hoverDeck = findClosestDeck(deckElements, horizontalMiddle(cardElement));
 
     const didSwap = possiblyPerformHoverSwap({
       hoverDeck,
@@ -291,11 +295,8 @@ export default function createCardElement({
     });
 
     if (didSwap) {
-      deckElements.forEach((e) =>
-        e.classList.remove(classes.hoverDeck)
-      );
+      deckElements.forEach((e) => e.classList.remove(classes.hoverDeck));
       hoverDeck.classList.add(classes.hoverDeck);
     }
-  };
+  }
 }
-

@@ -41,8 +41,13 @@
     box-shadow: var(--shadows-2);
   }
 
+  &:focus {
+    outline: none;
+  }
+
   /* This adds a rounded outline around portals */
-  &[data-child-type="portal"]::after {
+  &:focus::after,
+  &:focus-within::after {
     content: "";
     display: block;
     border-radius: 5px;
@@ -67,16 +72,26 @@
 }
 
 .deckTitleContainer {
-  border-top-left-radius: 4px;
-  border-top-right-radius: 4px;
-  background-color: var(--deck-color, #aaa);
-  display: flex;
-  padding: 7px;
-  gap: 7px;
-
   --input-bg: color-mix(in srgb,
       var(--deck-color, #aaa) 80%,
       var(--deck-black-or-white-contrast));
+
+  --menu-bg: color-mix(in srgb,
+      var(--deck-color, #aaa) 60%,
+      var(--deck-black-or-white-contrast));
+
+  --menu-fg: var(--deck-text-color);
+
+  --deck-title-padding: 4px 7px;
+
+  & .deckTitleContentContainer {
+    border-top-left-radius: 4px;
+    border-top-right-radius: 4px;
+    background-color: var(--deck-color, #aaa);
+    display: flex;
+    padding: 7px;
+    gap: 7px;
+  }
 
   & .deckTitle {
     flex-basis: 100%;
@@ -86,7 +101,7 @@
     font-size: 16px;
     font-weight: normal;
     width: fit-content;
-    padding: 7px;
+    padding: var(--deck-title-padding);
     border-radius: 4px;
     transition: background-color 300ms;
     line-height: 1.5;
@@ -101,9 +116,47 @@
     }
   }
 
+  & .portalReference {
+    & .portalReferenceContent {
+      background-color: transparent;
+      color: var(--deck-color, #aaa);
+      border-radius: 4px;
+      display: flex;
+      gap: 10px;
+    }
+
+    & .portalBoardLink {
+      border: 0;
+      font-size: inherit;
+      appearance: none;
+      background-color: var(--menu-bg);
+      color: var(--menu-fg);
+      white-space: nowrap;
+      text-decoration: none;
+      display: inline-block;
+      padding: 5px;
+      padding-right: 9px;
+      border-radius: 4px;
+      display: flex;
+      align-items: center;
+      gap: 5px;
+    }
+
+    & .portalIcon {
+      padding-right: 3px;
+    }
+
+    & .portalBoardTitle, & .portalDeckTitle {
+      padding: 0 2px;
+      max-width: 100px;
+      text-overflow: ellipsis;
+      overflow: hidden;
+    }
+  }
+
   & .deckTitleInput {
     flex-basis: 100%;
-    padding: 7px;
+    padding: var(--deck-title-padding);
     display: block;
     font-size: 16px;
     border-radius: 4px;
@@ -112,6 +165,8 @@
     color: var(--deck-text-color, black);
     margin: 0;
     flex-grow: 0;
+    flex-shrink: 1;
+    width: 0;
 
     line-height: 1.5;
   }
@@ -120,15 +175,13 @@
     width: 45px;
     appearance: none;
     border: 0;
-    background: color-mix(in srgb,
-        var(--deck-color, #aaa) 60%,
-        var(--deck-black-or-white-contrast));
+    background: var(--menu-bg);
     border-radius: 4px;
     flex-shrink: 0;
     display: flex;
     align-items: center;
     justify-content: center;
-    color: var(--deck-text-color);
+    color: var(--menu-fg);
     cursor: pointer;
     transition: background-color 100ms;
     height: 35px;

@@ -1,10 +1,10 @@
 import easeInOutQuad from "src/libs/easeInOutQuad";
 
 export function smoothScrollToCenter(opts: {
-  scrollContainer: HTMLElement,
-  element: HTMLElement,
-  time: number,
-  onEnd?: () => void,
+  scrollContainer: HTMLElement;
+  element: HTMLElement;
+  time: number;
+  onEnd?: () => void;
 }) {
   const rect = opts.element.getBoundingClientRect();
   const targetCenter = (rect.left + rect.width / 2) | 0;

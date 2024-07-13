@@ -1,27 +1,26 @@
+import { replaceWithInputAndFocusAtCaretPosition } from "./replaceWithInputAndFocusAtCaretPosition";
+import { makeTextAreaAutoGrow } from "./makeTextAreaAutoGrow";
+import { smoothScrollToCenter } from "./smoothScrollToCenter";
+import { setLinkableText } from "./setLinkableText";
+import addDragHandlers from "./addDragHandlers";
+import { CleanupHooks } from "./CleanupHooks";
 import { Deck, Portal } from "src/libs/types";
 import classes from "./styles.module.css";
-import { CleanupHooks } from "./CleanupHooks";
-import { setLinkableText } from "./setLinkableText";
-import { replaceWithInputAndFocusAtCaretPosition } from "./replaceWithInputAndFocusAtCaretPosition";
-import api from "src/libs/api";
-import animate from "./animate";
 import onlyOnceFn from "./onlyOnceFn";
+import animate from "./animate";
+import api from "src/libs/api";
 import { el } from "./el";
-import { createLinkableTextFragment } from "./createLinkableTextFragment";
-import { makeTextAreaAutoGrow } from "./makeTextAreaAutoGrow";
-import addDragHandlers from "./addDragHandlers";
-import { smoothScrollToCenter } from "./smoothScrollToCenter";
 
 const DECK_ANIMATION_TIME = 300;
 
-export default function createDeckTitleNode({
+export default function createDeckTitleElement({
   root,
   cleanupHooks,
   deckElements,
   deckElement,
   child,
 }: {
-  root: HTMLElement,
+  root: HTMLElement;
   deckElements: HTMLElement[];
   cleanupHooks: CleanupHooks;
   deckElement: HTMLElement;
@@ -32,13 +31,12 @@ export default function createDeckTitleNode({
 
   let deckTitleNode: HTMLHeadingElement;
   let menuNode: HTMLButtonElement;
+  let portalDeckNameNode: HTMLDivElement;
 
-  const containerNode = el("div", {
-    className: classes.deckTitleContainer,
-  },
-    deckTitleNode = el(
-      "h2",
-      {
+  // @prettier-ignore
+  const containerNode = el("div", { className: classes.deckTitleContainer },
+    el("div", { className: classes.deckTitleContentContainer },
+      deckTitleNode = el("h2", {
         tabIndex: 0,
         className: classes.deckTitle,
         onkeydown: (e) => {
@@ -48,23 +46,43 @@ export default function createDeckTitleNode({
           }
         },
       },
-      createLinkableTextFragment(child.title)
-    ),
-    menuNode = el(
-      "button",
-      {
+        child.title
+      ),
+      el("div", {},
+        portalDeckNameNode = el("div", { className: classes.portalReference }),
+      ),
+      menuNode = el("button", {
         type: "button",
         className: classes.deckTitleMenu,
         onclick: () => {
           // TODO: Show menu.
         },
       },
-      el("i", {
-        className: "material-icons",
-        textContent: "menu",
-      })
+        el("i", {
+          className: "material-icons",
+          textContent: "menu",
+        })
+      ),
     ),
   );
+
+  if (child.type === "portal") {
+    portalDeckNameNode.append(
+      el("div", { className: classes.portalReferenceContent },
+        el("a", {
+          className: classes.portalBoardLink,
+          href: `/board/${child.target.boardId}?focusDeck=${child.target.deckId}`,
+        },
+          el("span", { className: `${classes.portalIcon} material-symbols-outlined` }, "sync_alt"),
+          el("span", { className: classes.portalBoardTitle }, child.target.boardTitle),
+          "›",
+          el("span", { className: classes.portalDeckTitle }, child.target.title),
+        ),
+      ),
+    );
+  } else {
+    portalDeckNameNode.remove();
+  }
 
   const titleInput = el("textarea", {
     className: classes.deckTitleInput,
@@ -163,7 +181,6 @@ export default function createDeckTitleNode({
 
     setPosition(clientX, clientY);
     renderFloatingDeck();
-
   }
 
   function onDragMove(clientX: number, clientY: number) {
@@ -178,8 +195,7 @@ export default function createDeckTitleNode({
     const prevRect = prevElement?.getBoundingClientRect();
     const nextRect = nextElement?.getBoundingClientRect();
 
-    const x =
-      clientX - insetX + placeholder.getBoundingClientRect().width / 2;
+    const x = clientX - insetX + placeholder.getBoundingClientRect().width / 2;
 
     if (prevRect && prevRect.left + prevRect.width > x) {
       placeholder.remove();

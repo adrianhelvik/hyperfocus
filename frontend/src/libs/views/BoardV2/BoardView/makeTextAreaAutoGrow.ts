@@ -41,4 +41,3 @@ function sizeElementRepeatedly(element: HTMLTextAreaElement) {
   setTimeout(() => sizeElement(element), 500);
   setTimeout(() => sizeElement(element), 1000);
 }
-
