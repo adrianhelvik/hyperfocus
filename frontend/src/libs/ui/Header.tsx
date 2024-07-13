@@ -93,7 +93,7 @@ const UnderLine = styled.div<{ $pageColor: string }>`
   height: 4px;
   background-color: ${(p) =>
     Color(p.$pageColor).isDark() ? theme.brightBlue : theme.logo1Dark};
-  width: calc(100% - 3px);
+  width: calc(100% - 4px);
   position: absolute;
   top: 100%;
   left: 0;
