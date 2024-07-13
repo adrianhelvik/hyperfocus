@@ -38,7 +38,6 @@ export const bg1 = `rgb(26, 20, 33)`;
 export const bg2 = `rgb(227, 226, 229)`;
 
 export const smoothGradient = [
-  `radial-gradient(rgba(0,0,0,0), rgba(0,0,0,0.9))`,
   `linear-gradient(90deg, rgba(0,0,0,0), ${Color(brightBlue).alpha(0.1).string()})`,
   `linear-gradient(black, ${Color(brightBlue).darken(0.9).hex()})`,
 ].join(", ");
