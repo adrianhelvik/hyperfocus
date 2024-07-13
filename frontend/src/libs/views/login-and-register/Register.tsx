@@ -49,14 +49,14 @@ export default function Register() {
         <Form onSubmit={onSubmit}>
           <Heading>Nice to meet you!</Heading>
           <Input
-            color={theme.brightBlue}
+            color={theme.baseColor}
             placeholder="Email"
             onChange={(e) => setEmail(e.target.value)}
             size={25}
             value={email}
           />
           <Input
-            color={theme.brightBlue}
+            color={theme.baseColor}
             type="password"
             placeholder="Password"
             onChange={(e) => setPassword(e.target.value)}
@@ -64,7 +64,7 @@ export default function Register() {
             value={password}
           />
           <Input
-            color={theme.brightBlue}
+            color={theme.baseColor}
             type="password"
             placeholder="Repeat password"
             onChange={(e) => setRepeatedPassword(e.target.value)}

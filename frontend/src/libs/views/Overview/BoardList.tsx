@@ -118,7 +118,7 @@ const Header = styled.div`
 `;
 
 const PlusButton = styled.button`
-  background-color: ${Color(theme.brightBlue).alpha(0.3).string()};
+  background-color: ${Color(theme.baseColor).alpha(0.3).string()};
   border: 0;
   color: white;
   border-radius: 4px;

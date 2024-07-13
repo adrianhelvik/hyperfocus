@@ -24,7 +24,10 @@ export const shadows = [
   `0 1px 4px 1px rgba(0, 0, 0, 0.25)`,
 ];
 
-export const brightBlue = `rgb(198, 249, 255)`;
+const rand = () => Math.random() * 255 | 0
+const randomColor = Color(`rgb(${rand()}, ${rand()}, ${rand()})`).mix(Color("white"), 0.3).hex();
+
+export const baseColor = randomColor;
 export const useWhiteInstead = `rgb(255, 255, 255)`;
 
 export const logo1Dark = `rgb(90, 90, 90)`;
@@ -48,7 +51,7 @@ function generateStars(staticOpacity = 1) {
   const shineHeightRand = 6;
   const max = 60;
 
-    let radius = 15;
+  let radius = 15;
   for (let i = i0; i < max; i++) {
     const rand1 = (i % 17) / 17;
     // const rand2 = (i % 17) / 17;
@@ -57,11 +60,11 @@ function generateStars(staticOpacity = 1) {
     const height = 5;
     const shineHeight = baseShineHeight + (shineHeightRand * rand1);
     radius += radiusIncrease;
-    let opacity = (i % opacityDeterminant) / opacityDeterminant -(radius / 100);
+    let opacity = (i % opacityDeterminant) / opacityDeterminant - (radius / 100);
     const x = radius * Math.cos(i) + 50;
     const y = radius * Math.sin(i) + 50;
     opacity = (max - radius) / max
-      let shineOpacity = 0.1;
+    let shineOpacity = 0.1;
 
     opacity *= staticOpacity;
     shineOpacity *= staticOpacity;
@@ -77,13 +80,13 @@ function generateStars(staticOpacity = 1) {
 export const smoothGradient = [
   ...generateStars(1),
   // `linear-gradient(${Color(brightBlue).darken(0.9).string()}, ${Color(brightBlue).alpha(0.8).string()})`,
-  `linear-gradient(90deg, rgba(0,0,0,0), ${Color(brightBlue).alpha(0.1).string()})`,
-  `linear-gradient(black, ${Color(brightBlue).darken(0.9).hex()})`,
+  `linear-gradient(90deg, rgba(0,0,0,0), ${Color(baseColor).alpha(0.1).string()})`,
+  `linear-gradient(black, ${Color(baseColor).darken(0.9).hex()})`,
 ].join(", ");
 
 export const smoothGradientMellow = [
   ...generateStars(0.4),
   // `linear-gradient(${Color(brightBlue).darken(0.9).string()}, ${Color(brightBlue).alpha(0.8).string()})`,
-  `linear-gradient(90deg, rgba(0,0,0,0), ${Color(brightBlue).alpha(0.1).string()})`,
-  `linear-gradient(black, ${Color(brightBlue).darken(0.9).hex()})`,
+  `linear-gradient(90deg, rgba(0,0,0,0), ${Color(baseColor).alpha(0.1).string()})`,
+  `linear-gradient(black, ${Color(baseColor).darken(0.9).hex()})`,
 ].join(", ");

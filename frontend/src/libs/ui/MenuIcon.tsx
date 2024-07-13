@@ -1,6 +1,7 @@
 import styled, { css } from "styled-components";
 import { MouseEventHandler } from "react";
 import * as theme from "src/libs/theme";
+import Color from "color";
 
 const MenuIcon = ({
   onClick,
@@ -40,7 +41,7 @@ const Icon = styled.i<{ $dark?: boolean }>`
   ${(p) =>
     p.$dark &&
     css`
-      background-color: ${theme.ui2};
+      background-color: ${Color("white").alpha(0.3).string()};
       color: white;
 
       &:hover {

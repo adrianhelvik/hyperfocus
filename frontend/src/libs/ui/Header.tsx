@@ -80,7 +80,7 @@ Logo.Container = styled.div`
 
 Logo.Text1 = styled.span<{ $pageColor: string }>`
   color: ${(p) =>
-    Color(p.$pageColor).isDark() ? theme.brightBlue : theme.logo1Dark};
+    Color(p.$pageColor).isDark() ? theme.baseColor : theme.logo1Dark};
   position: relative;
 `;
 
@@ -92,7 +92,7 @@ Logo.Text2 = styled.span<{ $pageColor: string }>`
 const UnderLine = styled.div<{ $pageColor: string }>`
   height: 4px;
   background-color: ${(p) =>
-    Color(p.$pageColor).isDark() ? theme.brightBlue : theme.logo1Dark};
+    Color(p.$pageColor).isDark() ? theme.baseColor : theme.logo1Dark};
   width: calc(100% - 4px);
   position: absolute;
   top: 100%;

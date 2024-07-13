@@ -44,7 +44,7 @@ export const Form = styled.form`
 `;
 
 export const Message = styled.div`
-  color: ${theme.brightBlue};
+  color: ${theme.baseColor};
   text-align: center;
   letter-spacing: 1px;
   height: 60px;
@@ -58,11 +58,11 @@ export const Message = styled.div`
 `;
 
 export const Button = styled.button<{ $secondary?: boolean }>`
-  background-color: ${theme.brightBlue};
+  background-color: ${theme.baseColor};
   border-radius: 4px;
   padding: 10px 10px;
   font-weight: bold;
-  color: ${Color(theme.brightBlue).mix(Color("black"), 0.8).hex()};
+  color: ${Color(theme.baseColor).mix(Color("black"), 0.8).hex()};
   text-align: center;
   cursor: pointer;
   display: block;
@@ -73,16 +73,16 @@ export const Button = styled.button<{ $secondary?: boolean }>`
   transition: background-color 0.3s, box-shadow 0.3s;
 
   &:hover {
-    background-color: ${theme.brightBlue};
+    background-color: ${theme.baseColor};
   }
 
   &:focus {
-    background-color: ${theme.brightBlue};
+    background-color: ${theme.baseColor};
     outline: none;
   }
 
   &:focus-visible {
-    outline: 2px solid ${theme.brightBlue};
+    outline: 2px solid ${theme.baseColor};
     outline-offset: 2px;
   }
 
@@ -91,12 +91,12 @@ export const Button = styled.button<{ $secondary?: boolean }>`
   }
 
   ${p => p.$secondary && css`
-    background-color: ${Color(theme.brightBlue).mix(Color("#000"), 0.6).hex()};
-    color: ${Color(theme.brightBlue).mix(Color("white"), 0.2).mix(Color("black"), 0.2).hex()};
+    background-color: ${Color(theme.baseColor).mix(Color("#000"), 0.6).hex()};
+    color: ${Color(theme.baseColor).mix(Color("white"), 0.2).mix(Color("black"), 0.2).hex()};
     font-weight: normal;
 
     &:focus {
-      background-color: ${Color(theme.brightBlue).mix(Color("#000"), 0.6).hex()};
+      background-color: ${Color(theme.baseColor).mix(Color("#000"), 0.6).hex()};
     }
   `}
 `;

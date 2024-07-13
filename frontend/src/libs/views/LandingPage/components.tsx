@@ -6,7 +6,7 @@ import Color from "color";
 export const GlobalStyle = createGlobalStyle`
   body {
     background: ${theme.smoothGradient};
-    color: ${Color(theme.brightBlue).mix(Color("#555"), 0.2).hex()};
+    color: ${Color(theme.baseColor).mix(Color("#555"), 0.2).hex()};
   }
 `
 
@@ -45,9 +45,9 @@ export const Particles = styled.div`
 
 export const Register = styled(Link)`
   font-size: 30px;
-  background-color: ${Color(theme.brightBlue).mix(Color("black"), 0.1).hex()};
-  border: 4px solid ${theme.brightBlue};
-  color: ${Color(theme.brightBlue).mix(Color("black"), 0.6).string()};
+  background-color: ${Color(theme.baseColor).mix(Color("black"), 0.1).mix(Color("white"), 0.4).hex()};
+  border: 4px solid ${theme.baseColor};
+  color: ${Color(theme.baseColor).mix(Color("black"), 0.6).string()};
   border: 0;
   border-radius: 4px;
   padding: 10px 20px;

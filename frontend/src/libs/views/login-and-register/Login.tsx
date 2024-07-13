@@ -56,14 +56,14 @@ export default observer(function Login() {
             <Heading>Welcome back!</Heading>
             <Input
               size={25}
-              color={theme.brightBlue}
+              color={theme.baseColor}
               placeholder="Username"
               onChange={(e) => setUsername(e.target.value)}
               value={username}
             />
             <Input
               size={25}
-              color={theme.brightBlue}
+              color={theme.baseColor}
               placeholder="Password"
               onChange={(e) => setPassword(e.target.value)}
               value={password}
