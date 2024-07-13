@@ -38,12 +38,14 @@ export default function Input(props: Props) {
 
   useEffect(() => {
     if (!showPassword) return;
-    const onMouseUp = () => {
+    const hidePassword = () => {
       setShowPassword(false);
     };
-    document.addEventListener("mouseup", onMouseUp);
+    document.addEventListener("touchend", hidePassword);
+    document.addEventListener("mouseup", hidePassword);
     return () => {
-      document.removeEventListener("mouseup", onMouseUp);
+      document.removeEventListener("touchend", hidePassword);
+      document.removeEventListener("mouseup", hidePassword);
     };
   }, [showPassword]);
 
@@ -81,10 +83,11 @@ export default function Input(props: Props) {
       </Label>
       {props.type === "password" && (
         <Icon
-          $color={color}
+          $color="#333"
           $colored={showPassword}
           className="material-icons"
           onMouseDown={show}
+          onTouchStart={show}
         >
           remove_red_eye
         </Icon>
@@ -152,11 +155,13 @@ const LabelText = styled.div<{ $hasContent: boolean, $color: string }>`
 const Label = styled.label``;
 
 const Icon = styled.i<{ $colored: boolean, $color: string }>`
+  user-select: none;
   position: absolute;
-  right: 5px;
+  right: 8px;
   top: 50%;
   transform: translateY(-50%);
   cursor: pointer;
+  color: #333;
   ${(p) =>
     p.$colored &&
     css`
