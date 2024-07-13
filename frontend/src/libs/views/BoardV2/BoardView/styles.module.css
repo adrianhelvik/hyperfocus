@@ -219,6 +219,10 @@
   cursor: text;
   line-height: 1.5;
 
+  & * {
+    user-select: none;
+  }
+
   .isMovingCard & {
     opacity: 0.8;
   }
