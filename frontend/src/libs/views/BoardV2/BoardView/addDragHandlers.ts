@@ -136,7 +136,10 @@ export default function addDragHandlers<Context>(options: {
     }
 
     function onDelayedTouchStart() {
-      navigator.vibrate(15);
+      try {
+        navigator.vibrate(15);
+      } catch (e) {}
+
       stopInitialListener();
 
       const moveContext = initializeDrag({
