@@ -1,17 +1,18 @@
 import { replaceWithInputAndFocusAtCaretPosition } from "./replaceWithInputAndFocusAtCaretPosition";
 import { possiblyPerformHoverSwap } from "./possiblyPerformHoverSwap";
-import startScrollWhenNearEdges from "./startScrollWhenNearEdges";
 import { makeTextAreaAutoGrow } from "./makeTextAreaAutoGrow";
-import { distanceBetween } from "./distanceBetween";
 import { findClosestDeck } from "./findClosestDeck";
 import { setLinkableText } from "./setLinkableText";
 import { styleMovedCard } from "./styleMovedCard";
+import addDragHandlers from "./addDragHandlers";
 import { CleanupHooks } from "./CleanupHooks";
 import { horizontalMiddle } from "./domUtils";
 import { Board, Card } from "src/libs/types";
 import classes from "./styles.module.css";
-import onlyOnceFn from "./onlyOnceFn";
+import animate from "./animate";
 import api from "src/libs/api";
+import { el } from "./el";
+import { smoothScrollToCenter } from "./smoothScrollToCenter";
 
 const CARD_ANIMATION_TIME = 300;
 
@@ -32,22 +33,27 @@ export default function createCardElement({
 }) {
   let editSource: "keyboard" | "mouse" = "mouse";
 
-  const cardElement = document.createElement("div");
-  cardElement.dataset.cardId = card.cardId ?? undefined;
-  cardElement.className = classes.card;
+  const cardElement = el("div", {
+    className: classes.card,
+    dataset: {
+      cardId: card.cardId ?? undefined,
+    },
+  });
 
-  const cardInputElement = document.createElement("textarea");
-  const cleanupAutoGrow = makeTextAreaAutoGrow(cardInputElement);
-  cardInputElement.className = classes.cardInput;
+  const cardInputElement = el("textarea", {
+    className: classes.cardInput,
+    onmousedown: (e) => {
+      e.stopPropagation();
+    },
+  });
 
-  // XXX: When a card is deleted, these will still stick around.
-  cleanupHooks.add(cleanupAutoGrow);
+  // XXX: When a card is deleted, this cleanup function
+  //      should preferrably be called as well.
+  //
+  // const cleanupAutoGrow =
+  makeTextAreaAutoGrow(cardInputElement);
 
-  cardInputElement.onmousedown = (e) => {
-    e.stopPropagation();
-  };
-
-  const switchToInput = (e: MouseEvent | null) => {
+  const switchToInput = (e: { clientX: number, clientY: number } | null) => {
     if (e) editSource = "mouse";
     else editSource = "keyboard";
     cardElement.dataset.editSource = editSource;
@@ -97,54 +103,72 @@ export default function createCardElement({
     }
   };
 
-  const cardContentElement = document.createElement("div");
-  cardContentElement.className = classes.cardContent;
-  cardContentElement.tabIndex = 0;
+  const cardContentElement = el("div", {
+    className: classes.cardContent,
+    tabIndex: 0,
+    onfocus() {
+      editSource = "keyboard";
+      cardElement.dataset.editSource = editSource;
+    },
+    onkeydown(e) {
+      if (!(e.target instanceof HTMLElement)) return;
+
+      switch (e.key) {
+        case "Enter": {
+          if (e.target.tagName === "A") break;
+          e.preventDefault();
+          switchToInput(null);
+          break;
+        }
+        // TODO:
+        // - Left: Select card to left
+        // - Right: Select card to left
+        // - Up: Select card above
+        // - Down: Select card below
+        // - alt-Left: Move card left
+        // - alt-Right: Move card right
+        // - alt-Up: Move card up
+        // - alt-Down: Move card down
+      }
+    },
+  });
   setLinkableText(cardContentElement, card.title);
   cardElement.append(cardContentElement);
 
-  cardContentElement.onkeydown = (e) => {
-    if (!(e.target instanceof HTMLElement)) return;
-
-    switch (e.key) {
-      case "Enter": {
-        if (e.target.tagName === "A") break;
-        e.preventDefault();
-        switchToInput(null);
-        break;
-      }
-      // TODO:
-      // - Left: Select card to left
-      // - Right: Select card to left
-      // - Up: Select card above
-      // - Down: Select card below
-      // - alt-Left: Move card left
-      // - alt-Right: Move card right
-      // - alt-Up: Move card up
-      // - alt-Down: Move card down
-    }
-  };
-
-  cardContentElement.onfocus = () => {
-    editSource = "keyboard";
-    cardElement.dataset.editSource = editSource;
-  };
-
-  const placeholderNode = document.createElement("div");
-  placeholderNode.className = classes.cardPlaceholder;
+  const placeholderNode = el("div", {
+    className: classes.cardPlaceholder,
+  });
   let hoverDeck: HTMLElement = deckElement;
 
-  let didMove = false;
-  let initialCoords = { x: -1, y: -1 };
-  let prevMoveCoords: { clientX: number; clientY: number };
+  // XXX: These drag handlers should probably be removed
+  //      when the card is unmounted. The cleanup hooks
+  //      here are triggered when the card is moved as well.
+  //      I should clean that up, pun intended.
+  //
+  // const removeDragHandlers =
+  addDragHandlers({
+    element: cardElement,
+    scrollContainer: root,
+    shouldIgnoreStart() {
+      return false;
+    },
+    onClick(clientX, clientY, target) {
+      // Ignore clicks on links inside the card
+      if (target instanceof HTMLAnchorElement) {
+        target.click();
+      } else {
+        switchToInput({ clientX, clientY });
+      }
+    },
+    onDragStart,
+    onDragMove,
+    onDragEnd,
+  });
 
-  cardElement.addEventListener("mousedown", (event) => {
-    // Ignore anything but left clicks
-    if (event.button !== 0) return;
+  return cardElement;
 
-    initialCoords = { x: event.clientX, y: event.clientY };
-
-    event.preventDefault();
+  function onDragStart(clientX: number, clientY: number) {
+    root.style.scrollSnapType = "none";
 
     const {
       top,
@@ -153,156 +177,125 @@ export default function createCardElement({
       height: cardHeight,
     } = cardElement.getBoundingClientRect();
 
-    const insetX = event.clientX - left;
-    const insetY = event.clientY - top;
+    const insetX = clientX - left;
+    const insetY = clientY - top;
 
-    let stopScroll: (() => void) | null = null;
+    cleanupHooks.run();
 
-    const onMoveBegin = () => {
-      didMove = true;
+    root.classList.add(classes.isMovingCard);
+    cardElement.parentElement?.parentElement?.classList.add(
+      classes.hoverDeck
+    );
 
-      cleanupHooks.run();
+    cardElement.replaceWith(placeholderNode);
+    document.body.appendChild(cardElement);
+    cardElement.classList.add(classes.movingCard);
 
-      root.classList.add(classes.isMovingCard);
-      cardElement.parentElement?.parentElement?.classList.add(
-        classes.hoverDeck
-      );
+    styleMovedCard({
+      clientX: clientX,
+      clientY: clientY,
+      cardElement,
+      insetX,
+      insetY,
+    });
 
-      stopScroll = startScrollWhenNearEdges(root);
+    cardElement.style.width = `${width}px`;
 
-      cardElement.replaceWith(placeholderNode);
-      document.body.appendChild(cardElement);
-      cardElement.classList.add(classes.movingCard);
+    Object.assign(placeholderNode.style, {
+      width: `${width}px`,
+      height: `${cardHeight}px`,
+    });
 
-      styleMovedCard({
-        clientX: event.clientX,
-        clientY: event.clientY,
-        cardElement,
-        insetX,
-        insetY,
-      });
-
-      cardElement.style.width = `${width}px`;
-
-      Object.assign(placeholderNode.style, {
-        width: `${width}px`,
-        height: `${cardHeight}px`,
-      });
+    return {
+      insetX,
+      insetY,
+      cardHeight,
     };
+  }
 
-    const onMouseUp = (e: MouseEvent) => {
-      document.removeEventListener("mouseup", onMouseUp);
-      document.removeEventListener("mousemove", onMouseMove);
+  function onDragEnd(clientX: number, clientY: number, context: { insetX: number, insetY: number }) {
+    cleanupHooks.run();
 
-      if (!didMove) {
-        // Ignore clicks on links inside the card
-        if (e.target instanceof HTMLElement && e.target.tagName === "A") {
-          e.target.click();
-        } else {
-          switchToInput(e);
-        }
-        return;
-      }
+    const index = Array.from(
+      placeholderNode.parentNode?.children ?? []
+    ).findIndex((e) => e === placeholderNode);
 
-      if (stopScroll) stopScroll();
+    root.classList.remove(classes.isMovingCard);
 
-      const index = Array.from(
-        placeholderNode.parentNode?.children ?? []
-      ).findIndex((e) => e === placeholderNode);
-      root.classList.remove(classes.isMovingCard);
-      const targetRect = placeholderNode.getBoundingClientRect();
+    smoothScrollToCenter({
+      scrollContainer: root,
+      element: placeholderNode,
+      time: CARD_ANIMATION_TIME,
+    });
 
-      const x = targetRect.left;
-      const y = targetRect.top;
+    const targetRect = placeholderNode.getBoundingClientRect();
+    const targetX = targetRect.left;
+    const targetY = targetRect.top;
 
-      cardElement.style.transition = `transform ${CARD_ANIMATION_TIME}ms`;
-      cardElement.style.transform = `translateX(${x}px) translateY(${y}px)`;
+    const initialScrollLeft = root.scrollLeft;
 
-      {
-        let timeout: ReturnType<typeof setTimeout>;
-        const cleanup = onlyOnceFn(() => {
-          cardElement.style.transition = "";
-          cardElement.style.transform = "";
-          cardElement.style.position = "";
-          cardElement.style.width = "";
-          cardElement.remove();
-          placeholderNode.replaceWith(cardElement);
-          cardElement.classList.remove(classes.movingCard);
-          clearTimeout(timeout);
-        });
+    cleanupHooks.add(animate({
+      values: {
+        x: [clientX - context.insetX, targetX],
+        y: [clientY - context.insetY, targetY],
+      },
+      fn(pos) {
+        const scrollXDelta = initialScrollLeft - root.scrollLeft;
+        const x = pos.x + scrollXDelta;
+        const y = pos.y;
+        cardElement.style.transform = `translateX(${x}px) translateY(${y}px)`;
+      },
+      time: CARD_ANIMATION_TIME,
+      onComplete() {
+        cardElement.style.transform = "";
+        cardElement.style.position = "";
+        cardElement.style.width = "";
+        root.style.scrollSnapType = "";
+        cardElement.remove();
+        placeholderNode.replaceWith(cardElement);
+        cardElement.classList.remove(classes.movingCard);
+      },
+    }));
 
-        timeout = setTimeout(() => {
-          cleanup();
-        }, CARD_ANIMATION_TIME);
-        cleanupHooks.add(() => {
-          cleanup();
-        });
-      }
+    deckElements.forEach((e) => e.classList.remove(classes.hoverDeck));
 
-      api.moveCard({
-        cardId: cardElement.dataset.cardId!,
-        target: hoverDeck.dataset.deckId,
-        index,
-      });
+    api.moveCard({
+      cardId: cardElement.dataset.cardId!,
+      target: hoverDeck.dataset.deckId,
+      index,
+    });
 
-      deckElements.forEach((e) => e.classList.remove(classes.hoverDeck));
+  };
 
-      didMove = false;
-    };
-
-    const onMouseMove = ({
+  function onDragMove(clientX: number, clientY: number, context: { insetX: number, insetY: number, cardHeight: number }) {
+    styleMovedCard({
       clientX,
       clientY,
-    }: {
-      clientX: number;
-      clientY: number;
-    }) => {
-      prevMoveCoords = { clientX, clientY };
+      cardElement,
+      insetX: context.insetX,
+      insetY: context.insetY,
+    });
 
-      if (
-        !didMove &&
-        distanceBetween({ x: clientX, y: clientY }, initialCoords) > 10
-      ) {
-        onMoveBegin();
-        didMove = true;
-      }
+    hoverDeck = findClosestDeck(
+      deckElements,
+      horizontalMiddle(cardElement)
+    );
 
-      if (!didMove) return;
+    const didSwap = possiblyPerformHoverSwap({
+      hoverDeck,
+      clientY,
+      insetY: context.insetY,
+      cardHeight: context.cardHeight,
+      cardElement,
+      placeholderNode,
+    });
 
-      styleMovedCard({
-        clientX,
-        clientY,
-        cardElement,
-        insetX,
-        insetY,
-      });
-
-      hoverDeck = findClosestDeck(
-        deckElements,
-        horizontalMiddle(cardElement)
+    if (didSwap) {
+      deckElements.forEach((e) =>
+        e.classList.remove(classes.hoverDeck)
       );
-
-      const didSwap = possiblyPerformHoverSwap({
-        hoverDeck,
-        clientY,
-        insetY,
-        cardHeight,
-        cardElement,
-        placeholderNode,
-      });
-
-      if (didSwap) {
-        deckElements.forEach((e) =>
-          e.classList.remove(classes.hoverDeck)
-        );
-        hoverDeck.classList.add(classes.hoverDeck);
-      }
-    };
-
-    document.addEventListener("mouseup", onMouseUp);
-    document.addEventListener("mousemove", onMouseMove);
-  });
-
-  return cardElement;
+      hoverDeck.classList.add(classes.hoverDeck);
+    }
+  };
 }
 

@@ -1,28 +1,27 @@
 import easeInOutQuad from "src/libs/easeInOutQuad";
 
-const TIME = 300;
-
-export function smoothScrollToCenter(
-  container: HTMLElement,
-  target: HTMLElement,
-  onEnd: () => void
-) {
-  const rect = target.getBoundingClientRect();
+export function smoothScrollToCenter(opts: {
+  scrollContainer: HTMLElement,
+  element: HTMLElement,
+  time: number,
+  onEnd?: () => void,
+}) {
+  const rect = opts.element.getBoundingClientRect();
   const targetCenter = (rect.left + rect.width / 2) | 0;
   const windowCenter = (window.innerWidth / 2) | 0;
-  const scrollStart = container.scrollLeft;
+  const scrollStart = opts.scrollContainer.scrollLeft;
   const scrollEnd = targetCenter - windowCenter + scrollStart;
   const start = Date.now();
   let progress = 0;
 
   const style = () => {
     const animationProgress = easeInOutQuad(progress);
-    container.scrollLeft =
+    opts.scrollContainer.scrollLeft =
       animationProgress * scrollEnd + (1 - animationProgress) * scrollStart;
   };
 
   const next = () => {
-    progress = Math.min(Date.now() - start, TIME) / TIME;
+    progress = Math.min(Date.now() - start, opts.time) / opts.time;
     style();
     if (progress < 1) {
       af = requestAnimationFrame(next);
@@ -35,7 +34,7 @@ export function smoothScrollToCenter(
   const cleanup = () => {
     if (done) return;
     done = true;
-    onEnd();
+    opts.onEnd?.();
     cancelAnimationFrame(af);
   };
 

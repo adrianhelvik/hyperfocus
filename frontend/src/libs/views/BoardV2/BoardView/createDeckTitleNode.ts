@@ -10,6 +10,7 @@ import { el } from "./el";
 import { createLinkableTextFragment } from "./createLinkableTextFragment";
 import { makeTextAreaAutoGrow } from "./makeTextAreaAutoGrow";
 import addDragHandlers from "./addDragHandlers";
+import { smoothScrollToCenter } from "./smoothScrollToCenter";
 
 const DECK_ANIMATION_TIME = 300;
 
@@ -26,6 +27,7 @@ export default function createDeckTitleNode({
   deckElement: HTMLElement;
   child: Deck | Portal;
 }) {
+  let dragInProgress = false;
   let initialIndex = -1;
 
   let deckTitleNode: HTMLHeadingElement;
@@ -77,8 +79,8 @@ export default function createDeckTitleNode({
     },
   });
 
-  const stopAutoGrow = makeTextAreaAutoGrow(titleInput);
-  cleanupHooks.add(stopAutoGrow);
+  // TODO: Handle cleanup from autogrow textarea
+  makeTextAreaAutoGrow(titleInput);
 
   let placeholder: HTMLElement;
 
@@ -97,13 +99,14 @@ export default function createDeckTitleNode({
     y = clientY - insetY;
   };
 
-  let didMove = false;
-
   addDragHandlers({
     element: containerNode,
     scrollContainer: root,
     shouldIgnoreStart(target) {
       return target instanceof Node && menuNode.contains(target);
+    },
+    onClick: (clientX, clientY) => {
+      startEditingDeckTitle({ clientX, clientY });
     },
     onDragStart,
     onDragMove,
@@ -113,10 +116,10 @@ export default function createDeckTitleNode({
   return containerNode;
 
   function onDragStart(clientX: number, clientY: number) {
-    root.style.scrollSnapType = "none";
-
     cleanupHooks.run();
-    didMove = false;
+
+    dragInProgress = true;
+    root.classList.add(classes.isMovingDeck);
 
     const rect = deckElement.getBoundingClientRect();
     placeholder = el("div", {
@@ -167,8 +170,6 @@ export default function createDeckTitleNode({
     setPosition(clientX, clientY);
     renderFloatingDeck();
 
-    didMove = true;
-
     const ownIndex = deckElements.indexOf(deckElement);
 
     const prevElement = placeholder.previousElementSibling as HTMLElement;
@@ -196,53 +197,52 @@ export default function createDeckTitleNode({
     }
   }
 
-  function onDragEnd(clientX: number, clientY: number, target: EventTarget | null) {
-    root.style.removeProperty("scrollSnapType");
+  function onDragEnd(clientX: number, clientY: number) {
+    smoothScrollToCenter({
+      scrollContainer: root,
+      element: placeholder,
+      time: DECK_ANIMATION_TIME,
+    });
+    setPosition(clientX, clientY);
+    renderFloatingDeck();
 
-    if (!didMove) {
-      if (target instanceof HTMLElement && target.tagName === "A") {
-        target.click();
-      } else {
-        deckElement.style.removeProperty("transform");
-        deckElement.style.removeProperty("position");
-        placeholder.replaceWith(deckElement);
-        startEditingDeckTitle({ clientX, clientY });
-      }
-    } else {
-      setPosition(clientX, clientY);
-      renderFloatingDeck();
+    const placeholderRect = placeholder.getBoundingClientRect();
 
-      const placeholderRect = placeholder.getBoundingClientRect();
-
-      const index = deckElements.indexOf(deckElement);
-      if (initialIndex !== index) {
-        api.moveBoardChildToIndex({
-          boardId: child.boardId,
-          index,
-          item: child,
-        });
-      }
-
-      cleanupHooks.add(
-        animate({
-          onComplete: onlyOnceFn(() => {
-            placeholder.replaceWith(deckElement);
-            deckElement.style.removeProperty("transform");
-            deckElement.style.removeProperty("position");
-          }),
-          values: {
-            x: [x, placeholderRect.left],
-            y: [y, placeholderRect.top],
-          },
-          time: DECK_ANIMATION_TIME,
-          fn: (pos) => {
-            x = pos.x;
-            y = pos.y;
-            renderFloatingDeck();
-          },
-        })
-      );
+    const index = deckElements.indexOf(deckElement);
+    if (initialIndex !== index) {
+      api.moveBoardChildToIndex({
+        boardId: child.boardId,
+        index,
+        item: child,
+      });
     }
+
+    const initialScrollLeft = root.scrollLeft;
+
+    cleanupHooks.add(
+      animate({
+        onComplete: onlyOnceFn(() => {
+          placeholder.replaceWith(deckElement);
+          deckElement.style.removeProperty("transform");
+          deckElement.style.removeProperty("position");
+          deckElement.style.removeProperty("width");
+          deckElement.style.removeProperty("height");
+          root.classList.remove(classes.isMovingDeck);
+          dragInProgress = false;
+        }),
+        values: {
+          x: [x, placeholderRect.left],
+          y: [y, placeholderRect.top],
+        },
+        time: DECK_ANIMATION_TIME,
+        fn: (pos) => {
+          const scrollXDelta = initialScrollLeft - root.scrollLeft;
+          x = pos.x + scrollXDelta;
+          y = pos.y;
+          renderFloatingDeck();
+        },
+      })
+    );
   }
 
   function startEditingDeckTitle(
