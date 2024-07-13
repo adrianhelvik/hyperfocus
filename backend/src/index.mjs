@@ -31,6 +31,9 @@ async function main() {
   const server = Hapi.server({
     host: "0.0.0.0",
     port: "1234",
+    debug: {
+      request: ["error"],
+    },
     routes: {
       cors: true,
     },

@@ -2,7 +2,6 @@
 
 import moveBoardChildToIndex from "./domain/moveBoardChildToIndex.mjs";
 import getDenormalizedBoard from "./domain/getDenormalizedBoard.mjs";
-import { deleteUploadedFile } from "./domain/deleteUploadedFile.mjs";
 import assertCanEditPortal from "./domain/assertCanEditPortal.mjs";
 import assertCanEditBoard from "./domain/assertCanEditBoard.mjs";
 import assertCanEditCard from "./domain/assertCanEditCard.mjs";
@@ -15,6 +14,7 @@ import createProject from "./domain/createProject.mjs";
 import requireString from "./utils/requireString.mjs";
 import setCardTitle from "./domain/setCardTitle.mjs";
 import authenticate from "./domain/authenticate.mjs";
+import deleteBoard from "./domain/deleteBoard.mjs";
 import createBoard from "./domain/createBoard.mjs";
 import createUser from "./domain/createUser.mjs";
 import deleteCard from "./domain/deleteCard.mjs";
@@ -41,7 +41,7 @@ export const loginRoute = {
    */
   async handler(request) {
     const { username, password } = request.payload;
-    const sessionId = await login(username, password);
+    const sessionId = await login(username, password)
 
     return {
       sessionId,
@@ -52,7 +52,12 @@ export const loginRoute = {
 export const authenticateRoute = {
   method: "POST",
   path: "/authenticate",
-  handler: authenticate,
+  /**
+   * @param {{ headers: { authorization: string } }} request
+   */
+  async handler(request) {
+    return await authenticate(request);
+  },
 };
 
 export const createBoardRoute = {
@@ -323,28 +328,7 @@ export const deleteBoardRoute = {
     const { boardId } = request.payload;
     await assertCanEditBoard(request, boardId);
 
-    const decks = await knex("decks").where({ boardId });
-    const cardImages = await knex("cardImages")
-      .leftJoin("cards", "cardImages.cardId", "cards.cardId")
-      .leftJoin("decks", "cards.deckId", "decks.deckId")
-      .where("decks.boardId", boardId)
-      .select("url")
-      .then(res => res.map(item => item.url));
-
-    await knex.transaction(async (trx) => {
-      for (const { deckId } of decks) {
-        await trx("portals").where({ deckId }).del();
-        await trx("cardImages").whereIn("url", cardImages).del();
-        await trx("cards").where({ deckId }).del();
-      }
-      await trx("decks").where({ boardId }).del();
-      await trx("portals").where({ boardId }).del();
-      await trx("boards").where({ boardId }).del();
-    });
-
-    await Promise.all(cardImages.map(url => {
-      return deleteUploadedFile(url);
-    }));
+    await deleteBoard(boardId);
 
     return { success: true };
   },
@@ -395,12 +379,7 @@ export const setBoardTitleRoute = {
     const { boardId, title } = request.payload;
     await assertCanEditBoard(request, boardId);
 
-    try {
-      await knex("boards").where({ boardId }).update({ title });
-    } catch (e) {
-      console.error(e.stack);
-      return { success: false };
-    }
+    await knex("boards").where({ boardId }).update({ title });
 
     return { success: true };
   },
@@ -445,7 +424,7 @@ export const registerUserRoute = {
   path: "/registerUser",
   /**
    * @param {{ payload: { email: string, password: string } }} request
-   * @returns {Promise<{ success: boolean }>}
+   * @returns {Promise<{ sessionId: string }>}
    */
   async handler(request) {
     const { email, password } = request.payload;
@@ -457,7 +436,9 @@ export const registerUserRoute = {
       email,
     });
 
-    return { success: true };
+    return {
+      sessionId: await login(email, password),
+    };
   },
 };
 

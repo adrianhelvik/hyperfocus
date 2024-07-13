@@ -1,7 +1,8 @@
 // @ts-check
 
-import Boom from "@hapi/boom";
+import sha256 from "../utils/sha256.mjs";
 import knex from "../knex.mjs";
+import Boom from "@hapi/boom";
 
 /**
  * Cache requests, so we never authenticate
@@ -22,11 +23,15 @@ export default async function authenticate(request) {
   if (!authorization)
     throw Boom.unauthorized("No authorization header provided");
 
-  const sessionId = authorization.replace(/^Bearer /, "");
+  const sessionId = sha256(authorization.replace(/^Bearer /, ""));
 
-  const session = await knex("sessions").where({ sessionId }).first();
+  const session = await knex("sessions")
+    .where({ sessionId })
+    .first();
 
-  if (!session) throw Boom.unauthorized("Invalid session id provided");
+  if (!session) {
+    throw Boom.unauthorized("Invalid session id provided");
+  }
 
   cache.set(request, session);
 

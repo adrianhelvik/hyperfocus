@@ -24,29 +24,29 @@ export default async function checkRouteLengths() {
 
     const routeDesc = `${route.method} ${route.path}`;
 
-    if (len > 100)
+    if (len > 100) {
       console.log(
         chalk.red.bold.inverse(
           `Route longer than 100 lines: ${routeDesc} (${len})`
         )
       );
-    else if (len > 80)
+    } else if (len > 80) {
       console.log(
         chalk.red.bold(`Route longer than 80 lines: ${routeDesc} (${len})`)
       );
-    else if (len > 60)
+    } else if (len > 60) {
       console.log(
         chalk.red(`Route longer than 60 lines: ${routeDesc} (${len})`)
       );
-    else if (len > 40)
+    } else if (len > 40) {
       console.log(
         chalk.yellow(`Route longer than 40 lines: ${routeDesc} (${len})`)
       );
-    else if (len > 20)
+    } else if (len > 20) {
       console.log(
-        chalk.gray(`Route longer than 20 lines: ${routeDesc} (${len})`)
+        chalk.yellowBright(`Route longer than 20 lines: ${routeDesc} (${len})`)
       );
-    else {
+    } else {
       console.log(chalk.green(`Route length ok: ${routeDesc} (${len})`));
       ok += 1;
     }

@@ -1,6 +1,6 @@
 // @ts-check
 
-import requireString from "../utils/requireString.mjs";
+import requireNonEmptyString from "../utils/requireNonEmptyString.mjs";
 import createHash from "../utils/createHash.mjs";
 import uuid from "../utils/uuid.mjs";
 import Boom from "@hapi/boom";
@@ -20,9 +20,9 @@ export default async function createUser({
   userId,
   email,
 }) {
-  const hash = await createHash(password);
+  requireNonEmptyString({ email, password });
 
-  requireString({ email, password });
+  const hash = await createHash(password);
 
   if (!username) username = null;
   else username = username.toLowerCase();

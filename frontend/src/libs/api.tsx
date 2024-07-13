@@ -8,7 +8,7 @@ type Api = {
   setCardTitle(payload: { cardId: string; title: string }): Promise<void>;
   ownProjects(): Promise<{ projects: Project[] }>;
   createBoard(board: BoardParam): Promise<Board>;
-  registerUser(payload: { password: string; email: string }): Promise<void>;
+  registerUser(payload: { password: string; email: string }): Promise<{ sessionId: string }>;
   deleteDeck(payload: { deckId: string }): Promise<void>;
   deletePortal(payload: { portalId: string }): Promise<void>;
   moveBoardChildToIndex(payload: {

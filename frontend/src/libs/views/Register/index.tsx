@@ -3,7 +3,7 @@ import { FormEvent, useState } from "react";
 import * as theme from "src/libs/theme";
 import styled from "styled-components";
 import Input from "src/libs/ui/Input";
-import api from "src/libs/api";
+import api, { setPersistentHeader } from "src/libs/api";
 import { Logo } from "src/libs/ui/Header";
 import Color from "color";
 
@@ -21,14 +21,18 @@ export default function Register() {
     setError("");
     setMessage("Logging in...");
 
-    if (password !== repeatedPassword)
-      return alert("The passwords do not match");
+    if (password !== repeatedPassword) {
+      setError("The passwords do not match");
+      setMessage("");
+      return;
+    }
 
     try {
-      await api.registerUser({
+      const { sessionId } = await api.registerUser({
         password,
         email,
       })
+      setPersistentHeader("Authorization", `Bearer ${sessionId}`);
       navigate("/login");
     } catch (e: any) {
       setError(e.message);

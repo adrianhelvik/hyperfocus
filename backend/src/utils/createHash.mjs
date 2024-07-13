@@ -1,8 +1,8 @@
+import requireString from "./requireString.mjs";
 import crypto from "crypto";
-import assert from "assert";
 
 export default async (password) => {
-  assert(password);
+  requireString({ password });
 
   return new Promise((resolve, reject) => {
     crypto.randomBytes(16, (err, salt) => {
