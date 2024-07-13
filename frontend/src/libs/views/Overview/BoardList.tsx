@@ -63,8 +63,8 @@ export default function BoardList() {
             <Header>
               <Title>My boards</Title>
               <PlusButton onClick={() => setIsAddingBoard(true)}>
-                <span className="material-symbols-outlined">add</span>
                 New board
+                <span className="material-symbols-outlined">add</span>
                 <ButtonShortcut>+</ButtonShortcut>
               </PlusButton>
             </Header>
@@ -166,7 +166,7 @@ const Title = styled.h2`
 const ButtonShortcut = styled.div`
   color: white;
   background-color: rgba(255, 255, 255, 0.3);
-  padding: 3px 8px;
+  padding: 2px 8px;
   border-radius: 5px;
   border: 1px solid #ddd;
   display: flex;

@@ -158,8 +158,8 @@ const Title = styled.div`
   &::before {
     content: "";
     float: right;
-    width: 60px;
-    height: 27px;
+    width: 76px;
+    height: 34px;
     vertical-align: top;
   }
 `;
