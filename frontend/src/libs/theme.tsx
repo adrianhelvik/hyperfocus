@@ -37,7 +37,35 @@ export const defaultDeckColor = "rgb(200, 200, 200)";
 export const bg1 = `rgb(26, 20, 33)`;
 export const bg2 = `rgb(227, 226, 229)`;
 
+let stars: string[] = [];
+
+const opacityDeterminant = 18;
+const radiusIncrease = 3.7;
+const baseShineHeight = 0;
+const shineHeightRand = 4;
+const max = 50;
+const i0 = 15;
+
+let radius = 15;
+for (let i = i0; i < max; i++) {
+  const rand1 = (i % 17) / 17;
+  // const rand2 = (i % 17) / 17;
+
+  const width = 5;
+  const height = 5;
+  const shineHeight = baseShineHeight + (shineHeightRand * rand1);
+  radius += radiusIncrease;
+  let opacity = (i % opacityDeterminant) / opacityDeterminant -(radius / 100);
+  const x = radius * Math.cos(i) + 50;
+  const y = radius * Math.sin(i) + 50;
+  opacity = (max - radius) / max
+  stars.push(`radial-gradient(${width}px ${height}px at ${x}% ${y}%, rgba(255, 255, 255, ${opacity}), rgba(255, 255, 255, 0))`);
+  stars.push(`radial-gradient(${width * 0.5}px ${height * shineHeight}px at ${x}% ${y}%, rgba(255, 255, 255, 0.1), rgba(255, 255, 255, 0))`);
+  stars.push(`radial-gradient(${width * shineHeight}px ${height * 0.5}px at ${x}% ${y}%, rgba(255, 255, 255, 0.1), rgba(255, 255, 255, 0))`);
+}
+
 export const smoothGradient = [
+  ...stars,
   `linear-gradient(90deg, rgba(0,0,0,0), ${Color(brightBlue).alpha(0.1).string()})`,
   `linear-gradient(black, ${Color(brightBlue).darken(0.9).hex()})`,
 ].join(", ");
