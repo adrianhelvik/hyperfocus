@@ -102,6 +102,6 @@ export const Heading = styled.h1`
   letter-spacing: 1px;
   text-align: center;
   margin-top: 20px;
-  margin-bottom: 30px;
+  margin-bottom: 20px;
   opacity: 0.7;
 `;
