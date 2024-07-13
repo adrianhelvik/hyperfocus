@@ -87,7 +87,7 @@ export const Button = styled.button<{ $secondary?: boolean }>`
   }
 
   &:hover:active {
-    background-color: ${theme.darkPurple};
+    background-color: ${theme.baseColor};
   }
 
   ${p => p.$secondary && css`
