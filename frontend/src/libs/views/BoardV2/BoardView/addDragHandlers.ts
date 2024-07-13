@@ -111,14 +111,17 @@ export default function addDragHandlers<Context>(options: {
       e.preventDefault();
     };
 
-    const removeContextMenuListener = () => {
+    document.body.style.userSelect = "none";
+
+    const afterInitialTouch = () => {
       document.removeEventListener("contextmenu", preventDefault);
-      document.removeEventListener("touchend", removeContextMenuListener);
+      document.removeEventListener("touchend", afterInitialTouch);
+      document.body.style.userSelect = "";
     };
 
     document.addEventListener("contextmenu", preventDefault);
     document.addEventListener("touchmove", onInitialTouchMove);
-    document.addEventListener("touchend", removeContextMenuListener);
+    document.addEventListener("touchend", afterInitialTouch);
 
     function stopInitialListener() {
       document.removeEventListener("touchmove", onInitialTouchMove);
