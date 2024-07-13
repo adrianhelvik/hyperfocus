@@ -175,12 +175,12 @@ const TopRight = styled.div`
   top: 10px;
   right: 10px;
   align-items: center;
-  gap: 5px;
+  gap: 7px;
 `;
 
 const ShortcutIcon = styled.div`
   color: #aaa;
-  padding: 2px 5px;
+  padding: 4px 5px;
   border: 1px solid #ddd;
   border-radius: 5px;
 
