@@ -108,11 +108,30 @@ const Form = styled.form`
   max-width: calc(100vw - 60px);
 `;
 
-const Button = styled.button`
+const LogoWrapper = styled.div`
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin-bottom: 50px;
+`;
+
+const Message = styled.div`
+  color: ${theme.brightBlue};
+  text-align: center;
+  margin-top: 30px;
+  letter-spacing: 1px;
+  height: 80px;
+
+  & strong {
+    display: block;
+  }
+`;
+
+const Button = styled.button<{ $secondary?: boolean }>`
   background-color: white;
-  font-weight: bold;
   border-radius: 4px;
   padding: 7px 10px;
+  font-weight: bold;
   color: ${Color(theme.brightBlue).mix(Color("black"), 0.8).hex()};
   text-align: center;
   cursor: pointer;
@@ -140,25 +159,14 @@ const Button = styled.button`
   &:hover:active {
     background-color: ${theme.darkPurple};
   }
+
+  ${p => p.$secondary && css`
+    background-color: ${Color(theme.brightBlue).mix(Color("#000"), 0.6).hex()};
+    color: ${Color(theme.brightBlue).mix(Color("white"), 0.2).mix(Color("black"), 0.2).hex()};
+    font-weight: normal;
+
+    &:focus {
+      background-color: ${Color(theme.brightBlue).mix(Color("#000"), 0.6).hex()};
+    }
+  `}
 `;
-
-const LogoWrapper = styled.div`
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    margin-bottom: 50px;
-`;
-
-
-const Message = styled.div`
-  color: ${theme.brightBlue};
-  text-align: center;
-  margin-top: 30px;
-  letter-spacing: 1px;
-  height: 80px;
-
-  & strong {
-    display: block;
-  }
-`;
-

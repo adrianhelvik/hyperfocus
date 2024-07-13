@@ -2,7 +2,7 @@ import { FormEvent, useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { useAuth } from "../authContext";
 import * as theme from "src/libs/theme";
-import styled from "styled-components";
+import styled, { css } from "styled-components";
 import { observer } from "mobx-react";
 import Input from "src/libs/ui/Input";
 import { Logo } from "../ui/Header";
@@ -69,6 +69,7 @@ export default observer(function Login() {
               type="password"
             />
             <Button>Log in</Button>
+            <Button type="button" onClick={() => navigate("/register")} $secondary>Register</Button>
             <Message>
               {message}
               {error && (
@@ -125,7 +126,7 @@ const Message = styled.div`
   }
 `;
 
-const Button = styled.button`
+const Button = styled.button<{ $secondary?: boolean }>`
   background-color: white;
   border-radius: 4px;
   padding: 7px 10px;
@@ -157,4 +158,14 @@ const Button = styled.button`
   &:hover:active {
     background-color: ${theme.darkPurple};
   }
+
+  ${p => p.$secondary && css`
+    background-color: ${Color(theme.brightBlue).mix(Color("#000"), 0.6).hex()};
+    color: ${Color(theme.brightBlue).mix(Color("white"), 0.2).mix(Color("black"), 0.2).hex()};
+    font-weight: normal;
+
+    &:focus {
+      background-color: ${Color(theme.brightBlue).mix(Color("#000"), 0.6).hex()};
+    }
+  `}
 `;
