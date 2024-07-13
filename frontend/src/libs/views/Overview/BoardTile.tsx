@@ -107,7 +107,7 @@ function BoardTile(props: Props) {
   return (
     <Container
       {...onSelect(openBoard)}
-      $color={props.board.color || "white"}
+      $color={props.board.color || Color("white").alpha(0.3).string()}
       onContextMenu={openMenu}
     >
       <Title>{props.board.title || <Weak>Untitled</Weak>}</Title>
@@ -131,11 +131,13 @@ const Container = styled.button.attrs({
   width: 100%;
   box-sizing: border-box;
 
+  backdrop-filter: blur(5px);
+
   cursor: pointer;
   padding: 10px;
   display: flex;
   background: ${(p) => p.$color};
-  color: ${(p) => (Color(p.$color).blacken(0.7).isDark() ? "white" : "black")};
+  color: white;
   border-radius: 4px;
   margin-right: 10px;
   margin-bottom: 10px;

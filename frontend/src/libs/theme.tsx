@@ -44,7 +44,7 @@ const radiusIncrease = 3.5;
 const baseShineHeight = 0;
 const shineHeightRand = 6;
 const max = 60;
-const i0 = 15;
+const i0 = Math.random() * 15;
 
 let radius = 15;
 for (let i = i0; i < max; i++) {
@@ -59,6 +59,7 @@ for (let i = i0; i < max; i++) {
   const x = radius * Math.cos(i) + 50;
   const y = radius * Math.sin(i) + 50;
   opacity = (max - radius) / max
+
   stars.push(`radial-gradient(${width}px ${height}px at ${x}% ${y}%, rgba(255, 255, 255, ${opacity}), rgba(255, 255, 255, 0))`);
   stars.push(`radial-gradient(${width * 0.5}px ${height * shineHeight}px at ${x}% ${y}%, rgba(255, 255, 255, 0.1), rgba(255, 255, 255, 0))`);
   stars.push(`radial-gradient(${width * shineHeight}px ${height * 0.5}px at ${x}% ${y}%, rgba(255, 255, 255, 0.1), rgba(255, 255, 255, 0))`);

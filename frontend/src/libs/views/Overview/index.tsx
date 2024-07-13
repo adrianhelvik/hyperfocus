@@ -5,7 +5,7 @@ import { useAutoCallback, useAutoMemo } from "hooks.macro";
 import { AuthContext } from "src/libs/authContext";
 import { useNavigate } from "react-router-dom";
 import AddBoardModal from "./AddBoardModal";
-import classes from "./styles.module.css";
+import { GlobalStyle } from "./components";
 import Header from "src/libs/ui/Header";
 import { Board } from "src/libs/types";
 import BoardList from "./BoardList";
@@ -47,13 +47,6 @@ export default withMenu(function Overview(props: Props) {
     }
   }, [auth.status]);
 
-  useEffect(() => {
-    document.body.classList.add(classes.body);
-    return () => {
-      document.body.classList.add(classes.body);
-    };
-  }, []);
-
   const onBoardAdded = useAutoCallback((board: Board) => {
     setBoards((boards) => [board, ...boards]);
   });
@@ -72,6 +65,7 @@ export default withMenu(function Overview(props: Props) {
 
   return (
     <OverviewStoreContext.Provider value={contextValue}>
+      <GlobalStyle />
       <div onContextMenu={onContextMenu}>
         <Header>My boards</Header>
         {isAddingBoard && <AddBoardModal />}

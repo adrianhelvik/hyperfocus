@@ -8,6 +8,7 @@ import * as theme from "src/libs/theme";
 import styled from "styled-components";
 import { Observer } from "mobx-react";
 import BoardTile from "./BoardTile";
+import Color from "color";
 
 export default function BoardList() {
   const [gridElement, setGridElement] = useState<HTMLDivElement | null>(null);
@@ -117,15 +118,14 @@ const Header = styled.div`
 `;
 
 const PlusButton = styled.button`
-  background-color: ${theme.ui2};
-  border: none;
+  background-color: ${Color(theme.brightBlue).alpha(0.3).string()};
+  border: 0;
   color: white;
   border-radius: 4px;
   display: flex;
   justify-content: center;
   align-items: center;
   transition: background-color 0.3s, box-shadow 0.3s;
-  box-shadow: ${theme.shadows[0]};
   font-size: inherit;
   cursor: pointer;
   padding: 5px;
@@ -145,7 +145,6 @@ const PlusButton = styled.button`
   & .material-symbols-outlined {
     border: 1px solid white;
     border-radius: 5px;
-    background-color: rgba(255, 255, 255, 0.3);
     color: white !important;
   }
 
@@ -163,22 +162,6 @@ const Title = styled.h2`
   margin: 0;
   font-weight: 400;
   font-size: 25px;
-  color: ${theme.ui1};
-  letter-spacing: 0.1rem;
-`;
-
-const ButtonShortcut = styled.div`
   color: white;
-  background-color: rgba(255, 255, 255, 0.3);
-  padding: 2px 8px;
-  border-radius: 5px;
-  border: 1px solid #ddd;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  margin-left: 8px;
-
-  @media (hover: none) {
-    display: none;
-  }
+  letter-spacing: 0.1rem;
 `;
