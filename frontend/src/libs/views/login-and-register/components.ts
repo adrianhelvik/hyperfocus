@@ -97,11 +97,11 @@ export const Button = styled.button<{ $secondary?: boolean }>`
 `;
 
 export const Heading = styled.h1`
-  font-size: 18px;
+  font-size: 16px;
   font-weight: 600;
   letter-spacing: 1px;
   text-align: center;
-  margin-top: 30px;
+  margin-top: 20px;
   margin-bottom: 30px;
-  opacity: 0.8;
+  opacity: 0.6;
 `;
