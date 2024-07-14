@@ -7,5 +7,5 @@ export const OverviewStoreContext = createContext({
   setIsAddingBoard(_input: boolean) { },
   onBoardColorChanged(_boardId: string, _input: string | null) { },
   isAddingBoard: false,
-  boards: [] as Board[],
+  boards: [] as Board[] | null,
 });

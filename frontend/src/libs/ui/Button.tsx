@@ -1,11 +1,12 @@
 import styled, { css } from "styled-components";
 import * as theme from "src/libs/theme";
+import Color from "color";
 
 export default styled.button<{ $danger?: boolean; $gray?: boolean }>`
   background-color: ${theme.baseColor};
   border-radius: 4px;
   padding: 7px 10px;
-  color: white;
+  color: ${Color(theme.baseColor).isDark() ? "white" : "black"};
   text-align: center;
   cursor: pointer;
   display: block;

@@ -41,6 +41,8 @@ const OuterContainer = styled.div<{ $transparent?: boolean }>`
   display: flex;
 
   background-color: ${theme.modalBackdropColor};
+  -webkit-backdrop-filter: blur(2px);
+  backdrop-filter: blur(2px);
 
   ${(p) =>
     p.$transparent &&

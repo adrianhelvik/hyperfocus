@@ -113,6 +113,7 @@ function BoardTile(props: Props) {
       {...onSelect(openBoard)}
       $color={color}
       onContextMenu={openMenu}
+      tabIndex={0}
     >
       <Title>{props.board.title || <Weak>Untitled</Weak>}</Title>
       <TopRight>
@@ -127,15 +128,11 @@ function BoardTile(props: Props) {
 
 export default withModal(withConfirm(withStatus(withMenu(BoardTile))));
 
-const Container = styled.button.attrs({
-  type: "button",
-}) <{ $color: string }>`
+const Container = styled.div <{ $color: string }>`
   all: unset;
   outline: revert;
   width: 100%;
   box-sizing: border-box;
-
-  backdrop-filter: blur(5px);
 
   cursor: pointer;
   padding: 10px;

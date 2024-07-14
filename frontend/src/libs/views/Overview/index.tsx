@@ -17,7 +17,7 @@ type Props = WithMenuProps & {
 
 export default withMenu(function Overview(props: Props) {
   const [isAddingBoard, setIsAddingBoard] = useState(false);
-  const [boards, setBoards] = useState<Board[]>([]);
+  const [boards, setBoards] = useState<Board[] | null>(null);
   const auth = useContext(AuthContext)!;
   const navigate = useNavigate();
 
@@ -48,15 +48,16 @@ export default withMenu(function Overview(props: Props) {
   }, [auth.status]);
 
   const onBoardAdded = useAutoCallback((board: Board) => {
-    setBoards((boards) => [board, ...boards]);
+    setBoards((boards) => boards === null ? null : [board, ...boards]);
   });
 
   const onBoardRemoved = useAutoCallback((board: Board) => {
-    setBoards((boards) => boards.filter((it) => it.boardId !== board.boardId));
+    setBoards((boards) => boards === null ? null : boards.filter((it) => it.boardId !== board.boardId));
   });
 
   const onBoardColorChanged = (boardId: string, color: string | null) => {
     setBoards(boards => {
+      if (boards === null) return null;
       return boards.map(board => {
         if (board.boardId === boardId) {
           return {

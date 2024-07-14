@@ -1,12 +1,11 @@
 import addGridKeyboardNavigation from "src/util/addGridKeyboardNavigation";
 import { useContext, useEffect, useLayoutEffect, useState } from "react";
 import { OverviewStoreContext } from "./OverviewStoreContext";
+import styled, { keyframes } from "styled-components";
 import { AuthContext } from "src/libs/authContext";
 import { useAutoLayoutEffect } from "hooks.macro";
 import { useNavigate } from "react-router-dom";
 import * as theme from "src/libs/theme";
-import styled from "styled-components";
-import { Observer } from "mobx-react";
 import BoardTile from "./BoardTile";
 import Color from "color";
 
@@ -26,7 +25,9 @@ export default function BoardList() {
 
       if ((e.metaKey || e.ctrlKey) && /[1-9]/.test(e.key)) {
         e.preventDefault();
-        navigate(`/board/${boards[parseInt(e.key, 10) - 1].boardId}`);
+        if (boards !== null) {
+          navigate(`/board/${boards[parseInt(e.key, 10) - 1].boardId}`);
+        }
       }
 
       if (!e.ctrlKey && !e.metaKey && e.key === "+") {
@@ -57,43 +58,43 @@ export default function BoardList() {
   const modifierKey = navigator.userAgent.includes(" Mac ") ? "⌘" : "ctrl ";
 
   return (
-    <Observer>
-      {() => {
-        return (
-          <Container>
-            <Header>
-              <Title>My boards</Title>
-              <PlusButton onClick={() => setIsAddingBoard(true)}>
-                New board
-                <span className="material-symbols-outlined">add</span>
-              </PlusButton>
-            </Header>
-            <Grid ref={setGridElement}>
-              {boards.map((board, i) => (
-                <BoardTile
-                  key={board.boardId}
-                  board={board}
-                  shortcut={
-                    !("ontouchstart" in document) && i <= 8
-                      ? `${modifierKey}${i + 1}`
-                      : null
-                  }
-                />
-              ))}
-              {!boards.length && <NoBoardsYet>
-                You have no boards yet.
-                <br />
-                Click + to get started.
-                <br />
-                <small>
-                  You can use the keyboard as well.
-                </small>
-              </NoBoardsYet>}
-            </Grid>
-          </Container>
-        );
-      }}
-    </Observer>
+    <Container>
+      <Header>
+        <Title>My boards</Title>
+        <PlusButton onClick={() => setIsAddingBoard(true)}>
+          New board
+          <span className="material-symbols-outlined">add</span>
+        </PlusButton>
+      </Header>
+      <Grid ref={setGridElement}>
+        {boards !== null && boards.map((board, i) => (
+          <BoardTile
+            key={board.boardId}
+            board={board}
+            shortcut={
+              !("ontouchstart" in document) && i <= 8
+                ? `${modifierKey}${i + 1}`
+                : null
+            }
+          />
+        ))}
+        {boards !== null && !boards.length && <NoBoardsYet>
+          You have no boards yet.
+          <br />
+          Click + to get started.
+          <br />
+          <small>
+            You can use the keyboard as well.
+          </small>
+        </NoBoardsYet>}
+        {boards === null && <Loading>
+          <LoadingCard $top={0} $left={0} />
+          <LoadingCard $top={0} $left={1} />
+          <LoadingCard $top={1} $left={0} />
+          <LoadingCard $top={1} $left={1} />
+        </Loading>}
+      </Grid>
+    </Container>
   );
 }
 
@@ -198,4 +199,121 @@ const NoBoardsYet = styled.div`
       display: none;
     }
   }
+`;
+
+const Loading = styled.div`
+  --border-radius: 10px;
+  --width: 80px;
+  --height: 60px;
+  --gap: 10px;
+
+  --full-width: calc(var(--width) * 2 + var(--gap));
+  --full-height: calc(var(--height) * 2 + var(--gap));
+
+  gap: 15px;
+  margin: 0 auto;
+  position: fixed;
+  top: 150px;
+  justify-content: center;
+  margin-left: calc(50% - var(--full-width) / 2);
+
+  width: var(--full-width);
+  height: var(--full-height);
+`;
+
+const transform = (x: number, y: number) => {
+  return `translateX(calc((${x}) * (var(--width) + var(--gap)))) translateY(calc((${y}) * (var(--height) + var(--gap))))`;
+};
+
+const LoadingCard = styled.div<{ $top: number, $left: number }>`
+  --top: ${p => p.$top};
+  --left: ${p => p.$left};
+
+  background-color: ${Color(theme.baseColor).mix(Color("white"), 0.5).alpha(0.2).string()};
+  border-radius: var(--border-radius);
+  width: var(--width);
+  height: var(--height);
+  position: absolute;
+  top: 0;
+  left: 0;
+  transform: ${p => transform(p.$left, p.$top)};
+
+  animation: ${(p) => {
+    if (p.$left === 0 && p.$top === 0) {
+      return keyframes`
+        0% {
+          transform: ${transform(0, 0)};
+        }
+        25% {
+          transform: ${transform(1, 0)};
+        }
+        50% {
+          transform: ${transform(1, 1)};
+        }
+        75% {
+          transform: ${transform(0, 1)};
+        }
+        100% {
+          transform: ${transform(0, 0)};
+        }
+      `;
+    }
+    if (p.$left === 1 && p.$top === 0) {
+      return keyframes`
+        0% {
+          transform: ${transform(1, 0)};
+        }
+        25% {
+          transform: ${transform(1, 1)};
+        }
+        50% {
+          transform: ${transform(0, 1)};
+        }
+        75% {
+          transform: ${transform(0, 0)};
+        }
+        100% {
+          transform: ${transform(1, 0)};
+        }
+      `;
+    }
+    if (p.$left === 1 && p.$top === 1) {
+      return keyframes`
+        0% {
+          transform: ${transform(1, 1)};
+        }
+        25% {
+          transform: ${transform(0, 1)};
+        }
+        50% {
+          transform: ${transform(0, 0)};
+        }
+        75% {
+          transform: ${transform(1, 0)};
+        }
+        100% {
+          transform: ${transform(1, 1)};
+        }
+      `;
+    }
+    if (p.$left === 0 && p.$top === 1) {
+      return keyframes`
+        0% {
+          transform: ${transform(0, 1)};
+        }
+        25% {
+          transform: ${transform(0, 0)};
+        }
+        50% {
+          transform: ${transform(1, 0)};
+        }
+        75% {
+          transform: ${transform(1, 1)};
+        }
+        100% {
+          transform: ${transform(0, 1)};
+        }
+      `;
+    }
+  }} forwards 3000ms infinite;
 `;

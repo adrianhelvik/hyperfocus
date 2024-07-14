@@ -269,7 +269,7 @@ const AddItem = styled.div`
   align-items: center;
   justify-content: space-between;
   border-radius: 5px;
-  font-size: 25px;
+  font-size: 22px;
 
   &:hover {
     background: ${theme.ui2};
