@@ -69,6 +69,9 @@ export default function addGridKeyboardNavigation(gridElement: Element) {
   };
 
   const onKeyDown = (e: KeyboardEvent) => {
+    if (e.target instanceof HTMLElement && e.target.dataset.preventGridKeyboardNavigation) {
+      return;
+    }
     switch (e.key) {
       case "ArrowRight":
         focusChild("right");

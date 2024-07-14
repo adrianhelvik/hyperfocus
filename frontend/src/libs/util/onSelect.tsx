@@ -2,10 +2,14 @@ export default function onSelect(fn: (event: any) => void) {
   return {
     tabIndex: 0,
     onClick: fn,
-    onKeyDown: (event: any) => {
-      if (event.which === 13) {
-        event.preventDefault(); // Prevent buttons from triggering submit
-        fn(event);
+    onKeyDown: (event: React.KeyboardEvent | KeyboardEvent) => {
+      if (event.key.toLowerCase() === "enter") {
+        if (event.target instanceof HTMLButtonElement) {
+          event.target.click();
+        } else {
+          event.preventDefault(); // Prevent buttons from triggering submit
+          fn(event);
+        }
       }
     },
   };

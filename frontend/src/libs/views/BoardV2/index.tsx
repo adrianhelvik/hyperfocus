@@ -82,10 +82,12 @@ export default function BoardV2() {
       <div className={classes.boardView}>
         <Header>
           <Breadcrumbs>
+            <NotOnSmallScreens>
             <CrumbButton onClick={() => navigate("/app")}>
               My boards
             </CrumbButton>
             <div>›</div>
+            </NotOnSmallScreens>
             <Title>{board?.title}</Title>
           </Breadcrumbs>
         </Header>
@@ -96,14 +98,18 @@ export default function BoardV2() {
   );
 }
 
+const NotOnSmallScreens = styled.div`
+  display: contents;
+
+  @media (max-width: 800px) {
+    display: none;
+  }
+`;
+
 const Breadcrumbs = styled.header`
   display: flex;
   align-items: start;
   gap: 10px;
-
-  @media (max-width: 960px) {
-    display: none;
-  }
 `;
 
 const CrumbButton = styled.button`
@@ -118,4 +124,7 @@ const CrumbButton = styled.button`
 
 const Title = styled.div`
   display: inline-block;
+
+  @media (max-width: 800px) {
+  }
 `;

@@ -9,7 +9,6 @@ import Button from "src/libs/ui/Button";
 import * as theme from "src/libs/theme";
 import { Board } from "src/libs/types";
 import Input from "src/libs/ui/Input";
-import Help from "src/libs/ui/Help";
 import api from "src/libs/api";
 
 type Props = {
@@ -69,13 +68,6 @@ export default function AddPortal(props: Props) {
 
   return (
     <form onSubmit={onSubmit}>
-      <MainTitle>
-        Create portal{" "}
-        <Help>
-          A portal is a link to a deck from another board. With portals it
-          becomes easier to move cards from one board to another.
-        </Help>
-      </MainTitle>
       <InputWrapper>
         <Input
           placeholder="Name in this board"
@@ -186,12 +178,4 @@ const Title = styled.div`
 const InputWrapper = styled.div`
   padding-bottom: 10px;
   margin-bottom: 10px;
-`;
-
-const MainTitle = styled.h2`
-  margin: 0;
-  margin-bottom: 30px;
-  color: #333;
-  font-size: 1.5rem;
-  font-weight: normal;
 `;

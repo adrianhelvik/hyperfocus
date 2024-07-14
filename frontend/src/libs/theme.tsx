@@ -92,3 +92,14 @@ export const smoothGradientMellow = [
   `linear-gradient(90deg, rgba(0,0,0,0), ${Color(baseColor).alpha(0.1).string()})`,
   `linear-gradient(black, ${Color(baseColor).darken(0.9).hex()})`,
 ].join(", ");
+
+export const modalBackdropColor = Color(baseColor)
+  .mix(Color("#000"), 0.8)
+  .alpha(0.6).string();
+
+export const modalBg = Color("white").alpha(0.2).string();
+export const modalFg = Color(baseColor).mix(Color("white"), 0.8).string();
+export const modalInputLabelColor = Color(baseColor).mix(Color("white"), 0.8).string();
+
+export const grayButtonBg = Color("#dbdbdb").alpha(0.1).string();
+export const grayButtonFg = Color("white").string();

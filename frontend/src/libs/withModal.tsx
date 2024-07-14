@@ -1,9 +1,7 @@
-import { Portal } from "react-portal";
+import React, { useState } from "react";
+import ReactDOM from "react-dom";
 import { Coord } from "./types";
 import Modal from "./ui/Modal";
-import React, { useState } from "react";
-
-const PortalAny = Portal as any as React.ComponentType<any>;
 
 export type ModalTemplateProps = {
   resolve: () => void;
@@ -45,11 +43,18 @@ export default function withModal<Props>(
     };
 
     const showModalInPlace = (event: any, Template: any) => {
+      let x = event.clientX;
+      let y = event.clientY;
+
+      if (event.pointerId === -1 && (event.target instanceof HTMLElement)) {
+        const rect = event.target.getBoundingClientRect();
+
+        x = rect.left;
+        y = rect.top + rect.height;
+      }
+
       showModal(Template);
-      setPlacement({
-        x: event.clientX,
-        y: event.clientY,
-      });
+      setPlacement({ x, y });
       setBackdrop(false);
       setWidth(null);
     };
@@ -71,7 +76,7 @@ export default function withModal<Props>(
           showModalInPlace={showModalInPlace}
         />
         {typeof Template === "function" ? (
-          <PortalAny>
+          ReactDOM.createPortal(
             <Modal
               hide={hide}
               placement={placement}
@@ -79,8 +84,9 @@ export default function withModal<Props>(
               width={width}
             >
               <Template resolve={hide} />
-            </Modal>
-          </PortalAny>
+            </Modal>,
+            document.body
+          )
         ) : null}
       </>
     );

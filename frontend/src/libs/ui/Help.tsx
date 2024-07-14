@@ -4,6 +4,7 @@ import * as theme from "src/libs/theme";
 import styled from "styled-components";
 import { useState } from "react";
 import React from "react";
+import Color from "color";
 
 type Props = {
   children: React.ReactNode;
@@ -69,8 +70,8 @@ const FloatingHelp = styled.div`
   padding: 10px;
   box-shadow: ${theme.shadows[1]};
   border-radius: 4px;
-  background-color: ${theme.baseColor};
-  color: white;
+  background-color: ${Color(theme.baseColor).mix(Color("white"), 0.5).string()};
+  color: ${Color(theme.baseColor).isDark() ? "white" : "black"};
   z-index: ${zIndexes.tooltip};
 
   &,
@@ -79,10 +80,22 @@ const FloatingHelp = styled.div`
   & *::after {
     pointer-events: none;
   }
+
+  & p {
+    &:first-child {
+      margin-top: 0;
+    }
+    &:last-child {
+      margin-bottom: 0;
+    }
+  }
 `;
 
 const Icon = styled.span`
   cursor: help;
+  vertical-align: middle;
+  margin-left: 10px;
+  margin-bottom: 3px;
   &:hover {
     color: ${theme.baseColor};
   }

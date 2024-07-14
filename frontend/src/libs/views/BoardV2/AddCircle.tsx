@@ -7,6 +7,7 @@ import { useBoard } from "./context";
 import AddPortal from "./AddPortal";
 import { useState } from "react";
 import AddDeck from "./AddDeck";
+import Help from "src/libs/ui/Help";
 
 export default function AddCircle() {
   const [container, setContainer] = useState<HTMLElement | null>(null);
@@ -17,13 +18,28 @@ export default function AddCircle() {
 
   const addDeck = async () => {
     if (!board) return;
-    showModal((props) => <AddDeck {...props} board={board} />);
+    showModal({
+      title: "Create a deck",
+      Template: (props) => <AddDeck {...props} board={board} />
+    });
   };
 
   const addPortal = async () => {
     if (!board) return;
-    await showModal((props) => <AddPortal {...props} index={null} />, {
+    await showModal({
       width: 700,
+      title: <>
+        Create a portal
+        <Help>
+          <p>
+            A portal is a link to a deck from another board.
+          </p>
+          <p>
+            With portals you becomes easier to move cards from one board to another.
+          </p>
+        </Help>
+      </>,
+      Template: (props) => <AddPortal {...props} index={null} />
     });
   };
 

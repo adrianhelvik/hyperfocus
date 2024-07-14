@@ -74,7 +74,7 @@ export default withMenu(function Overview(props: Props) {
     <OverviewStoreContext.Provider value={contextValue}>
       <GlobalStyle />
       <div onContextMenu={onContextMenu}>
-        <Header>My boards</Header>
+        <Header />
         {isAddingBoard && <AddBoardModal />}
         <BoardList />
       </div>

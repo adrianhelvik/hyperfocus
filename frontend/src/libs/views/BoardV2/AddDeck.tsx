@@ -38,7 +38,6 @@ function AddDeck(props: Props) {
 
   return (
     <Container onSubmit={onSubmit}>
-      <Title>Create a deck</Title>
       <Input
         autoFocus
         placeholder="Title"
@@ -58,11 +57,3 @@ function AddDeck(props: Props) {
 export default AddDeck;
 
 const Container = styled.form``;
-
-const Title = styled.h2`
-  margin: 0;
-  margin-bottom: 30px;
-  color: #333;
-  font-size: 1.5rem;
-  font-weight: normal;
-`;

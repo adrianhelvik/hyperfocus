@@ -1,49 +1,39 @@
-import { ReactNode, useLayoutEffect, useState } from "react";
-import styles from "./useModal.module.css";
+import { ComponentType, ReactNode, useState } from "react";
+import { useAutoCallback } from "hooks.macro";
 import { createPortal } from "react-dom";
+import Modal from "./ui/Modal";
 
 export type ModalTemplateProps = {
   resolve: () => void;
 };
 
 export type ModalType = {
-  showModal: (
-    Template: React.ComponentType<ModalTemplateProps>,
-    options?: { width?: number }
-  ) => Promise<void>;
+  showModal: (options: {
+    title: ReactNode,
+    Template: ComponentType<ModalTemplateProps>,
+    width?: number,
+  }) => Promise<void>;
   renderModal: () => ReactNode;
 };
 
+export type ModalHookOptions = {
+  Template: ComponentType<ModalTemplateProps>;
+  title: ReactNode;
+  inPlace: boolean;
+  width?: number;
+  resolve: () => boolean;
+  reject: () => void;
+};
+
 export default function useModal(): ModalType {
-  const [openModal, setOpenModal] = useState<any>(null);
-  const [root, setRoot] = useState<HTMLDialogElement>();
+  const [openModal, setOpenModal] = useState<ModalHookOptions | null>(null);
 
-  useLayoutEffect(() => {
-    const root = document.createElement("dialog");
-    root.className = styles.dialog;
-    document.body.append(root);
-    setRoot(root);
-    const onClose = () => setOpenModal(root.open);
-    root.addEventListener("close", onClose);
-    return () => {
-      root.remove();
-      root.removeEventListener("close", onClose);
-    };
-  }, []);
-
-  const hasOpenModal = Boolean(openModal);
-
-  useLayoutEffect(() => {
-    if (!root) return;
-    if (hasOpenModal) {
-      if (!root.open) root.showModal();
-    } else if (root.open) {
-      root.close();
-    }
-  }, [root, hasOpenModal]);
+  const hide = useAutoCallback(() => {
+    setOpenModal(null);
+  });
 
   return {
-    showModal: async (Template) => {
+    showModal: async ({ title, Template, width }) => {
       let resolve: any, reject: any;
       const promise = new Promise<void>((res, rej) => {
         resolve = res;
@@ -54,6 +44,8 @@ export default function useModal(): ModalType {
         Template,
         resolve,
         reject,
+        title,
+        width,
       });
       await promise;
       setOpenModal(null);
@@ -62,7 +54,20 @@ export default function useModal(): ModalType {
       if (openModal) {
         const { Template } = openModal;
         return (
-          <>{createPortal(<Template resolve={openModal.resolve} />, root!)}</>
+          <>
+            {createPortal(
+              <Modal
+                title={openModal.title}
+                width={openModal.width}
+                hide={hide}
+              >
+                <Template
+                  resolve={openModal.resolve}
+                />
+              </Modal>,
+              document.body
+            )}
+          </>
         );
       }
       return null;

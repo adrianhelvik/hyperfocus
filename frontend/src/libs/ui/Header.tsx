@@ -16,7 +16,7 @@ type Props = {
 export default function Header(props: Props) {
   const location = useLocation();
   const isInApp = /^\/(app|board)($|\/)/.test(location.pathname);
-  const pageColor = props.color || theme.baseColor;
+  const pageColor = "black";
   const auth = useAuth();
 
   useAutoEffect(() => {
@@ -28,7 +28,7 @@ export default function Header(props: Props) {
       <UndecoratedLink to={isInApp ? "/app" : "/"}>
         <Logo pageColor={pageColor} />
       </UndecoratedLink>
-      <DesktopOnlyTitle>{props.children}</DesktopOnlyTitle>
+      <Content>{props.children}</Content>
       {auth.status === "success" && location.pathname === "/" && (
         <Login to="/login">Go to dashboard</Login>
       )}
@@ -50,8 +50,7 @@ const Container = styled.div<{ $color: string }>`
   position: sticky;
   top: 0;
   padding: 15px;
-  display: grid;
-  grid-template-columns: auto 1fr auto;
+  display: flex;
   align-items: center;
   z-index: ${zIndexes.header};
 
@@ -101,6 +100,7 @@ const UnderLine = styled.div<{ $pageColor: string }>`
 
 const Login = styled(Link)`
   color: inherit;
+  margin-left: auto;
 `;
 
 const Logout = styled.button`
@@ -112,17 +112,14 @@ const Logout = styled.button`
   padding: 8px 20px;
   border-radius: 5px;
   transition: background-color 300ms;
+  margin-left: auto;
 
   &:hover {
     background-color: ${Color(theme.baseColor).mix(Color("#000"), 0.6).hex()};
   }
 `;
 
-const DesktopOnlyTitle = styled.div`
-  color: inherit;
+const Content = styled.div`
+  color: white;
   margin-left: 20px;
-
-  @media (max-width: 800px) {
-    display: none;
-  }
 `;

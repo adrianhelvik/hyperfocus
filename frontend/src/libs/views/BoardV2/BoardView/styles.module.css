@@ -13,6 +13,12 @@
   padding-bottom: 65px;
   scroll-snap-type: x mandatory;
 
+  scrollbar-width: 0;
+
+  &::-webkit-scrollbar {
+    display: none;
+  }
+
   &.isMovingCard {
     scroll-snap-type: none;
   }
@@ -46,6 +52,11 @@
   max-height: 100%;
   touch-action: pan-y;
   transform: translate3d(0, 0, 0);
+  scrollbar-width: 0;
+
+  &::-webkit-scrollbar {
+    display: none;
+  }
 
   @media (hover: none) {
     -webkit-touch-callout: none;
@@ -177,7 +188,8 @@
       padding-right: 3px;
     }
 
-    & .portalBoardTitle, & .portalDeckTitle {
+    & .portalBoardTitle,
+    & .portalDeckTitle {
       padding: 0 2px;
       max-width: 100px;
       text-overflow: ellipsis;
@@ -357,6 +369,10 @@
   display: flex;
   flex-direction: column;
   scrollbar-width: none;
+
+  &::-webkit-scrollbar {
+    display: none;
+  }
 
   gap: 7px;
   min-height: 40px;

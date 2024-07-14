@@ -2,7 +2,7 @@ import withEvents, { WithEventsProps } from "src/libs/util/withEvents";
 import styled, { css, keyframes } from "styled-components";
 import onSelect from "src/libs/util/onSelect";
 import * as zIndexes from "src/libs/zIndexes";
-import { useAutoEffect } from "hooks.macro";
+import { useAutoCallback, useAutoEffect } from "hooks.macro";
 import * as theme from "src/libs/theme";
 import React, { useEffect, useState } from "react";
 import { Portal } from "react-portal";
@@ -31,6 +31,19 @@ export default function withMenu<Props>(
     const [y, setY] = useState<number | null>(null);
     const [id] = useState(() => crypto.randomUUID());
 
+    const closeMenu = () => {
+      setOptions(null);
+      setX(null);
+      setY(null);
+    };
+
+    const selectItem = (e: { target: HTMLElement }) => {
+      const key = e.target.getAttribute("data-key");
+      if (!key) return;
+      options[key](e);
+      closeMenu();
+    };
+
     useEffect(() => {
       if (x == null) return;
       if (x + MENU_WIDTH > window.innerWidth) {
@@ -39,6 +52,25 @@ export default function withMenu<Props>(
         setDir("left");
       }
     }, [x]);
+
+    useAutoEffect(() => {
+      if (!menu) return;
+
+      const onKeyDown = (event: KeyboardEvent) => {
+        if (event.key === "Escape") {
+          closeMenu();
+        }
+      };
+
+      const timeout = setTimeout(() => {
+        document.addEventListener("keyup", onKeyDown);
+      }, 100);
+
+      return () => {
+        clearTimeout(timeout);
+        document.removeEventListener("keyup", onKeyDown);
+      };
+    });
 
     useAutoEffect(() => {
       props.on(document, "click", (event) => {
@@ -65,9 +97,18 @@ export default function withMenu<Props>(
     });
 
     const showMenu = (
-      event: { clientX: number; clientY: number },
+      event: { clientX: number; clientY: number, target?: unknown, pointerId?: number },
       options: Record<string, (e: { target: HTMLElement }) => void>
     ) => {
+      if (event.pointerId === -1 && (event.target instanceof HTMLElement)) {
+        const rect = event.target.getBoundingClientRect();
+
+        event = {
+          clientX: rect.left,
+          clientY: rect.top + rect.height,
+        };
+      }
+
       setShowMenuTimeout(
         setTimeout(() => {
           window.dispatchEvent(
@@ -80,18 +121,49 @@ export default function withMenu<Props>(
       );
     };
 
-    const closeMenu = () => {
-      setOptions(null);
-      setX(null);
-      setY(null);
-    };
+    useAutoEffect(() => {
+      if (menu && options) {
+        if (menu.children[0] instanceof HTMLElement) {
+          menu.children[0].focus();
+        }
+      }
+    });
 
-    const selectItem = (e: { target: HTMLElement }) => {
-      const key = e.target.getAttribute("data-key");
-      if (!key) return;
-      options[key](e);
-      closeMenu();
-    };
+    useAutoEffect(() => {
+      if (!menu || !options) return;
+
+      const onKeyDown = (event: KeyboardEvent) => {
+        if (!document.activeElement) return;
+        if (!menu) return;
+
+        switch (event.key) {
+          case "ArrowUp": {
+            event.preventDefault();
+            const index = Array.from(menu.children).indexOf(document.activeElement);
+            const nextChild = menu.children[index - 1]
+            if (nextChild instanceof HTMLElement) {
+              nextChild.focus();
+            }
+            break;
+          }
+          case "ArrowDown": {
+            event.preventDefault();
+            const index = Array.from(menu.children).indexOf(document.activeElement);
+            const prevChild = menu.children[index + 1]
+            if (prevChild instanceof HTMLElement) {
+              prevChild.focus();
+            }
+            break;
+          }
+        }
+      };
+
+      document.addEventListener("keydown", onKeyDown);
+
+      return () => {
+        document.removeEventListener("keydown", onKeyDown);
+      };
+    });
 
     return (
       <React.Fragment>
@@ -103,6 +175,7 @@ export default function withMenu<Props>(
                 <MenuItem
                   ref={(e) => index === 0 && e && e.focus()}
                   {...onSelect(selectItem)}
+                  data-prevent-grid-keyboard-navigation
                   data-disable-drag
                   data-key={key}
                   key={key}
@@ -183,6 +256,8 @@ const MenuItem = styled.div`
 
   &:focus {
     outline: none;
+    background-color: ${theme.gray1};
+    color: white;
   }
 
   &:first-child {

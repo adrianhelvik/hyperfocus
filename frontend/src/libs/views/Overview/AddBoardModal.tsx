@@ -3,7 +3,7 @@ import { OverviewStoreContext } from "./OverviewStoreContext";
 import ModalFooter from "src/libs/ui/ModalFooter";
 import { useAutoEffect } from "hooks.macro";
 import Button from "src/libs/ui/Button";
-import styled from "styled-components";
+import * as theme from "src/libs/theme";
 import Input from "src/libs/ui/Input";
 import Modal from "src/libs/ui/Modal";
 import api from "src/libs/api";
@@ -44,11 +44,11 @@ function AddBoardModal() {
 
   return (
     <form onSubmit={onSubmit}>
-      <Modal hide={() => setIsAddingBoard(false)}>
-        <Title>Name your board</Title>
+      <Modal hide={() => setIsAddingBoard(false)} title="Name your board">
         <Input
           placeholder="Enter a name"
           onChange={setTitleFromEvent}
+          color={theme.modalInputLabelColor}
           value={title}
           size={50}
           autoFocus
@@ -65,10 +65,3 @@ function AddBoardModal() {
 }
 
 export default AddBoardModal;
-
-const Title = styled.h2`
-  font-weight: normal;
-  margin: 0;
-  margin-bottom: 20px;
-  color: #333;
-`;

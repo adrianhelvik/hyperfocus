@@ -1,11 +1,12 @@
-import styled, { keyframes, css } from "styled-components";
-import React, { useState } from "react";
+import styled, { css } from "styled-components";
+import React, { ReactNode, useState } from "react";
+import * as theme from "src/libs/theme";
 import * as zIndexes from "../zIndexes";
 
 type Props = {
   transparent?: boolean;
   hide: (event?: React.MouseEvent | KeyboardEvent) => void;
-  children: JSX.Element;
+  children: ReactNode;
 };
 
 const Backdrop = ({ hide, transparent, children }: Props) => {
@@ -39,9 +40,7 @@ const OuterContainer = styled.div<{ $transparent?: boolean }>`
   align-items: flex-start;
   display: flex;
 
-  background-color: rgba(0, 0, 0, 0.5);
-
-  animation: ${keyframes`from { opacity: 0; }`} 0.5s;
+  background-color: ${theme.modalBackdropColor};
 
   ${(p) =>
     p.$transparent &&

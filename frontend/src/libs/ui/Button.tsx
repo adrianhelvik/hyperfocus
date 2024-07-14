@@ -27,8 +27,8 @@ export default styled.button<{ $danger?: boolean; $gray?: boolean }>`
       `;
     if (p.$gray)
       return css`
-        background-color: ${theme.gray2};
-        color: black;
+        background-color: ${theme.grayButtonBg};
+        color: ${theme.grayButtonFg};
       `;
     return css`
       transition: background-color 0.3s, box-shadow 0.3s;

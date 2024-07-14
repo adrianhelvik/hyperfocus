@@ -2,27 +2,29 @@ import { MouseEventHandler } from "react";
 import * as theme from "src/libs/theme";
 import styled from "styled-components";
 import Color from "color";
+import { resetButton } from "src/styles/helpers";
 
 const MenuIcon = ({
   onClick,
   $dark,
 }: {
-  onClick: MouseEventHandler<HTMLDivElement>;
+  onClick: MouseEventHandler<HTMLElement>;
   $dark?: boolean;
 }) => (
-  <Container>
+  <Container onClick={onClick}>
     <Icon
       data-disable-drag
       className="material-icons"
       $dark={$dark}
-      onClick={onClick}
     >
       menu
     </Icon>
   </Container>
 );
 
-const Container = styled.div``;
+const Container = styled.button`
+  ${resetButton};
+`;
 
 const Icon = styled.i<{ $dark?: boolean }>`
   transition: background-color 0.3s;

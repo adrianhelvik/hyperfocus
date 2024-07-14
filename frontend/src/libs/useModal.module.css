@@ -1,16 +1,17 @@
 .dialog {
-  --dialog-bg: rgba(90, 90, 110, 0.7);
   border: none;
   position: fixed;
   inset: 0;
   z-index: 1500;
   box-shadow: var(--shadows-1);
   border-radius: 4px;
+  background-color: var(--modalBg);
+  color: var(--modalFg);
 
   &::backdrop {
     position: fixed;
     inset: 0;
     z-index: 1400;
-    background-color: var(--dialog-bg);
+    background-color: var(--modalBackdropColor);
   }
 }
