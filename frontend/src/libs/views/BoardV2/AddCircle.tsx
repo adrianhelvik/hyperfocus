@@ -8,12 +8,15 @@ import AddPortal from "./AddPortal";
 import { useState } from "react";
 import AddDeck from "./AddDeck";
 import Help from "src/libs/ui/Help";
+import { useNavigate } from "react-router-dom";
+import Color from "color";
 
 export default function AddCircle() {
   const [container, setContainer] = useState<HTMLElement | null>(null);
   const { showModal, renderModal } = useModal();
   const [mounted, setMounted] = useState(false);
   const [open, setOpen] = useState(false);
+  const navigate = useNavigate();
   const board = useBoard();
 
   const addDeck = async () => {
@@ -47,6 +50,10 @@ export default function AddCircle() {
     if (open) {
       if (e.key === "Escape") {
         setOpen(false);
+      }
+      if (!e.ctrlKey && !e.metaKey && e.key === "b") {
+        e.preventDefault();
+        navigate("/app");
       }
       if (!e.ctrlKey && !e.metaKey && e.key === "d") {
         e.preventDefault();
@@ -117,6 +124,10 @@ export default function AddCircle() {
           <AddItemText>Add portal</AddItemText>
           <AddItemShortcut>p</AddItemShortcut>
         </AddItem>
+        <AddItem onClick={() => navigate("/app")}>
+          <AddItemText>Back to overview</AddItemText>
+          <AddItemShortcut>b</AddItemShortcut>
+        </AddItem>
       </Content>
       <VerticalLine $mounted={mounted} $open={open} />
       <HorizontalLine $mounted={mounted} $open={open} />
@@ -126,11 +137,11 @@ export default function AddCircle() {
 }
 
 const diameter = 60;
-const height = 140;
-const width = 200;
+const height = 210;
+const width = 300;
 
 const Container = styled.div<{ $open: boolean; $mounted: boolean }>`
-  background-color: ${theme.baseColor};
+  background-color: ${Color(theme.baseColor).alpha(0.1).string()};
   position: fixed;
   bottom: 20px;
   right: 20px;
@@ -245,9 +256,11 @@ const Content = styled.div<{ $open: boolean; $mounted: boolean }>`
   gap: 10px;
 `;
 
+const addItemBg = Color(theme.baseColor).mix(Color("white"), 0.3);
+
 const AddItem = styled.div`
   color: white;
-  background-color: rgba(255, 255, 255, 0.1);
+  background-color: ${addItemBg.alpha(0.1).string()};
   cursor: pointer;
   transition: 0.3s;
   padding: 10px;
@@ -256,6 +269,7 @@ const AddItem = styled.div`
   align-items: center;
   justify-content: space-between;
   border-radius: 5px;
+  font-size: 25px;
 
   &:hover {
     background: ${theme.ui2};

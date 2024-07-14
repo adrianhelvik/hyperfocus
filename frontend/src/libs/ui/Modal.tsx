@@ -61,6 +61,7 @@ const Container = styled.div<{
   border-radius: 4px;
   max-height: 100vh;
   overflow: auto;
+  -webkit-backdrop-filter: blur(8px);
   backdrop-filter: blur(8px);
   box-shadow: ${theme.shadows[1]};
 

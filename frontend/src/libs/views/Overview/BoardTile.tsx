@@ -161,7 +161,7 @@ const Title = styled.div`
   &::before {
     content: "";
     float: right;
-    width: 76px;
+    width: 88px;
     height: 34px;
     vertical-align: top;
   }

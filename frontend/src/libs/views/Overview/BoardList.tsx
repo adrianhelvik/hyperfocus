@@ -24,7 +24,7 @@ export default function BoardList() {
       if (e.target instanceof HTMLInputElement) return;
       if (e.target instanceof HTMLTextAreaElement) return;
 
-      if (e.metaKey && /[1-9]/.test(e.key)) {
+      if ((e.metaKey || e.ctrlKey) && /[1-9]/.test(e.key)) {
         e.preventDefault();
         navigate(`/board/${boards[parseInt(e.key, 10) - 1].boardId}`);
       }
@@ -80,7 +80,15 @@ export default function BoardList() {
                   }
                 />
               ))}
-              {!boards.length && <div>You have no boards yet</div>}
+              {!boards.length && <NoBoardsYet>
+                You have no boards yet.
+                <br />
+                Click + to get started.
+                <br />
+                <small>
+                  You can use the keyboard as well.
+                </small>
+              </NoBoardsYet>}
             </Grid>
           </Container>
         );
@@ -96,6 +104,7 @@ const Container = styled.div`
 `;
 
 const Grid = styled.div`
+  transform: translate3d(0, 0, 0);
   padding: 20px;
   display: grid;
   grid-template-columns: repeat(4, 1fr);
@@ -164,4 +173,29 @@ const Title = styled.h2`
   font-size: 20px;
   color: white;
   letter-spacing: 0.1rem;
+`;
+
+const NoBoardsYet = styled.div`
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  text-align: center;
+  width: 100%;
+  position: fixed;
+  inset: 0;
+  top: 30vh;
+  font-size: 60px;
+  color: ${Color(theme.baseColor).mix(Color("white"), 0.5).mix(Color("black"), 0.3).string()};
+
+  & small {
+    font-size: 30px;
+    margin-top: 50px;
+  }
+
+  @media (touch: none) {
+    & small {
+      display: none;
+    }
+  }
 `;

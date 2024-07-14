@@ -50,7 +50,7 @@ export default function BoardV2() {
   }, [div, hasBoard, navigate, boardId]);
 
   useOnKeyDown((e) => {
-    if (e.metaKey && /[1-9]/.test(e.key)) {
+    if ((e.metaKey || e.ctrlKey) && /[1-9]/.test(e.key)) {
       e.preventDefault();
       return navigate("/app");
     }
@@ -83,10 +83,10 @@ export default function BoardV2() {
         <Header>
           <Breadcrumbs>
             <NotOnSmallScreens>
-            <CrumbButton onClick={() => navigate("/app")}>
-              My boards
-            </CrumbButton>
-            <div>›</div>
+              <CrumbButton onClick={() => navigate("/app")}>
+                My boards
+              </CrumbButton>
+              <div>›</div>
             </NotOnSmallScreens>
             <Title>{board?.title}</Title>
           </Breadcrumbs>
