@@ -225,6 +225,78 @@ const transform = (x: number, y: number) => {
   return `translateX(calc((${x}) * (var(--width) + var(--gap)))) translateY(calc((${y}) * (var(--height) + var(--gap))))`;
 };
 
+const kf00 = keyframes`
+  0% {
+    transform: ${transform(0, 0)};
+  }
+  25% {
+    transform: ${transform(1, 0)};
+  }
+  50% {
+    transform: ${transform(1, 1)};
+  }
+  75% {
+    transform: ${transform(0, 1)};
+  }
+  100% {
+    transform: ${transform(0, 0)};
+  }
+`;
+
+const kf10 = keyframes`
+  0% {
+    transform: ${transform(1, 0)};
+  }
+  25% {
+    transform: ${transform(1, 1)};
+  }
+  50% {
+    transform: ${transform(0, 1)};
+  }
+  75% {
+    transform: ${transform(0, 0)};
+  }
+  100% {
+    transform: ${transform(1, 0)};
+  }
+`;
+
+const kf11 = keyframes`
+  0% {
+    transform: ${transform(1, 1)};
+  }
+  25% {
+    transform: ${transform(0, 1)};
+  }
+  50% {
+    transform: ${transform(0, 0)};
+  }
+  75% {
+    transform: ${transform(1, 0)};
+  }
+  100% {
+    transform: ${transform(1, 1)};
+  }
+`;
+
+const kf01 = keyframes`
+  0% {
+    transform: ${transform(0, 1)};
+  }
+  25% {
+    transform: ${transform(0, 0)};
+  }
+  50% {
+    transform: ${transform(1, 0)};
+  }
+  75% {
+    transform: ${transform(1, 1)};
+  }
+  100% {
+    transform: ${transform(0, 1)};
+  }
+`;
+
 const LoadingCard = styled.div<{ $top: number, $left: number }>`
   --top: ${p => p.$top};
   --left: ${p => p.$left};
@@ -240,80 +312,16 @@ const LoadingCard = styled.div<{ $top: number, $left: number }>`
 
   animation: ${(p) => {
     if (p.$left === 0 && p.$top === 0) {
-      return keyframes`
-        0% {
-          transform: ${transform(0, 0)};
-        }
-        25% {
-          transform: ${transform(1, 0)};
-        }
-        50% {
-          transform: ${transform(1, 1)};
-        }
-        75% {
-          transform: ${transform(0, 1)};
-        }
-        100% {
-          transform: ${transform(0, 0)};
-        }
-      `;
+      return kf00;
     }
     if (p.$left === 1 && p.$top === 0) {
-      return keyframes`
-        0% {
-          transform: ${transform(1, 0)};
-        }
-        25% {
-          transform: ${transform(1, 1)};
-        }
-        50% {
-          transform: ${transform(0, 1)};
-        }
-        75% {
-          transform: ${transform(0, 0)};
-        }
-        100% {
-          transform: ${transform(1, 0)};
-        }
-      `;
+      return kf10;
     }
     if (p.$left === 1 && p.$top === 1) {
-      return keyframes`
-        0% {
-          transform: ${transform(1, 1)};
-        }
-        25% {
-          transform: ${transform(0, 1)};
-        }
-        50% {
-          transform: ${transform(0, 0)};
-        }
-        75% {
-          transform: ${transform(1, 0)};
-        }
-        100% {
-          transform: ${transform(1, 1)};
-        }
-      `;
+      return kf11;
     }
     if (p.$left === 0 && p.$top === 1) {
-      return keyframes`
-        0% {
-          transform: ${transform(0, 1)};
-        }
-        25% {
-          transform: ${transform(0, 0)};
-        }
-        50% {
-          transform: ${transform(1, 0)};
-        }
-        75% {
-          transform: ${transform(1, 1)};
-        }
-        100% {
-          transform: ${transform(0, 1)};
-        }
-      `;
+      return kf01;
     }
   }} forwards 3000ms infinite;
 `;

@@ -1,9 +1,9 @@
+import { useAutoEffect, useAutoLayoutEffect } from "hooks.macro";
+import React, { ReactNode, useState } from "react";
 import styled, { css } from "styled-components";
 import * as theme from "../theme";
 import Backdrop from "./Backdrop";
 import { Coord } from "../types";
-import React, { ReactNode, useState } from "react";
-import { useAutoEffect, useAutoLayoutEffect } from "hooks.macro";
 
 type Props = {
   placement?: Coord | null;
