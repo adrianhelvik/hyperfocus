@@ -1,10 +1,10 @@
 import withEvents, { WithEventsProps } from "src/libs/util/withEvents";
 import styled, { css, keyframes } from "styled-components";
+import React, { useEffect, useState } from "react";
 import onSelect from "src/libs/util/onSelect";
 import * as zIndexes from "src/libs/zIndexes";
-import { useAutoCallback, useAutoEffect } from "hooks.macro";
+import { useAutoEffect } from "hooks.macro";
 import * as theme from "src/libs/theme";
-import React, { useEffect, useState } from "react";
 import { Portal } from "react-portal";
 
 const PortalAny = Portal as any;

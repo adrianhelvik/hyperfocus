@@ -31,12 +31,12 @@ function BoardTile(props: Props) {
     navigate(`/board/${props.board.boardId}`);
   };
 
-  const setColor = ({ hex }: { hex: string }) => {
+  const setColor = (color: string | null) => {
     api.setBoardColor({
       boardId: props.board.boardId!,
-      color: hex,
+      color: color,
     });
-    onBoardColorChanged(props.board.boardId, hex);
+    onBoardColorChanged(props.board.boardId, color);
   };
 
   const rename = (title: string) => {
@@ -80,11 +80,14 @@ function BoardTile(props: Props) {
         props.showModalInPlace(nativeEvent, ({ resolve }) => (
           <ColorPicker
             onChange={(color: { hex: string }) => {
-              setColor(color);
+              setColor(color.hex);
               resolve();
             }}
           />
         ));
+      },
+      "Clear color": () => {
+        setColor(null);
       },
       Delete: async () => {
         if (

@@ -30,6 +30,7 @@ import uuid from "./utils/uuid.mjs";
 import { Stream } from "stream";
 import Boom from "@hapi/boom";
 import knex from "./knex.mjs";
+import Color from "color";
 import fs from "fs";
 
 export const loginRoute = {
@@ -355,12 +356,18 @@ export const setBoardColorRoute = {
   method: "POST",
   path: "/setBoardColor",
   /**
-   * @param {{ payload: { boardId: string, color: string }, headers: { authorization: string } }} request
+   * @param {{ payload: { boardId: string, color: string | null }, headers: { authorization: string } }} request
    * @returns {Promise<{ success: boolean }>}
    */
   async handler(request) {
     const { boardId, color } = request.payload;
     await assertCanEditBoard(request, boardId);
+
+    if (!["null", "string"].includes(color)) {
+      throw Boom.badRequest("Invalid color");
+    }
+
+    if (color != null) color = Color(color).hex();
 
     await knex("boards").where({ boardId }).update({ color });
 

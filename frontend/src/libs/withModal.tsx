@@ -7,14 +7,16 @@ export type ModalTemplateProps = {
   resolve: () => void;
 };
 
+export type TemplateComponent = React.ComponentType<ModalTemplateProps>;
+
 export type WithModalProps = {
   showModal: (
-    Template: React.ComponentType<ModalTemplateProps>,
+    Template: TemplateComponent,
     options?: { width?: number }
   ) => Promise<void>;
   showModalInPlace: (
     event: React.MouseEvent,
-    Template: React.ComponentType<ModalTemplateProps>
+    Template: TemplateComponent,
   ) => void;
 };
 
@@ -42,7 +44,7 @@ export default function withModal<Props>(
       return promise;
     };
 
-    const showModalInPlace = (event: any, Template: any) => {
+    const showModalInPlace = (event: PointerEvent, Template: TemplateComponent) => {
       let x = event.clientX;
       let y = event.clientY;
 

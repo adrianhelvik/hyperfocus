@@ -45,7 +45,7 @@ export type BoardChild = Deck | Portal;
 
 export type Board = {
   children: BoardChild[];
-  color: string;
+  color: string | null;
   title: string;
   boardId: string;
 };

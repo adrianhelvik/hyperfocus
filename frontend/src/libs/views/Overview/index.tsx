@@ -55,9 +55,17 @@ export default withMenu(function Overview(props: Props) {
     setBoards((boards) => boards.filter((it) => it.boardId !== board.boardId));
   });
 
-  const onBoardColorChanged = () => {
-    api.ownBoards().then(({ boards }) => {
-      setBoards(boards);
+  const onBoardColorChanged = (boardId: string, color: string | null) => {
+    setBoards(boards => {
+      return boards.map(board => {
+        if (board.boardId === boardId) {
+          return {
+            ...board,
+            color,
+          }
+        }
+        return board;
+      });
     });
   };
 

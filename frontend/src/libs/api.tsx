@@ -38,7 +38,7 @@ type Api = {
   }): PromiseLike<{ sessionId: string }>;
   getBoard(payload: { boardId: string }): PromiseLike<Board>;
   deleteBoard(payload: { boardId: string }): PromiseLike<void>;
-  setBoardColor(board: Partial<Board>): PromiseLike<void>;
+  setBoardColor(payload: { boardId: string, color: string | null }): PromiseLike<void>;
   addPortal(options: {
     boardId: string;
     deckId: string;
