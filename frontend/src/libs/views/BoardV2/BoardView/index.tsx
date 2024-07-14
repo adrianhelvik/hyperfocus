@@ -8,7 +8,6 @@ import { CleanupHooks } from "./CleanupHooks";
 import classes from "./styles.module.css";
 import api from "src/libs/api";
 import { el } from "./el";
-import animate from "./animate";
 
 export class BoardView {
   private cleanupHooks = new CleanupHooks();
