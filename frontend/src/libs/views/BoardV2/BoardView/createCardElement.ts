@@ -154,8 +154,13 @@ export default function createCardElement({
     },
     onClick(clientX, clientY, target) {
       // Ignore clicks on links inside the card
-      if (target instanceof HTMLAnchorElement) {
-        target.click();
+      if (target instanceof HTMLAnchorElement || target instanceof HTMLTextAreaElement) {
+        target.dispatchEvent(new MouseEvent("click", {
+          clientX,
+          clientY,
+          bubbles: false,
+          cancelable: true,
+        }))
       } else {
         switchToInput({ clientX, clientY });
       }
