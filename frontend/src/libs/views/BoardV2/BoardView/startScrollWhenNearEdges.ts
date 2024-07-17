@@ -1,7 +1,7 @@
 import clamp from "src/util/clamp";
 
 const AUTO_SCROLL_OFFSET = 100;
-const MULTIPLIER = 4;
+const MULTIPLIER = 2;
 
 export default function startScrollWhenNearEdges(root: HTMLElement) {
   let scrollDirection: "NONE" | "LEFT" | "RIGHT" = "NONE";
@@ -34,13 +34,16 @@ export default function startScrollWhenNearEdges(root: HTMLElement) {
   document.addEventListener("mousemove", onMouseMove);
   document.addEventListener("touchmove", onTouchMove);
 
+  let time = Date.now();
   const scrollInterval = setInterval(() => {
+    let timePassed = Date.now() - time;
     if (scrollDirection === "LEFT") {
-      root.scrollBy({ left: -multiplier });
+      root.scrollBy({ left: -multiplier * timePassed });
     }
     if (scrollDirection === "RIGHT") {
-      root.scrollBy({ left: multiplier });
+      root.scrollBy({ left: multiplier * timePassed });
     }
+    time = Date.now();
   });
 
   return () => {
