@@ -8,16 +8,19 @@ services:
       - backend
     build:
       context: .
-      dockerfile: ./frontend/Dockerfile.dev
+      dockerfile: ./frontend/Dockerfile
+      target: install
     volumes:
       - ./frontend/src:/frontend/src
       - ./frontend/public:/frontend/public
     ports:
       - 9341:9341
     environment:
+      PRELOAD_FILES: 'true'
       NODE_ENV: 'development'
-      API_URL: http://backend:1234
+      API_URL: 'http://backend:1234'
       REWRITE: 'true'
+      PORT: '9341'
 
   backend:
     image: subtask-backend
