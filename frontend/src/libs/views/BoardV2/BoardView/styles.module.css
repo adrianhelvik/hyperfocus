@@ -10,7 +10,7 @@
   padding: 20px;
   overflow-x: auto;
   flex-grow: 1;
-  padding-bottom: 65px;
+  padding-bottom: 85px;
   scroll-snap-type: x mandatory;
 
   scrollbar-width: 0;
