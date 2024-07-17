@@ -95,8 +95,7 @@ export const smoothGradientMellow = [
 
 export const modalBackdropColor = "rgba(30, 30, 30, 0.8)";
 
-export const modalBg = Color("white").alpha(0.2).string();
-export const modalFg = Color(baseColor).mix(Color("white"), 0.8).string();
+export const modalBg = Color("#666").alpha(0.5).string();
 export const modalInputLabelColor = Color(baseColor).mix(Color("white"), 0.8).string();
 
 export const grayButtonBg = Color("#dbdbdb").alpha(0.1).string();

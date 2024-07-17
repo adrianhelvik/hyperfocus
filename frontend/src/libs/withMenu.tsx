@@ -233,7 +233,7 @@ const MenuWrapper = styled.div<{
   font-size: 0.8rem;
   color: #707070;
   border-radius: 4px;
-  z-index: ${zIndexes.contextMenu};
+  z-index: ${zIndexes.overlaidMenu};
   overflow: hidden;
 
   animation: ${keyframes`

@@ -1,7 +1,7 @@
 import styled, { css } from "styled-components";
 import React, { ReactNode, useState } from "react";
-import * as theme from "src/libs/theme";
 import * as zIndexes from "../zIndexes";
+import Color from "color";
 
 type Props = {
   transparent?: boolean;
@@ -40,9 +40,9 @@ const OuterContainer = styled.div<{ $transparent?: boolean }>`
   align-items: flex-start;
   display: flex;
 
-  background-color: ${theme.modalBackdropColor};
-  -webkit-backdrop-filter: blur(2px);
-  backdrop-filter: blur(2px);
+  background-color: ${Color("black").alpha(0.3).string()};
+  -webkit-backdrop-filter: blur(10px) grayscale(0.8);
+  backdrop-filter: blur(10px) grayscale(0.8);
 
   ${(p) =>
     p.$transparent &&

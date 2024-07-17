@@ -50,7 +50,7 @@
   height: fit-content;
   transition: opacity 300ms, box-shadow 300ms;
   max-height: 100%;
-  touch-action: pan-y;
+  border-radius: 4px;
   transform: translate3d(0, 0, 0);
   scrollbar-width: 0;
 
@@ -125,6 +125,9 @@
   --menu-fg: var(--deck-text-color);
 
   --deck-title-padding: 4px 7px;
+
+  position: sticky;
+  top: 0;
 
   & .deckTitleContentContainer {
     border-top-left-radius: 4px;
@@ -321,8 +324,12 @@
 }
 
 .newCardContainer {
+  position: sticky;
+  bottom: 0;
+  background-color: #ddd;
+
   padding: 7px;
-  padding-top: 0;
+  margin-top: -7px;
   display: grid;
   grid-template-columns: 1fr auto;
   gap: 7px;
@@ -376,7 +383,6 @@
 
   gap: 7px;
   min-height: 40px;
-  overflow-y: auto;
 
   &>* {
     flex-shrink: 0;

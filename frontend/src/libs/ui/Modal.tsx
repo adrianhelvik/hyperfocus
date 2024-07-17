@@ -70,7 +70,7 @@ const Container = styled.div<{
   $width?: number | null;
   $offsetX: number;
 }>`
-  color: ${theme.modalFg};
+  color: white;
   background-color: ${theme.modalBg};
   max-width: calc(100vw - 40px);
   padding: 20px;
@@ -96,7 +96,7 @@ const Container = styled.div<{
 `;
 
 const Title = styled.h2`
-  color: ${theme.modalFg};
+  color: white;
   margin-top: 0;
   margin-bottom: 30px;
   font-size: 20px;

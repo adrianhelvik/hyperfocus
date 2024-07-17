@@ -2,12 +2,14 @@ import styled, { keyframes, css } from "styled-components";
 import useOnKeyDown from "src/util/useOnKeyDown";
 import { useNavigate } from "react-router-dom";
 import { useAutoEffect } from "hooks.macro";
+import * as zIndexes from "../../zIndexes";
 import useModal from "src/libs/useModal";
 import * as theme from "src/libs/theme";
 import { useBoard } from "./context";
 import AddPortal from "./AddPortal";
 import Help from "src/libs/ui/Help";
 import { useState } from "react";
+import ReactDOM from "react-dom";
 import AddDeck from "./AddDeck";
 import Color from "color";
 
@@ -25,6 +27,7 @@ export default function AddCircle() {
       title: "Create a deck",
       Template: (props) => <AddDeck {...props} board={board} />
     });
+    setOpen(false);
   };
 
   const addPortal = async () => {
@@ -44,6 +47,7 @@ export default function AddCircle() {
       </>,
       Template: (props) => <AddPortal {...props} index={null} />
     });
+    setOpen(false);
   };
 
   useOnKeyDown((e) => {
@@ -84,55 +88,41 @@ export default function AddCircle() {
     };
   });
 
-  useAutoEffect(() => {
-    if (!open) return;
-
-    const onDocumentClick = (event: MouseEvent) => {
-      if (!(event.target instanceof Element)) {
-        return;
-      }
-      if (container?.contains(event.target)) {
-        return;
-      }
-
-      setOpen(false);
-    };
-
-    const timeout = setTimeout(() => {
-      document.addEventListener("click", onDocumentClick);
-    }, 500);
-
-    return () => {
-      clearTimeout(timeout);
-      document.removeEventListener("click", onDocumentClick);
-    };
-  });
-
   return (
-    <Container
-      onClick={() => setOpen((open) => !open)}
-      ref={(e) => setContainer(e)}
-      $mounted={mounted}
-      $open={open}
-    >
-      <Content $open={open} $mounted={mounted}>
-        <AddItem onClick={addDeck}>
-          <AddItemText>Add deck</AddItemText>
-          <AddItemShortcut>d</AddItemShortcut>
-        </AddItem>
-        <AddItem onClick={addPortal}>
-          <AddItemText>Add portal</AddItemText>
-          <AddItemShortcut>p</AddItemShortcut>
-        </AddItem>
-        <AddItem onClick={() => navigate("/app")}>
-          <AddItemText>Back to overview</AddItemText>
-          <AddItemShortcut>b</AddItemShortcut>
-        </AddItem>
-      </Content>
-      <VerticalLine $mounted={mounted} $open={open} />
-      <HorizontalLine $mounted={mounted} $open={open} />
-      {renderModal()}
-    </Container>
+    <>
+      {ReactDOM.createPortal(
+        <Background $open={open} onClick={() => setOpen(false)} />,
+        document.body
+      )}
+      <Container
+        ref={setContainer}
+        onClick={(e) => {
+          if (e.target === container) {
+            setOpen((open) => !open);
+          }
+        }}
+        $mounted={mounted}
+        $open={open}
+      >
+        <Content $open={open} $mounted={mounted}>
+          <AddItem onClick={addDeck}>
+            <AddItemText>Add deck</AddItemText>
+            <AddItemShortcut>d</AddItemShortcut>
+          </AddItem>
+          <AddItem onClick={addPortal}>
+            <AddItemText>Add portal</AddItemText>
+            <AddItemShortcut>p</AddItemShortcut>
+          </AddItem>
+          <AddItem onClick={() => navigate("/app")}>
+            <AddItemText>Back to overview</AddItemText>
+            <AddItemShortcut>b</AddItemShortcut>
+          </AddItem>
+        </Content>
+        <VerticalLine $mounted={mounted} $open={open} />
+        <HorizontalLine $mounted={mounted} $open={open} />
+        {renderModal()}
+      </Container>
+    </>
   );
 }
 
@@ -140,12 +130,26 @@ const overlayColor = Color(theme.baseColor).mix(Color("white"), 0.3);
 const lightOverlayColor = Color(theme.baseColor).mix(Color("white"), 0.3);
 
 const diameter = 60;
-const height = 210;
+const height = 240;
 const width = 300;
 
+const Background = styled.div<{ $open: boolean }>`
+  background-color: ${Color("black").alpha(0.3).string()};
+  -webkit-backdrop-filter: blur(2px) grayscale(0.8);
+  backdrop-filter: blur(2px) grayscale(0.8);
+
+  opacity: ${p => p.$open ? "1" : "0"};
+  transition: backdrop-filter 300ms, opacity 300ms;
+  z-index: ${zIndexes.addButtonBackdrop};
+  position: fixed;
+  inset: 0;
+  pointer-events: ${p => p.$open ? "auto" : "none"};
+`;
+
 const Container = styled.div<{ $open: boolean; $mounted: boolean }>`
-  background-color: ${theme.baseColor};
+  background-color: ${p => p.$open ? "tranparent" : theme.baseColor};
   color: ${Color(theme.baseColor).isDark() ? "white" : "black"};
+  z-index: ${zIndexes.addButtons};
   position: fixed;
   bottom: 20px;
   right: 20px;
@@ -257,14 +261,12 @@ const Content = styled.div<{ $open: boolean; $mounted: boolean }>`
   padding: 10px;
   display: flex;
   flex-direction: column;
-  gap: 10px;
+  gap: 20px;
 `;
 
-const addItemBg = Color(theme.baseColor).mix(Color("white"), 0.3);
-
 const AddItem = styled.div`
-  background-color: ${overlayColor.string()};
-  color: ${overlayColor.isDark() ? "white" : "black"};
+  background-color: ${theme.baseColor};
+  color: ${Color(theme.baseColor).isDark() ? "white" : "black"};
   cursor: pointer;
   transition: 0.3s;
   padding: 10px;
