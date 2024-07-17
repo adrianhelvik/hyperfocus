@@ -1,11 +1,18 @@
 import react from "@vitejs/plugin-react";
 import { defineConfig } from "vite";
+import picocolors from "picocolors";
 
 declare global {
     const process: {
         env: Record<string, string>;
     }
 }
+
+const API_URL = process.env.API_URL || "https://hyperfocus.live";
+
+console.log();
+console.log(picocolors.bold(`API_URL=${API_URL}`));
+console.log();
 
 export default defineConfig({
     plugins: [
@@ -45,7 +52,7 @@ export default defineConfig({
         port: 9341,
         proxy: {
             "/api": {
-                target: process.env.API_URL || "https://hyperfocus.live",
+                target: API_URL,
                 rewrite(path: string) {
                     if (process.env.REWRITE === "true") {
                         //

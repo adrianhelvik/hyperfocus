@@ -20,7 +20,7 @@ export default function Header(props: Props) {
   const auth = useAuth();
 
   useAutoEffect(() => {
-    auth.authenticate();
+    auth.authenticate().then(console.log.bind(console, "Auth result"));
   });
 
   return (

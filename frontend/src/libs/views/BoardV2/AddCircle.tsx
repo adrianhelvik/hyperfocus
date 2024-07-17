@@ -8,6 +8,7 @@ import AddPortal from "./AddPortal";
 import { useState } from "react";
 import AddDeck from "./AddDeck";
 import Help from "src/libs/ui/Help";
+import Color from "color";
 
 export default function AddCircle() {
   const [container, setContainer] = useState<HTMLElement | null>(null);
@@ -125,12 +126,16 @@ export default function AddCircle() {
   );
 }
 
+const overlayColor = Color(theme.baseColor).mix(Color("white"), 0.3);
+const lightOverlayColor = Color(theme.baseColor).mix(Color("white"), 0.3);
+
 const diameter = 60;
 const height = 140;
 const width = 200;
 
 const Container = styled.div<{ $open: boolean; $mounted: boolean }>`
   background-color: ${theme.baseColor};
+  color: ${Color(theme.baseColor).isDark() ? "white" : "black"};
   position: fixed;
   bottom: 20px;
   right: 20px;
@@ -196,7 +201,7 @@ const lineHeight = 20;
 const lineWidth = 3;
 
 const Line = styled.div<{ $open: boolean; $mounted: boolean }>`
-  background: white;
+  background-color: ${Color(theme.baseColor).isDark() ? "white" : "black"};
   position: absolute;
   top: 50%;
   left: 50%;
@@ -246,8 +251,8 @@ const Content = styled.div<{ $open: boolean; $mounted: boolean }>`
 `;
 
 const AddItem = styled.div`
-  color: white;
-  background-color: rgba(255, 255, 255, 0.1);
+  background-color: ${overlayColor.string()};
+  color: ${overlayColor.isDark() ? "white" : "black"};
   cursor: pointer;
   transition: 0.3s;
   padding: 10px;
@@ -265,7 +270,7 @@ const AddItem = styled.div`
 const AddItemText = styled.div``;
 
 const AddItemShortcut = styled.div`
-  background-color: rgba(255, 255, 255, 0.3);
+  background-color: ${lightOverlayColor.string()};
   border: 1px solid white;
   border-radius: 5px;
   padding: 5px 10px;

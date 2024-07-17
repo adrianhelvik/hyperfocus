@@ -134,7 +134,7 @@ const PlusButton = styled.button`
   padding-left: 16px;
 
   &:hover {
-    background-color: ${Color(theme.baseColor).alpha(0.3).string()};
+    background-color: ${Color(theme.baseColor).alpha(0.4).string()};
     box-shadow: ${theme.shadows[1]};
   }
 
