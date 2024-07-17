@@ -276,7 +276,7 @@ const AddItem = styled.div`
   font-size: 22px;
 
   &:hover {
-    background: ${theme.ui2};
+    background-color: ${overlayColor.mix(Color("black"), 0.2).string()};
   }
 `;
 
