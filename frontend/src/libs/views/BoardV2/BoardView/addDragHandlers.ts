@@ -114,6 +114,7 @@ export default function addDragHandlers<Context>(options: {
     const afterInitialTouch = () => {
       document.removeEventListener("contextmenu", preventDefault);
       document.removeEventListener("touchend", afterInitialTouch);
+      clearTimeout(timeout);
     };
 
     document.addEventListener("contextmenu", preventDefault, { passive: false });
@@ -138,7 +139,7 @@ export default function addDragHandlers<Context>(options: {
     function onDelayedTouchStart() {
       try {
         navigator.vibrate(15);
-      } catch (e) {}
+      } catch (e) { }
 
       stopInitialListener();
 

@@ -1,9 +1,9 @@
+import { useAutoEffect, useAutoLayoutEffect } from "hooks.macro";
+import React, { ReactNode, useState } from "react";
 import styled, { css } from "styled-components";
 import * as theme from "../theme";
 import Backdrop from "./Backdrop";
 import { Coord } from "../types";
-import React, { ReactNode } from "react";
-import { useAutoEffect } from "hooks.macro";
 
 type Props = {
   placement?: Coord | null;
@@ -15,15 +15,8 @@ type Props = {
 };
 
 function Modal(props: Props) {
-  if (props.placement) {
-    if (typeof props.placement.x !== "number")
-      throw Error("props.placement.x must be a number");
-    if (typeof props.placement.y !== "number")
-      throw Error("props.placement.y must be a number");
-  }
-
-  if (typeof props.hide !== "function")
-    throw Error("props.hide must be a function");
+  const [container, setContainer] = useState<HTMLElement | null>(null);
+  const [offsetX, setOffsetX] = useState<number>(0);
 
   useAutoEffect(() => {
     const onKeyDown = (event: KeyboardEvent) => {
@@ -38,9 +31,31 @@ function Modal(props: Props) {
     };
   });
 
+  useAutoLayoutEffect(() => {
+    if (!container) return;
+    if (!props.placement) return;
+
+    const placeElement = () => {
+      const rect = container.getBoundingClientRect();
+      if (rect.left + rect.width > window.innerWidth) {
+        setOffsetX(-rect.width);
+      }
+    };
+
+    placeElement();
+
+    window.addEventListener("resize", placeElement);
+    const interval = setInterval(placeElement, 500);
+
+    return () => {
+      window.removeEventListener("resize", placeElement);
+      clearInterval(interval);
+    };
+  });
+
   return (
     <Backdrop transparent={Boolean(props.placement)} hide={props.hide}>
-      <Container $position={props.placement} $width={props.width}>
+      <Container $placement={props.placement} $width={props.width} ref={setContainer} $offsetX={offsetX}>
         {props.title && <Title>{props.title}</Title>}
         {props.children}
       </Container>
@@ -51,8 +66,9 @@ function Modal(props: Props) {
 export default Modal;
 
 const Container = styled.div<{
-  $position?: Coord | null;
+  $placement?: Coord | null;
   $width?: number | null;
+  $offsetX: number;
 }>`
   color: ${theme.modalFg};
   background-color: ${theme.modalBg};
@@ -61,23 +77,21 @@ const Container = styled.div<{
   border-radius: 4px;
   max-height: 100vh;
   overflow: auto;
-  backdrop-filter: blur(8px);
   box-shadow: ${theme.shadows[1]};
 
   ${(p) =>
-    !p.$position &&
+    !p.$placement &&
     css`
       width: ${p.$width || 400}px;
       margin-bottom: 100px;
     `}
 
   ${(p) =>
-    p.$position &&
+    p.$placement &&
     css`
       position: fixed;
-      left: ${p.$position.x}px;
-      top: ${p.$position.y + 20}px;
-      transform: translateX(-50%);
+      left: ${p.$placement.x + p.$offsetX}px;
+      top: ${p.$placement.y}px;
     `}
 `;
 

@@ -262,9 +262,7 @@ export class BoardView {
       deckElement
         .querySelector("[data-cards-container]")
         ?.append(newCardElement);
-      newCardElement.scrollIntoView({
-        behavior: "smooth",
-      });
+      deckElement.scrollTop = deckElement.scrollHeight - deckElement.clientHeight;
     };
 
     addCardInput.addEventListener("keydown", (e) => {

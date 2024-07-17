@@ -50,7 +50,7 @@ function generateStars(staticOpacity = 1) {
   const baseShineHeight = 0;
   const shineHeightRand = 6;
   const max = 60;
-  const jitter =  10 * Math.random();
+  const jitter = 10 * Math.random();
 
   let radius = 15;
   for (let i = i0; i < max; i++) {
@@ -93,9 +93,7 @@ export const smoothGradientMellow = [
   `linear-gradient(black, ${Color(baseColor).darken(0.9).hex()})`,
 ].join(", ");
 
-export const modalBackdropColor = Color(baseColor)
-  .mix(Color("#000"), 0.8)
-  .alpha(0.6).string();
+export const modalBackdropColor = "rgba(30, 30, 30, 0.8)";
 
 export const modalBg = Color("white").alpha(0.2).string();
 export const modalFg = Color(baseColor).mix(Color("white"), 0.8).string();

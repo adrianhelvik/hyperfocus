@@ -1,13 +1,14 @@
 import styled, { keyframes, css } from "styled-components";
 import useOnKeyDown from "src/util/useOnKeyDown";
+import { useNavigate } from "react-router-dom";
 import { useAutoEffect } from "hooks.macro";
 import useModal from "src/libs/useModal";
 import * as theme from "src/libs/theme";
 import { useBoard } from "./context";
 import AddPortal from "./AddPortal";
+import Help from "src/libs/ui/Help";
 import { useState } from "react";
 import AddDeck from "./AddDeck";
-import Help from "src/libs/ui/Help";
 import Color from "color";
 
 export default function AddCircle() {
@@ -15,6 +16,7 @@ export default function AddCircle() {
   const { showModal, renderModal } = useModal();
   const [mounted, setMounted] = useState(false);
   const [open, setOpen] = useState(false);
+  const navigate = useNavigate();
   const board = useBoard();
 
   const addDeck = async () => {
@@ -48,6 +50,10 @@ export default function AddCircle() {
     if (open) {
       if (e.key === "Escape") {
         setOpen(false);
+      }
+      if (!e.ctrlKey && !e.metaKey && e.key === "b") {
+        e.preventDefault();
+        navigate("/app");
       }
       if (!e.ctrlKey && !e.metaKey && e.key === "d") {
         e.preventDefault();
@@ -118,6 +124,10 @@ export default function AddCircle() {
           <AddItemText>Add portal</AddItemText>
           <AddItemShortcut>p</AddItemShortcut>
         </AddItem>
+        <AddItem onClick={() => navigate("/app")}>
+          <AddItemText>Back to overview</AddItemText>
+          <AddItemShortcut>b</AddItemShortcut>
+        </AddItem>
       </Content>
       <VerticalLine $mounted={mounted} $open={open} />
       <HorizontalLine $mounted={mounted} $open={open} />
@@ -130,8 +140,8 @@ const overlayColor = Color(theme.baseColor).mix(Color("white"), 0.3);
 const lightOverlayColor = Color(theme.baseColor).mix(Color("white"), 0.3);
 
 const diameter = 60;
-const height = 140;
-const width = 200;
+const height = 210;
+const width = 300;
 
 const Container = styled.div<{ $open: boolean; $mounted: boolean }>`
   background-color: ${theme.baseColor};
@@ -250,6 +260,8 @@ const Content = styled.div<{ $open: boolean; $mounted: boolean }>`
   gap: 10px;
 `;
 
+const addItemBg = Color(theme.baseColor).mix(Color("white"), 0.3);
+
 const AddItem = styled.div`
   background-color: ${overlayColor.string()};
   color: ${overlayColor.isDark() ? "white" : "black"};
@@ -261,6 +273,7 @@ const AddItem = styled.div`
   align-items: center;
   justify-content: space-between;
   border-radius: 5px;
+  font-size: 22px;
 
   &:hover {
     background: ${theme.ui2};

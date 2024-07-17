@@ -41,7 +41,6 @@ export default function startScrollWhenNearEdges(root: HTMLElement) {
     if (scrollDirection === "RIGHT") {
       root.scrollBy({ left: multiplier });
     }
-    console.log(multiplier);
   });
 
   return () => {

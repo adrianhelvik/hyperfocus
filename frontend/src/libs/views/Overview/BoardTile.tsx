@@ -31,12 +31,12 @@ function BoardTile(props: Props) {
     navigate(`/board/${props.board.boardId}`);
   };
 
-  const setColor = ({ hex }: { hex: string }) => {
+  const setColor = (color: string | null) => {
     api.setBoardColor({
       boardId: props.board.boardId!,
-      color: hex,
+      color: color,
     });
-    onBoardColorChanged(props.board.boardId, hex);
+    onBoardColorChanged(props.board.boardId, color);
   };
 
   const rename = (title: string) => {
@@ -80,11 +80,14 @@ function BoardTile(props: Props) {
         props.showModalInPlace(nativeEvent, ({ resolve }) => (
           <ColorPicker
             onChange={(color: { hex: string }) => {
-              setColor(color);
+              setColor(color.hex);
               resolve();
             }}
           />
         ));
+      },
+      "Clear color": () => {
+        setColor(null);
       },
       Delete: async () => {
         if (
@@ -110,6 +113,7 @@ function BoardTile(props: Props) {
       {...onSelect(openBoard)}
       $color={color}
       onContextMenu={openMenu}
+      tabIndex={0}
     >
       <Title>{props.board.title || <Weak>Untitled</Weak>}</Title>
       <TopRight>
@@ -124,15 +128,11 @@ function BoardTile(props: Props) {
 
 export default withModal(withConfirm(withStatus(withMenu(BoardTile))));
 
-const Container = styled.button.attrs({
-  type: "button",
-}) <{ $color: string }>`
+const Container = styled.div <{ $color: string }>`
   all: unset;
   outline: revert;
   width: 100%;
   box-sizing: border-box;
-
-  backdrop-filter: blur(5px);
 
   cursor: pointer;
   padding: 10px;
@@ -161,7 +161,7 @@ const Title = styled.div`
   &::before {
     content: "";
     float: right;
-    width: 76px;
+    width: 88px;
     height: 34px;
     vertical-align: top;
   }
