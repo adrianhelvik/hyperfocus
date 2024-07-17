@@ -1,7 +1,7 @@
 import clamp from "src/util/clamp";
 
 const AUTO_SCROLL_OFFSET = 100;
-const MULTIPLIER = 2;
+const MULTIPLIER = 1;
 
 export default function startScrollWhenNearEdges(root: HTMLElement) {
   let scrollDirection: "NONE" | "LEFT" | "RIGHT" = "NONE";
