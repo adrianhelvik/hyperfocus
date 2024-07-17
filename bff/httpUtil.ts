@@ -59,12 +59,10 @@ export function pipeFile(res: http.ServerResponse<http.IncomingMessage>, fileNam
                 res.statusCode = 404;
                 res.write("Not found");
             })
-
         if (acceptedEncodings.includes("gzip")) {
-            res.writeHead(200, { 'content-encoding': 'gzip' });
+            res.setHeader('content-encoding', 'gzip')
             fileStream.pipe(zlib.createGzip()).pipe(res);
         } else {
-            res.writeHead(200, {});
             fileStream.pipe(res);
         }
     } catch (e: any) {

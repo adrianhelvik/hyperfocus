@@ -19,4 +19,4 @@ FROM oven/bun:1.1.20-distroless
 WORKDIR /bff
 COPY --from=build /frontend /frontend
 COPY ./bff ./
-CMD ["bun", "index.ts"]
+CMD ["index.ts"]
