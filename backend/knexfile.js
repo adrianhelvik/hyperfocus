@@ -1,7 +1,12 @@
+// @ts-check
+
+/**
+ * @type {import("knex").Knex.Config}
+ */
 const config = {
   client: 'postgresql',
   connection: {
-    port: process.env.PGPORT,
+    port: process.env.PGPORT ? parseInt(process.env.PGPORT, 10) : undefined,
     host: process.env.PGHOST,
     user: process.env.PGUSER,
     password: process.env.PGPASSWORD,

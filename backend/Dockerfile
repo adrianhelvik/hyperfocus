@@ -1,15 +1,27 @@
-FROM node:21-alpine
+FROM oven/bun:1.1.20 AS install
 
 WORKDIR /backend
 
-COPY ./backend/scripts ./scripts
 COPY ./backend/package.json ./
 COPY ./backend/yarn.lock ./
-
-RUN yarn
-
-COPY ./backend/migrations ./migrations
+COPY ./backend/migrations ./
 COPY ./backend/knexfile.js ./
-COPY ./backend/src src
+COPY ./backend/src ./
 
-CMD node node_modules/.bin/knex migrate:latest && node src/index.mjs
+RUN bun install --production
+
+CMD ["--watch", "src/index.ts"]
+
+FROM oven/bun:1.1.20-distroless
+
+WORKDIR /backend
+
+COPY --from=install /backend/node_modules /backend/node_modules
+
+COPY ./backend/package.json ./
+COPY ./backend/yarn.lock ./
+COPY ./backend/migrations ./
+COPY ./backend/knexfile.js ./
+COPY ./backend/src ./
+
+CMD ["src/index.ts"]

@@ -5,38 +5,49 @@ export type DbBoard = {
   createdAt: Date
 }
 
-enum BoardChildType {
-  Deck = 'deck',
-  Portal = 'portal',
-}
-
 export type Deck = {
+  title: string;
+  cards: Card[]
   deckId: string
-  type: BoardChildType.Deck
+  index: number;
+  type: "deck";
 }
 
-export type Board = Board & {
-  children: Deck[]
+export type Board = {
+  title: string;
+  boardId: string;
+  children: (Deck | Portal)[]
 }
 
 export type Card = {
+  cardId: string
   deckId: string
   boardId: string
+  images: string[]
 }
 
 export type Portal = {
+  deckTitle: string
+  target: Deck
   portalId: string
   deckId: string
   boardId: string
-  type: BoardChildType.Portal
+  index: number;
+  type: "portal";
 }
 
 export type BoardChild = (Deck | Portal) & {
-    portalId?: string
+  portalId?: string
 }
 
 export type Route<Payload, Response> = {
   method: 'GET' | 'POST' | 'PUT' | 'DELETE'
   path: string
   handler: (options: { payload: Payload }) => Promise<Response>
+}
+
+export type ReqWithAuth = {
+  headers: {
+    authorization: string
+  }
 }

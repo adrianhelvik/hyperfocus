@@ -30,6 +30,7 @@ services:
     build:
       context: .
       dockerfile: ./backend/Dockerfile
+      target: install
     environment:
       NODE_ENV: 'development'
       UPLOADS_BASE_URL: "http://localhost:1234"
@@ -39,7 +40,6 @@ services:
       PGHOST: 'postgres'
       PGPORT: '5432'
       TERM: 'xterm'
-    command: sh -c 'yarn knex migrate:latest && yarn start --colors'
     volumes:
       - ./backend/src:/backend/src
 
