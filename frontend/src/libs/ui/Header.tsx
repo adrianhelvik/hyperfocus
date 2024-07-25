@@ -30,6 +30,7 @@ export default function Header(props: Props) {
       <UndecoratedLink to={isInApp ? "/app" : "/"}>
         <Logo pageColor={pageColor} />
       </UndecoratedLink>
+      <AdminLink to="/admin">Admin</AdminLink>
       <Content>{props.children}</Content>
       {auth.status === "success" && location.pathname === "/" && (
         <Login to="/login">Go to dashboard</Login>
@@ -52,7 +53,8 @@ const Container = styled.div<{ $color: string }>`
   position: sticky;
   top: 0;
   padding: 15px;
-  display: flex;
+  display: grid;
+  grid-template-columns: 1fr repeat(10, auto);
   align-items: center;
   z-index: ${zIndexes.header};
 
@@ -98,6 +100,11 @@ const UnderLine = styled.div<{ $pageColor: string }>`
   position: absolute;
   top: 100%;
   left: 0;
+`;
+
+const AdminLink = styled(Link)`
+  color: inherit;
+  text-decoration: none;
 `;
 
 const Login = styled(Link)`

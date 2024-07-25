@@ -1,9 +1,11 @@
-import "dotenv/config.js";
+import "dotenv/config";
 
 import runCodeHeuristics from "./runCodeHeuristics";
 import healthcheck from "./healthcheck";
+import { knex } from "./knex";
 import Hapi from "@hapi/hapi";
 import chalk from "chalk";
+import fs from "fs";
 
 main();
 
@@ -12,12 +14,25 @@ async function main() {
     process.env.NODE_ENV = "development";
     console.warn(
       chalk.yellow.bold(
-        'The env variable NODE_ENV was not set! Using "development"'
-      )
+        'The env variable NODE_ENV was not set! Using "development"',
+      ),
     );
   }
 
   await healthcheck.db();
+
+  await knex.migrate.latest().then(
+    () => {
+      console.log("Database migration complete!");
+    },
+    (error) => {
+      console.error(
+        "Failed to migrate database:",
+        "stack" in error ? error.stack : error,
+      );
+      console.log(fs.readdirSync("/backend"));
+    },
+  );
 
   const { default: createTestUserUnlessExists } = await import(
     "./domain/createTestUserUnlessExists"

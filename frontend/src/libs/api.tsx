@@ -1,5 +1,5 @@
 import local from "src/libs/local";
-import { Board, BoardParam, Deck, Portal, Project } from "./types";
+import { Board, BoardParam, Deck, Portal, Project, User } from "./types";
 
 let persistentHeaders = local.get("persistentHeaders", {});
 
@@ -46,6 +46,7 @@ type Api = {
     title: string;
   }): PromiseLike<Portal>;
   ownBoards: () => PromiseLike<{ boards: Board[] }>;
+  getUsers: () => PromiseLike<{ users: User[] }>;
 };
 
 export async function addCardImages(cardId: string, images: File[]) {

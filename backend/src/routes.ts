@@ -8,6 +8,7 @@ import assertIsVerified from "./domain/assertIsVerified";
 import getBoardsForUser from "./domain/getBoardsForUser";
 import requireInteger from "./utils/requireInteger";
 import addCardImages from "./domain/addCardImages";
+import assertIsAdmin from "./domain/assertIsAdmin";
 import createProject from "./domain/createProject";
 import requireString from "./utils/requireString";
 import setCardTitle from "./domain/setCardTitle";
@@ -416,7 +417,7 @@ export const uploadsRoute = route({
 export const setCardTitleRoute = route({
   method: "POST",
   path: "/setCardTitle",
-  async handler(request: { payload: { cardId: string, title: string }, headers: { authorization: string } }) {
+  async handler(request: { payload: { cardId: string, title: string } } & ReqWithAuth) {
     const { cardId, title } = request.payload;
 
     await assertCanEditCard(request, cardId);
@@ -428,3 +429,13 @@ export const setCardTitleRoute = route({
     };
   },
 });
+
+export const getUsersRoute = route({
+  method: "POST",
+  path: "/getUsers",
+  async handler(request: ReqWithAuth) {
+    await assertIsAdmin(request);
+
+    return { users: await knex("users").select("email") };
+  }
+})

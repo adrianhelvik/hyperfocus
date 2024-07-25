@@ -49,3 +49,5 @@ export type Board = {
   title: string;
   boardId: string;
 };
+
+export type User = any;

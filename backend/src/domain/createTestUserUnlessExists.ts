@@ -24,6 +24,10 @@ export default async function createTestUserUnlessExists() {
 
     console.log("test user created. username: test, password: secret");
   } else {
+    await knex("users")
+      .where({ email: "test@test.com" })
+      .update({ role: "admin" });
+
     console.log("test user existed. username: test, password: secret");
   }
 }

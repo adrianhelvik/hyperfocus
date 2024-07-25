@@ -4,9 +4,9 @@ WORKDIR /backend
 
 COPY ./backend/package.json ./
 COPY ./backend/yarn.lock ./
-COPY ./backend/migrations ./
+COPY ./backend/migrations ./migrations
 COPY ./backend/knexfile.js ./
-COPY ./backend/src ./
+COPY ./backend/src ./src
 
 RUN bun install --production
 
@@ -21,9 +21,9 @@ RUN apt-get -y update && apt-get -y install postgresql
 COPY --from=install /backend/node_modules /backend/node_modules
 COPY ./backend/package.json ./
 COPY ./backend/yarn.lock ./
-COPY ./backend/migrations ./
+COPY ./backend/migrations ./migrations
 COPY ./backend/knexfile.js ./
-COPY ./backend/src ./
+COPY ./backend/src ./src
 
 CMD ["--watch", "src/index.ts"]
 
@@ -34,8 +34,8 @@ WORKDIR /backend
 COPY --from=install /backend/node_modules /backend/node_modules
 COPY ./backend/package.json ./
 COPY ./backend/yarn.lock ./
-COPY ./backend/migrations ./
+COPY ./backend/migrations ./migrations
 COPY ./backend/knexfile.js ./
-COPY ./backend/src ./
+COPY ./backend/src ./src
 
 CMD ["src/index.ts"]
