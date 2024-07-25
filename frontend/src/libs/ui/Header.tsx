@@ -23,6 +23,8 @@ export default function Header(props: Props) {
     auth.authenticate().then(console.log.bind(console, "Auth result"));
   });
 
+  console.log("Auth status:", auth.status);
+
   return (
     <Container $color={pageColor}>
       <UndecoratedLink to={isInApp ? "/app" : "/"}>

@@ -30,7 +30,7 @@ services:
     build:
       context: .
       dockerfile: ./backend/Dockerfile
-      target: install
+      target: dev
     environment:
       NODE_ENV: 'development'
       UPLOADS_BASE_URL: "http://localhost:1234"
