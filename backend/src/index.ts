@@ -1,13 +1,19 @@
 import "dotenv/config";
 
 import runCodeHeuristics from "./runCodeHeuristics";
+import authenticate from "./domain/authenticate";
 import healthcheck from "./healthcheck";
+import * as SocketIO from "socket.io";
 import { knex } from "./knex";
 import Hapi from "@hapi/hapi";
 import chalk from "chalk";
 import fs from "fs";
 
 main();
+
+declare global {
+  const io: SocketIO.Server;
+}
 
 async function main() {
   if (process.env.NODE_ENV == null) {
@@ -54,16 +60,62 @@ async function main() {
     },
   });
 
-  server.events.on("response", function(request) {
-    console.log(
-      (request.info.remoteAddress ?? "NO REMOTE ADDRESS") +
-      ": " +
-      request.method.toUpperCase() +
-      " " +
-      request.path +
-      " --> " +
-      ("statusCode" in request.response ? request.response.statusCode : ""),
-    );
+  if (process.env.NODE_ENV === "development") {
+    server.events.on("response", function(request) {
+      console.log(
+        (request.info.remoteAddress ?? "NO REMOTE ADDRESS") +
+        ": " +
+        request.method.toUpperCase() +
+        " " +
+        request.path +
+        " --> " +
+        ("statusCode" in request.response ? request.response.statusCode : ""),
+      );
+    });
+  }
+
+  (global as any).io = new SocketIO.Server(server.listener);
+
+  io.on("connection", (socket) => {
+    let headers: Record<string, string> | null = null;
+
+    socket.on("authenticate", (newHeaders) => {
+      headers = lowercaseHeaders(newHeaders);
+    });
+
+    let joinIndex = 0;
+
+    socket.on("joinBoard", async (boardId) => {
+      joinIndex += 1;
+      const currentJoinIndex = joinIndex;
+      if (headers) {
+        await authenticate({ headers })
+        if (joinIndex !== currentJoinIndex) return;
+        socket.join(`board:${boardId}`);
+      } else {
+        socket.once("authenticate", async (newHeaders) => {
+          headers = lowercaseHeaders(newHeaders);
+          if (headers && await authenticate.isAuthenticated({ headers })) {
+            if (joinIndex !== currentJoinIndex) return;
+            socket.join(`board:${boardId}`);
+          }
+        });
+      }
+    });
+
+    socket.on("leaveBoard", (boardId) => {
+      socket.leave(`board:${boardId}`);
+    });
+
+    function lowercaseHeaders(headers: Record<string, string>) {
+      const result: Record<string, string> = {};
+      for (const [key, val] of Object.entries(headers)) {
+        if (typeof key === "string") {
+          result[key.toLowerCase()] = val;
+        }
+      }
+      return result;
+    }
   });
 
   const routes = await import("./routes");

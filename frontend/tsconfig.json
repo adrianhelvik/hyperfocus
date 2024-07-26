@@ -13,6 +13,7 @@
       "vite/client"
     ],
     "moduleResolution": "node",
+    "declarations": true,
     "allowJs": true,
     "strict": true,
     "noUnusedLocals": true,
@@ -25,8 +26,7 @@
     "isolatedModules": true
   },
   "include": [
-    "./src/**/*.ts",
-    "./src/**/*.tsx"
+    "src"
   ],
   "exclude": [
     "node_modules",

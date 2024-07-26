@@ -153,14 +153,14 @@ export const addPortalRoute = route({
 export const addCardRoute = route({
   method: "POST",
   path: "/addCard",
-  async handler(request: { payload: { title: string, deckId: UUID, index: number } } & ReqWithAuth) {
-    const { title, deckId, index } = request.payload;
+  async handler(request: { payload: { cardId: UUID, title: string, deckId: UUID, index: number } } & ReqWithAuth) {
+    const { cardId, title, deckId, index } = request.payload;
 
     requireString({ title, deckId });
 
     await assertCanEditDeck(request, deckId);
 
-    const cardId = await addCard({ title, deckId, index });
+    await addCard({ cardId, title, deckId, index });
 
     return { cardId };
   },

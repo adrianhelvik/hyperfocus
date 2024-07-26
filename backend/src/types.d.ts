@@ -20,10 +20,12 @@ export type Board = {
 }
 
 export type Card = {
-  cardId: string
-  deckId: string
-  boardId: string
-  images: string[]
+  cardId: string;
+  deckId: string;
+  title: string;
+  boardId: string;
+  images: string[];
+  index: number;
 }
 
 export type Portal = {
@@ -48,6 +50,6 @@ export type Route<Payload, Response> = {
 
 export type ReqWithAuth = {
   headers: {
-    authorization: string
+    authorization?: string
   }
 }

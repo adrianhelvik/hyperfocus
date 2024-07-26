@@ -10,8 +10,6 @@ COPY ./backend/src ./src
 
 RUN bun install --production
 
-CMD ["--watch", "src/index.ts"]
-
 FROM oven/bun:1.1.20 AS dev
 
 WORKDIR /backend
@@ -25,6 +23,7 @@ COPY ./backend/migrations ./migrations
 COPY ./backend/knexfile.js ./
 COPY ./backend/src ./src
 
+ENV FORCE_COLOR=3
 CMD ["--watch", "src/index.ts"]
 
 FROM oven/bun:1.1.20-distroless

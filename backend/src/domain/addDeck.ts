@@ -1,5 +1,3 @@
-
-
 import getDenormalizedBoard from "./getDenormalizedBoard";
 import { type UUID } from "crypto";
 import uuid from "../utils/uuid";

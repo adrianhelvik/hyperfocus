@@ -11,6 +11,8 @@ export type Project = {
 };
 
 export type Card = {
+  boardId: string;
+  deckId: string;
   title: string;
   cardId: string;
   images: Array<string>;

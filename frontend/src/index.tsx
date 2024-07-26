@@ -1,7 +1,8 @@
-import "./globals";
-import { createRoot } from "react-dom/client";
 import "./index.css";
+import "./globals";
 import "./debug";
+
+import { createRoot } from "react-dom/client";
 import { StrictMode } from "react";
 
 const root = createRoot(document.getElementById("root")!);

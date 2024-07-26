@@ -5,6 +5,7 @@ export default async function getCard(cardId: string): Promise<Card> {
   const card = await knex("cards")
     .where({ cardId })
     .leftJoin("decks", "cards.deckId", "decks.deckId")
+    .select("decks.*", "cards.*")
     .first();
 
   card.images = await knex("cardImages")

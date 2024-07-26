@@ -1,6 +1,7 @@
 import sha256 from "../utils/sha256";
 import Boom from "@hapi/boom";
 import { knex } from "../knex";
+import { ReqWithAuth } from "../types";
 
 /**
  * Cache requests, so we never authenticate
@@ -11,7 +12,7 @@ export const cache = new WeakMap();
 /**
  * Authenticates a request and returns the session.
  */
-export default async function authenticate(request: { headers: { authorization: string } }) {
+export default async function authenticate(request: ReqWithAuth) {
   if (cache.has(request)) return cache.get(request);
 
   const { authorization } = request.headers;
@@ -33,3 +34,13 @@ export default async function authenticate(request: { headers: { authorization: 
 
   return session;
 }
+
+authenticate.isAuthenticated = async (request: ReqWithAuth) => {
+  try {
+    await authenticate(request);
+    return true;
+  } catch (error) {
+    if (!(error instanceof Boom.Boom)) throw error;
+    return false;
+  }
+};

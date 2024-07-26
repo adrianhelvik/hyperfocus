@@ -27,6 +27,7 @@ type Api = {
   }): PromiseLike<Deck>;
   setDeckColor(payload: { deckId: string; color: string }): unknown;
   addCard(payload: {
+    cardId: string,
     title: string;
     deckId: string;
   }): PromiseLike<{ cardId: string }>;

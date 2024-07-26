@@ -2,7 +2,7 @@ import { getDeckColorCSSVariables } from "./getDeckColorCSSVariables";
 import { makeTextAreaAutoGrow } from "./makeTextAreaAutoGrow";
 import createDeckTitleElement from "./createDeckTitleElement";
 import { isKeypressElement } from "./isKeypressElement";
-import { Board, Deck, Portal } from "src/libs/types";
+import { Board, Card, Deck, Portal } from "src/libs/types";
 import createCardElement from "./createCardElement";
 import { CleanupHooks } from "./CleanupHooks";
 import classes from "./styles.module.css";
@@ -16,19 +16,54 @@ export class BoardView {
   private scrollSnapTimeout: ReturnType<typeof setTimeout> | null = null;
   private cancelSnapToDeck: (() => void) | null = null;
   private focusDeckTimeout?: ReturnType<typeof setTimeout>;
+  private addedCardIds = new Set<string>();
 
   constructor(private root: HTMLElement, private readonly board: Board) {
-    this.cleanup();
+    this.unmount();
+    this.mount();
+  }
+
+  mount() {
     this.buildInterface();
     this.possiblyFocusDeck();
+    this.addRealtimeListeners();
     document.addEventListener("keydown", this.onKeydown);
   }
 
-  unmount() {
-    this.cleanup();
+  private addRealtimeListeners() {
+    SOCKET_IO.on("addCard", this.onAddCard);
   }
 
-  private cleanup() {
+  private removeRealtimeListeners() {
+    SOCKET_IO.off("addCard", this.onAddCard);
+  }
+
+  private onAddCard = (card: Card) => {
+    if (card.boardId !== this.board.boardId) return;
+
+    if (this.addedCardIds.has(card.cardId)) {
+      return;
+    }
+
+    const cardsContainer = this.root.querySelector(`[data-cards-container="${card.deckId}"]`)
+    const deckElement = this.deckElements.find(it => it.dataset.deckId === card.deckId);
+    if (deckElement && cardsContainer instanceof HTMLElement) {
+      cardsContainer.append(createCardElement({
+        cleanupHooks: this.cleanupHooks,
+        deckElements: this.deckElements,
+        deckElement,
+        board: this.board,
+        card,
+        root: this.root,
+      }));
+    } else {
+      console.error("Did not find deck element. Remounting.");
+      this.unmount();
+      this.mount();
+    }
+  };
+
+  private unmount() {
     clearTimeout(this.focusDeckTimeout);
     this.onDestroyCallbacks.forEach((fn) => fn());
     this.onDestroyCallbacks = [];
@@ -38,6 +73,7 @@ export class BoardView {
     document.removeEventListener("keydown", this.onKeydown);
     if (this.scrollSnapTimeout) clearTimeout(this.scrollSnapTimeout);
     if (this.cancelSnapToDeck) this.cancelSnapToDeck();
+    this.removeRealtimeListeners();
   }
 
   private onKeydown = (e: KeyboardEvent) => {
@@ -242,7 +278,10 @@ export class BoardView {
     const submit = async () => {
       const title = addCardInput.value;
       addCardInput.value = "";
-      const { cardId } = await api.addCard({
+      const cardId = crypto.randomUUID();
+      this.addedCardIds.add(cardId);
+      await api.addCard({
+        cardId,
         title,
         deckId: deck.deckId,
       });

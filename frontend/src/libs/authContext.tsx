@@ -1,6 +1,7 @@
 import React, { ReactNode, useContext, useState } from "react";
 import { useAutoCallback, useAutoMemo } from "hooks.macro";
 import api, { setPersistentHeader } from "src/libs/api";
+import local from "./local";
 
 type Status = "pending" | "success" | "failure";
 
@@ -43,6 +44,7 @@ export function ProvideAuth(props: { children: ReactNode }) {
     if (status === "success") return true;
     try {
       await api.authenticate();
+      SOCKET_IO.emit("authenticate", local.get("persistentHeaders"));
       setStatus("success");
       return true;
     } catch (e) {

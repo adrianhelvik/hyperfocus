@@ -21,6 +21,16 @@ export default function BoardV2() {
   const navigate = useNavigate();
 
   useEffect(() => {
+    if (!boardId) return;
+
+    SOCKET_IO.emit("joinBoard", boardId);
+
+    return () => {
+      SOCKET_IO.emit("leaveBoard", boardId)
+    };
+  }, [boardId])
+
+  useEffect(() => {
     let cancelled = false;
     api.getBoard({ boardId }).then((board) => {
       if (cancelled) return;

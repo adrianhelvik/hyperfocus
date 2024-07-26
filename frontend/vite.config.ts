@@ -73,6 +73,11 @@ export default defineConfig({
                 changeOrigin: true,
                 secure: false,
             },
+            "/socket.io": {
+                target: API_URL,
+                changeOrigin: true,
+                secure: false,
+            }
         },
     },
 });
