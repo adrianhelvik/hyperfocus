@@ -43,6 +43,18 @@ const Background = styled.div<{ $active: boolean, $color: string }>`
   transition: background-color 300ms;
   background-color: ${p => p.$active ? p.$color : mixBlackWhite(p.$color, 0.6, 0.6)};
   border-radius: calc(var(--height) / 2);
+
+  cursor: pointer;
+
+  &:hover {
+      outline: 1px solid ${p => mixBlackWhite(p.$color, 0.6, 0.6, 0.5)};
+      outline-offset: 2px;
+  }
+
+  &:focus {
+      outline: 1px solid ${p => mixBlackWhite(p.$color, 0.6, 0.6)};
+      outline-offset: 2px;
+  }
 `
 
 const Dot = styled.div<{ $active: boolean }>`

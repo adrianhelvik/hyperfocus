@@ -6,10 +6,12 @@ export const brighten = (color: string, amount: number) =>
 export const darken = (color: string, amount: number) =>
   Color(color).mix(Color("black"), amount).string();
 
-export const mixBlackWhite = (color: string, black: number, white: number) => {
+export const mixBlackWhite = (color: string, black: number, white: number, alpha = 1) => {
   return Color(color)
     .mix(Color("black"), black)
-    .mix(Color("white"), white).string();
+    .mix(Color("white"), white)
+    .alpha(alpha)
+    .string();
 }
 
 export const opacity = (color: string, amount: number) =>
