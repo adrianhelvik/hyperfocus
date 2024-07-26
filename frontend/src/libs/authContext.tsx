@@ -4,6 +4,7 @@ import api, { setPersistentHeader } from "src/libs/api";
 import local from "./local";
 
 type Status = "pending" | "success" | "failure";
+type Role = "none" | "user" | "admin";
 
 export type Auth = {
   authenticate: () => Promise<boolean>;
@@ -39,13 +40,16 @@ export function useAuth(): Auth {
 
 export function ProvideAuth(props: { children: ReactNode }) {
   const [status, setStatus] = useState<Status>("pending");
+  const [role, setRole] = useState<Role>("none");
 
   const authenticate = useAutoCallback(async (): Promise<boolean> => {
     if (status === "success") return true;
     try {
-      await api.authenticate();
+      const user = await api.authenticate();
+      console.log("User:", user);
       SOCKET_IO.emit("authenticate", local.get("persistentHeaders"));
       setStatus("success");
+      setRole(user.role)
       return true;
     } catch (e) {
       console.log("%cauthentication failed", "background:red;padding:4px");
@@ -73,6 +77,7 @@ export function ProvideAuth(props: { children: ReactNode }) {
     logout,
     login,
     status,
+    role,
   });
 
   return (

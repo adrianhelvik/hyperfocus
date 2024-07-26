@@ -54,7 +54,7 @@ function AddBoardModal() {
           autoFocus
         />
         <ModalFooter>
-          <Button $gray type="button" onClick={() => setIsAddingBoard(false)}>
+          <Button $cancel type="button" onClick={() => setIsAddingBoard(false)}>
             Cancel
           </Button>
           <Button>Create</Button>

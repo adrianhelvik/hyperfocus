@@ -1,11 +1,12 @@
 import ModalFooter from "src/libs/ui/ModalFooter";
+import { useEmitBoardChildAdded } from "./context";
+import * as theme from "src/libs/theme";
 import Button from "src/libs/ui/Button";
+import { Board } from "src/libs/types";
 import styled from "styled-components";
 import Input from "src/libs/ui/Input";
 import { useState } from "react";
 import api from "src/libs/api";
-import { Board } from "src/libs/types";
-import { useEmitBoardChildAdded } from "./context";
 
 type Props = {
   board: Board;
@@ -41,11 +42,12 @@ function AddDeck(props: Props) {
       <Input
         autoFocus
         placeholder="Title"
+        color={theme.modalInputLabelColor}
         onChange={setTitleFromEvent}
         value={title}
       />
       <ModalFooter>
-        <Button $gray type="button" onClick={() => props.resolve()}>
+        <Button $cancel type="button" onClick={() => props.resolve()}>
           Cancel
         </Button>
         <Button>Create</Button>

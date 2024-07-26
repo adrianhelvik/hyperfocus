@@ -43,7 +43,7 @@ export const bg2 = `rgb(227, 226, 229)`;
 const i0 = Math.random() * 15;
 
 function generateStars(staticOpacity = 1) {
-  let stars: string[] = [];
+  const stars: string[] = [];
 
   const opacityDeterminant = 18;
   const radiusIncrease = 1;
@@ -95,8 +95,8 @@ export const smoothGradientMellow = [
 
 export const modalBackdropColor = "rgba(30, 30, 30, 0.8)";
 
-export const modalBg = Color("#666").alpha(0.5).string();
-export const modalInputLabelColor = Color(baseColor).mix(Color("white"), 0.8).string();
+export const modalBg = Color("#fff").alpha(0.7).string();
+export const modalInputLabelColor = Color(baseColor).mix(Color("black"), 0.8).string();
 
-export const grayButtonBg = Color("#dbdbdb").alpha(0.1).string();
+export const grayButtonBg = Color("#777").alpha(0.8).string();
 export const grayButtonFg = Color("white").string();

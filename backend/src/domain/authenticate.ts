@@ -24,6 +24,8 @@ export default async function authenticate(request: ReqWithAuth) {
 
   const session = await knex("sessions")
     .where({ sessionId })
+    .leftJoin("users", "users.userId", "sessions.userId")
+    .select("sessions.sessionId", "users.role")
     .first();
 
   if (!session) {

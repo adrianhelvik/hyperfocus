@@ -40,7 +40,7 @@ const OuterContainer = styled.div<{ $transparent?: boolean }>`
   align-items: flex-start;
   display: flex;
 
-  background-color: ${Color("black").alpha(0.3).string()};
+  background-color: ${Color("black").alpha(0.6).string()};
   -webkit-backdrop-filter: blur(10px) grayscale(0.8);
   backdrop-filter: blur(10px) grayscale(0.8);
 

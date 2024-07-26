@@ -2,7 +2,7 @@ import styled, { css } from "styled-components";
 import * as theme from "src/libs/theme";
 import Color from "color";
 
-export default styled.button<{ $danger?: boolean; $gray?: boolean }>`
+export default styled.button<{ $danger?: boolean; $cancel?: boolean }>`
   background-color: ${theme.baseColor};
   border-radius: 4px;
   padding: 7px 10px;
@@ -13,6 +13,12 @@ export default styled.button<{ $danger?: boolean; $gray?: boolean }>`
   border: none;
   font-size: inherit;
   margin: 0;
+  border: 1px solid rgba(255, 255, 255, 0.3);
+
+  &:focus {
+    outline: 2px solid ${theme.baseColor};
+    outline-offset: 2px;
+  }
 
   ${(p) => {
     if (p.disabled) {
@@ -26,7 +32,7 @@ export default styled.button<{ $danger?: boolean; $gray?: boolean }>`
       return css`
         background-color: ${theme.red};
       `;
-    if (p.$gray)
+    if (p.$cancel)
       return css`
         background-color: ${theme.grayButtonBg};
         color: ${theme.grayButtonFg};

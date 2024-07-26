@@ -3,13 +3,14 @@ import { useAutoEffect, useAutoMemo } from "hooks.macro";
 import ModalFooter from "src/libs/ui/ModalFooter";
 import styled, { css } from "styled-components";
 import onSelect from "src/libs/util/onSelect";
-import { FormEvent, useState } from "react";
+import { FormEvent, useEffect, useState } from "react";
 import ellipsify from "src/libs/ellipsify";
 import Button from "src/libs/ui/Button";
 import * as theme from "src/libs/theme";
 import { Board } from "src/libs/types";
 import Input from "src/libs/ui/Input";
 import api from "src/libs/api";
+import Color from "color";
 
 type Props = {
   index: number | null;
@@ -18,6 +19,7 @@ type Props = {
 
 export default function AddPortal(props: Props) {
   const [selectedBoardId, setSelectedBoardId] = useState<string | null>(null);
+  const [decksElement, setDecksElement] = useState<HTMLElement | null>(null);
   const [selectedDeckId, setSelectedDeckId] = useState<string | null>(null);
   const [boards, setBoards] = useState<Board[]>([]);
   const [title, setTitle] = useState("");
@@ -30,6 +32,16 @@ export default function AddPortal(props: Props) {
     if (!boards) return null;
     return boards.find((it) => it.boardId === selectedBoardId);
   });
+
+  useEffect(() => {
+    if (!selectedBoardId) return;
+    const timeout = setTimeout(() => {
+      decksElement?.querySelector("button")?.focus();
+    }, 100);
+    return () => {
+      clearTimeout(timeout);
+    }
+  }, [selectedBoardId, decksElement]);
 
   const selectedDeck = useAutoMemo(() => {
     if (!selectedDeckId) return null;
@@ -71,6 +83,7 @@ export default function AddPortal(props: Props) {
       <InputWrapper>
         <Input
           placeholder="Name in this board"
+          color={theme.modalInputLabelColor}
           autoFocus
           value={title}
           onChange={(e) => setTitle(e.target.value)}
@@ -84,13 +97,15 @@ export default function AddPortal(props: Props) {
               key={board.boardId}
               $selected={board.boardId === selectedBoardId}
               $empty={board.children.length === 0}
-              {...onSelect(() => setSelectedBoardId(board.boardId))}
+              {...onSelect(() => {
+                setSelectedBoardId(board.boardId);
+              })}
             >
               {ellipsify(board.title || "Untitled")}
             </Tile>
           ))}
         </Section>
-        <Section>
+        <Section ref={setDecksElement}>
           <Title>Select Deck</Title>
           {selectedBoard &&
             selectedBoard.children
@@ -108,7 +123,7 @@ export default function AddPortal(props: Props) {
       </Sections>
       <hr />
       <ModalFooter>
-        <Button $gray onClick={() => props.resolve()}>
+        <Button $cancel onClick={() => props.resolve()}>
           Cancel
         </Button>
         <Button disabled={!selectedDeck || !title}>Create portal</Button>
@@ -124,14 +139,14 @@ const Sections = styled.div`
 
 const Tile = styled.button.attrs({
   type: "button",
-})<{ $selected?: boolean; $empty?: boolean }>`
+}) <{ $selected?: boolean; $empty?: boolean }>`
   width: 100%;
   border: 1px solid transparent;
   font-size: 0.8rem;
   cursor: pointer;
   padding: 10px;
   border-radius: 4px;
-  background: #ddd;
+  background: white;
   &:not(:last-child) {
     margin-bottom: 10px;
   }
@@ -147,8 +162,8 @@ const Tile = styled.button.attrs({
   ${(p) =>
     p.$selected &&
     css`
-      background: ${theme.baseColor};
-      color: white;
+      background: ${Color(theme.baseColor).mix(Color("white"), 0.3).hex()};
+      color: black;
     `};
 
   ${(p) =>

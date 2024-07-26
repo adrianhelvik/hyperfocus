@@ -32,7 +32,7 @@ type Api = {
     deckId: string;
   }): PromiseLike<{ cardId: string }>;
   logout(): PromiseLike<void>;
-  authenticate(): PromiseLike<void>;
+  authenticate(): PromiseLike<{ sessionId: string, role: "user" | "admin" }>;
   login(payload: {
     username: string;
     password: string;
