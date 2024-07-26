@@ -7,14 +7,14 @@ import api from "src/libs/api";
 import { createGlobalStyle } from "styled-components";
 
 export default function AdminView() {
-  const [users, setUsers] = useState<UserStat[] | null>(null);
+  const [stats, setUsers] = useState<UserStat[] | null>(null);
 
   useEffect(() => {
     api.getUserStats()
       .then((users) => setUsers(users));
   }, []);
 
-  if (!users) return "Loading...";
+  if (!stats) return "Loading...";
 
   return (
     <>
@@ -30,16 +30,20 @@ export default function AdminView() {
             <thead>
               <tr>
                 <th>Email</th>
+                <th>Role</th>
                 <th>Board count</th>
                 <th>Card count</th>
+                <th>Verified email</th>
               </tr>
             </thead>
             <tbody>
-              {users.map(user => (
-                <tr key={user.userId}>
-                  <td>{user.email}</td>
-                  <td>{user.boardCount}</td>
-                  <td>{user.cardCount}</td>
+              {stats.map(stat => (
+                <tr key={stat.userId}>
+                  <td>{stat.email}</td>
+                  <td>{stat.role}</td>
+                  <td>{stat.boardCount}</td>
+                  <td>{stat.cardCount}</td>
+                  <td>{stat.verifiedEmail ? "Yes" : "No"}</td>
                 </tr>
               ))}
             </tbody>

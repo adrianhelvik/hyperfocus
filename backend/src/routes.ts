@@ -13,6 +13,7 @@ import createProject from "./domain/createProject";
 import requireString from "./utils/requireString";
 import setCardTitle from "./domain/setCardTitle";
 import authenticate from "./domain/authenticate";
+import getUserStats from "./domain/getUserStats";
 import deleteBoard from "./domain/deleteBoard";
 import createBoard from "./domain/createBoard";
 import createUser from "./domain/createUser";
@@ -436,25 +437,6 @@ export const getUserStatsRoute = route({
   async handler(request: ReqWithAuth) {
     await assertIsAdmin(request);
 
-    const usersQuery = knex("users")
-      .select("userId", "email")
-
-    const result: { userId: string, email: string, boardCount: number, cardCount: number }[] = [];
-
-    for await (const user of usersQuery.stream()) {
-      result.push(user);
-      user.boardCount = await knex("boards")
-        .where({ createdBy: user.userId })
-        .count("*")
-        .then(res => Number(res[0].count));
-      user.cardCount = await knex("cards")
-        .leftJoin("decks", "decks.deckId", "cards.deckId")
-        .leftJoin("boards", "boards.boardId", "decks.boardId")
-        .where("boards.createdBy", user.userId)
-        .count("*")
-        .then(res => Number(res[0].count));
-    }
-
-    return result;
+    return await getUserStats();
   }
 })

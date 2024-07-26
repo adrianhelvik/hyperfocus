@@ -53,6 +53,8 @@ export type Board = {
 };
 
 export type UserStat = {
+  role: "user" | "admin";
+  verifiedEmail: boolean;
   userId: string;
   email: string;
   boardCount: number;
