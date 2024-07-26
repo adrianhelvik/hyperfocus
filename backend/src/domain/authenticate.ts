@@ -1,7 +1,8 @@
-import sha256 from "../utils/sha256";
-import Boom from "@hapi/boom";
-import { knex } from "../knex";
 import { ReqWithAuth } from "../types";
+import sha256 from "../utils/sha256";
+import { type UUID } from "crypto";
+import { knex } from "../knex";
+import Boom from "@hapi/boom";
 
 /**
  * Cache requests, so we never authenticate
@@ -12,7 +13,7 @@ export const cache = new WeakMap();
 /**
  * Authenticates a request and returns the session.
  */
-export default async function authenticate(request: ReqWithAuth) {
+export default async function authenticate(request: ReqWithAuth): Promise<{ sessionId: UUID, userId: UUID, role: "user" | "admin" }> {
   if (cache.has(request)) return cache.get(request);
 
   const { authorization } = request.headers;
@@ -25,7 +26,7 @@ export default async function authenticate(request: ReqWithAuth) {
   const session = await knex("sessions")
     .where({ sessionId })
     .leftJoin("users", "users.userId", "sessions.userId")
-    .select("sessions.sessionId", "users.role")
+    .select("sessions.sessionId", "sessions.userId", "users.role")
     .first();
 
   if (!session) {
