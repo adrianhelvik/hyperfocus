@@ -15,7 +15,7 @@ type Props = {
 
 export default function Header(props: Props) {
   const location = useLocation();
-  const isInApp = /^\/(app|board)($|\/)/.test(location.pathname);
+  const isInApp = /^\/(app|board|admin)($|\/)/.test(location.pathname);
   const pageColor = "black";
   const auth = useAuth();
 
@@ -30,8 +30,7 @@ export default function Header(props: Props) {
           <Logo pageColor={pageColor} />
         </UndecoratedLink>
       </div>
-      {auth.role === "admin" && location.pathname !== "/admin" && <AdminLink to="/admin">Admin</AdminLink>}
-      {location.pathname === "/admin" && <AdminLink to="/app">Dashboard</AdminLink>}
+      {auth.role === "admin" && location.pathname === "/app" && <AdminLink to="/admin">Admin</AdminLink>}
       <Content>{props.children}</Content>
       {auth.status === "success" && location.pathname === "/" && (
         <Login to="/login">Go to dashboard</Login>
