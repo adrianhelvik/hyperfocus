@@ -38,7 +38,7 @@ export default function Header(props: Props) {
       {auth.status === "success" && location.pathname === "/app" && (
         <Logout onClick={auth.logout}>Log out</Logout>
       )}
-      {auth.status === "failure" && <Login to="/login">Log in</Login>}
+      {(auth.status === "invalid" || auth.status === "error") && <Login to="/login">Log in</Login>}
     </Container>
   );
 }
