@@ -74,6 +74,7 @@ export default function UserEventsTable() {
             <th>Event name</th>
             <th>Timestamp</th>
             <th>Info</th>
+            <th>Duration</th>
           </tr>
         </thead>
         <tbody>
