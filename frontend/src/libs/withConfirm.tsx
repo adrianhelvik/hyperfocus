@@ -1,9 +1,10 @@
+import React, { ComponentType, useState } from "react";
 import hoist from "hoist-non-react-statics";
 import Backdrop from "src/libs/ui/Backdrop";
-import React, { useState } from "react";
 import { Portal } from "react-portal";
 import Modal from "src/libs/ui/Modal";
 import { Coord } from "./types";
+import useStableCallback from "src/util/useStableCallback";
 
 // Broken types in the library
 const AnyPortal = Portal as any;
@@ -13,14 +14,18 @@ export type ConfirmTemplateProps = {
   no: () => void;
 };
 
+export type ConfirmFn = (
+  Template: ComponentType<ConfirmTemplateProps>
+) => Promise<boolean>;
+
+export type ConfirmInPlaceFn = (
+  event: MouseEvent,
+  Template: React.ComponentType<ConfirmTemplateProps>
+) => Promise<boolean>;
+
 export type WithConfirmProps = {
-  confirm: (
-    Template: React.ComponentType<ConfirmTemplateProps>
-  ) => Promise<boolean>;
-  confirmInPlace: (
-    event: MouseEvent,
-    Template: React.ComponentType<ConfirmTemplateProps>
-  ) => Promise<boolean>;
+  confirm: ConfirmFn;
+  confirmInPlace: ConfirmInPlaceFn;
 };
 
 export default function withConfirm<Props extends Record<string, any>>(
@@ -34,15 +39,15 @@ export default function withConfirm<Props extends Record<string, any>>(
       null
     );
 
-    const confirm = (Template: React.ComponentType<ConfirmTemplateProps>) => {
+    const confirm = useStableCallback((Template: React.ComponentType<ConfirmTemplateProps>) => {
       setTemplate(() => Template);
       const promise = new Promise<boolean>((resolve) => {
         setResolve(() => resolve);
       });
       return promise;
-    };
+    });
 
-    const confirmInPlace = (
+    const confirmInPlace = useStableCallback((
       event: MouseEvent,
       Template: React.ComponentType<ConfirmTemplateProps>
     ) => {
@@ -51,26 +56,32 @@ export default function withConfirm<Props extends Record<string, any>>(
       if (typeof event.clientY !== "number")
         throw Error("event.clientY was not a number");
       const promise = confirm(Template);
-      setPlacement({
-        x: event.clientX,
-        y: event.clientY,
-      });
+      const x = event.clientX;
+      const y = event.clientY;
+      if (x !== 0 || y !== 0) {
+        setPlacement({
+          x,
+          y,
+        });
+      } else {
+        setPlacement(null);
+      }
       return promise;
-    };
+    });
 
-    const yes = () => {
+    const yes = useStableCallback(() => {
       if (!resolve) return;
       resolve(true);
       setTemplate(null);
       setPlacement(null);
-    };
+    });
 
-    const no = () => {
+    const no = useStableCallback(() => {
       if (!resolve) return;
       resolve(false);
       setTemplate(null);
       setPlacement(null);
-    };
+    });
 
     return (
       <>
@@ -91,8 +102,6 @@ export default function withConfirm<Props extends Record<string, any>>(
       </>
     );
   }
-
-  hoist(WithConfirm as any, Component as any);
 
   return WithConfirm;
 }

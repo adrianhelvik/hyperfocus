@@ -45,7 +45,7 @@ export default withMenu(function Overview(props: Props) {
     if (auth.status === "failure") {
       navigate("/");
     }
-  }, [auth.status]);
+  }, [auth.status, navigate]);
 
   const onBoardAdded = useAutoCallback((board: Board) => {
     setBoards((boards) => boards === null ? null : [board, ...boards]);
@@ -70,8 +70,24 @@ export default withMenu(function Overview(props: Props) {
     });
   };
 
+  const onBoardTitleChanged = (boardId: string, title: string) => {
+    setBoards(boards => {
+      if (boards === null) return null;
+      return boards.map(board => {
+        if (board.boardId === boardId) {
+          return {
+            ...board,
+            title,
+          }
+        }
+        return board;
+      });
+    });
+  };
+
   const contextValue = useAutoMemo({
     onBoardColorChanged,
+    onBoardTitleChanged,
     setIsAddingBoard,
     onBoardRemoved,
     isAddingBoard,

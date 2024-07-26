@@ -1,5 +1,6 @@
-import styled, { css } from "styled-components";
 import React, { ReactNode, useState } from "react";
+import styled, { css } from "styled-components";
+import { cssFilter } from "src/util/css";
 import * as zIndexes from "../zIndexes";
 import Color from "color";
 
@@ -7,48 +8,46 @@ type Props = {
   transparent?: boolean;
   hide: (event?: React.MouseEvent | KeyboardEvent) => void;
   children: ReactNode;
+  blur?: boolean;
 };
 
-const Backdrop = ({ hide, transparent, children }: Props) => {
+const Backdrop = (props: Props) => {
   const [container, setContainer] = useState<Element | null>(null);
 
   const onContainerClick = (event: React.MouseEvent) => {
-    if (event.target === container && typeof hide === "function") hide(event);
+    if (event.target === container && typeof props.hide === "function") props.hide(event);
   };
 
   return (
     <OuterContainer
-      $transparent={transparent}
+      $transparent={props.transparent}
+      $blur={props.blur}
       onClick={onContainerClick}
       ref={setContainer}
     >
-      <InnerContainer>{children}</InnerContainer>
+      <InnerContainer>{props.children}</InnerContainer>
     </OuterContainer>
   );
 };
 
 export default Backdrop;
 
-const OuterContainer = styled.div<{ $transparent?: boolean }>`
+const OuterContainer = styled.div<{ $transparent?: boolean, $blur?: boolean }>`
   position: fixed;
-  bottom: 0;
-  right: 0;
-  left: 0;
-  top: 0;
+  inset: 0;
+
   z-index: ${zIndexes.backdrop};
 
   align-items: flex-start;
   display: flex;
 
-  background-color: ${Color("black").alpha(0.6).string()};
-  -webkit-backdrop-filter: blur(10px) grayscale(0.8);
-  backdrop-filter: blur(10px) grayscale(0.8);
+  ${p => p.$blur && css`
+    ${cssFilter("blur(2px) grayscale(0.4) brightness(30%)")}
+  `}
 
-  ${(p) =>
-    p.$transparent &&
-    css`
-      background-color: rgba(0, 0, 0, 0.0001);
-    `}
+  ${p => !p.$transparent && css`
+    background-color: ${Color("black").alpha(0.4).string()};
+  `}
 `;
 
 const InnerContainer = styled.div`

@@ -2,6 +2,7 @@ import React, { useState } from "react";
 import ReactDOM from "react-dom";
 import { Coord } from "./types";
 import Modal from "./ui/Modal";
+import useStableCallback from "src/util/useStableCallback";
 
 export type ModalTemplateProps = {
   resolve: () => void;
@@ -9,15 +10,17 @@ export type ModalTemplateProps = {
 
 export type TemplateComponent = React.ComponentType<ModalTemplateProps>;
 
+export type ShowModalInPlace = (
+  event: React.MouseEvent | MouseEvent,
+  Template: TemplateComponent,
+) => void;
+
 export type WithModalProps = {
   showModal: (
     Template: TemplateComponent,
     options?: { width?: number }
   ) => Promise<void>;
-  showModalInPlace: (
-    event: React.MouseEvent,
-    Template: TemplateComponent,
-  ) => void;
+  showModalInPlace: ShowModalInPlace;
 };
 
 export default function withModal<Props>(
@@ -32,7 +35,7 @@ export default function withModal<Props>(
     );
     const [resolve, setResolve] = useState<(() => void) | null>(null);
 
-    const showModal = (
+    const showModal = useStableCallback((
       Template: React.ComponentType<any>,
       options: { width?: number } = {}
     ) => {
@@ -42,9 +45,9 @@ export default function withModal<Props>(
         setWidth(options.width || null);
       });
       return promise;
-    };
+    });
 
-    const showModalInPlace = (event: PointerEvent, Template: TemplateComponent) => {
+    const showModalInPlace = useStableCallback((event: PointerEvent, Template: TemplateComponent) => {
       let x = event.clientX;
       let y = event.clientY;
 
@@ -59,16 +62,16 @@ export default function withModal<Props>(
       setPlacement({ x, y });
       setBackdrop(false);
       setWidth(null);
-    };
+    });
 
-    const hide = () => {
+    const hide = useStableCallback(() => {
       if (resolve) resolve();
       setPlacement(null);
       setBackdrop(true);
       setTemplate(null);
       setResolve(null);
       setWidth(null);
-    };
+    });
 
     return (
       <>

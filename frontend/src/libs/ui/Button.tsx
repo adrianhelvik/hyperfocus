@@ -1,8 +1,12 @@
 import styled, { css } from "styled-components";
 import * as theme from "src/libs/theme";
 import Color from "color";
+import { brighten, darken } from "../colorFns";
 
-export default styled.button<{ $danger?: boolean; $cancel?: boolean }>`
+const grayBg = Color("#777").alpha(0.8).string();
+
+export default styled.button<{ $danger?: boolean; $cancel?: boolean, $white?: boolean }>`
+  transition: background-color 0.3s, box-shadow 0.3s;
   background-color: ${theme.baseColor};
   border-radius: 4px;
   padding: 7px 10px;
@@ -34,18 +38,37 @@ export default styled.button<{ $danger?: boolean; $cancel?: boolean }>`
       `;
     if (p.$cancel)
       return css`
-        background-color: ${theme.grayButtonBg};
-        color: ${theme.grayButtonFg};
+        background-color: ${grayBg};
+        color: white;
+
+        &:hover {
+          background-color: ${brighten(grayBg, 0.2)};
+        }
+
+        &:hover:active {
+          background-color: ${darken(grayBg, 0.2)};
+        }
+      `;
+    if (p.$white)
+      return css`
+        background-color: white;
+        color: ${grayBg};
+
+        &:hover {
+          background-color: ${darken("white", 0.2)};
+        }
+
+        &:hover:active {
+          background-color: ${darken("white", 0.2)};
+        }
       `;
     return css`
-      transition: background-color 0.3s, box-shadow 0.3s;
-
       &:hover {
-        background-color: ${theme.ui2};
+        background-color: ${brighten(theme.baseColor, 0.2)};
       }
 
       &:hover:active {
-        background-color: ${theme.darkPurple};
+        background-color: ${darken(theme.baseColor, 0.2)};
       }
     `;
   }}

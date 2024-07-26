@@ -7,7 +7,7 @@ export const GlobalStyle = createGlobalStyle`
   }
 
   * {
-    --webkit-scrollbar-width: 0 !important;
-    scrollbar-width: 0 !important;
+    --webkit-scrollbar-width: none !important;
+    scrollbar-width: none !important;
   }
 `;

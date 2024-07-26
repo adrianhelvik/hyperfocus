@@ -1,13 +1,16 @@
 import { getDeckColorCSSVariables } from "./getDeckColorCSSVariables";
+import createDeckHeaderElement from "./createDeckHeaderElement";
 import { makeTextAreaAutoGrow } from "./makeTextAreaAutoGrow";
-import createDeckTitleElement from "./createDeckTitleElement";
-import { isKeypressElement } from "./isKeypressElement";
 import { Board, Card, Deck, Portal } from "src/libs/types";
+import { ConfirmInPlaceFn } from "src/libs/withConfirm";
+import { isKeypressElement } from "./isKeypressElement";
 import createCardElement from "./createCardElement";
+import { ShowMenuFn } from "src/libs/withMenu";
 import { CleanupHooks } from "./CleanupHooks";
 import classes from "./styles.module.css";
 import api from "src/libs/api";
 import { el } from "./el";
+import { ShowModalInPlace } from "src/libs/withModal";
 
 export class BoardView {
   private cleanupHooks = new CleanupHooks();
@@ -18,7 +21,13 @@ export class BoardView {
   private focusDeckTimeout?: ReturnType<typeof setTimeout>;
   private addedCardIds = new Set<string>();
 
-  constructor(private root: HTMLElement, private readonly board: Board) {
+  constructor(
+    private readonly root: HTMLElement,
+    private readonly board: Board,
+    private readonly showMenu: ShowMenuFn,
+    private readonly confirmInPlace: ConfirmInPlaceFn,
+    private readonly showModalInPlace: ShowModalInPlace,
+  ) {
     this.unmount();
     this.mount();
   }
@@ -192,12 +201,15 @@ export class BoardView {
     deckElement.append(deckContentElement);
 
     deckContentElement.append(
-      createDeckTitleElement({
+      createDeckHeaderElement({
         root: this.root,
         deckElement,
         child,
         cleanupHooks: this.cleanupHooks,
         deckElements: this.deckElements,
+        showMenu: this.showMenu,
+        confirmInPlace: this.confirmInPlace,
+        showModalInPlace: this.showModalInPlace,
       })
     );
 

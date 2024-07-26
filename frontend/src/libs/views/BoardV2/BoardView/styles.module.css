@@ -13,7 +13,7 @@
   padding-bottom: 85px;
   scroll-snap-type: x mandatory;
 
-  scrollbar-width: 0;
+  scrollbar-width: none;
 
   &::-webkit-scrollbar {
     display: none;
@@ -52,7 +52,7 @@
   max-height: 100%;
   border-radius: 4px;
   transform: translate3d(0, 0, 0);
-  scrollbar-width: 0;
+  scrollbar-width: none;
 
   &::-webkit-scrollbar {
     display: none;
@@ -87,23 +87,6 @@
     transform: rotate(102deg);
   }
 
-  /* This adds a rounded outline around portals */
-  &:focus::after,
-  &:focus-within::after {
-    content: "";
-    display: block;
-    border-radius: 5px;
-    border: 2px solid rgb(114, 32, 222, 1);
-    width: calc(100% + 10px);
-    height: calc(100% + 10px);
-    margin-left: -5px;
-    margin-top: -5px;
-    position: fixed;
-    top: 0;
-    left: 0;
-    pointer-events: none;
-  }
-
   & .deckContent {
     display: flex;
     flex-direction: column;
@@ -127,6 +110,7 @@
   --deck-title-padding: 4px 7px;
 
   position: sticky;
+  z-index: 10;
   top: 0;
 
   & .deckTitleContentContainer {
@@ -382,7 +366,6 @@
   }
 
   gap: 7px;
-  min-height: 40px;
 
   &>* {
     flex-shrink: 0;
@@ -393,6 +376,10 @@
     text-align: center;
     color: #888;
     margin: auto;
+    height: 60px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
   }
 }
 

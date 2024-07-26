@@ -53,7 +53,7 @@ export default function BoardList() {
     if (auth.status === "failure") {
       return navigate("/login");
     }
-  }, [auth.status]);
+  }, [auth.status, navigate]);
 
   const modifierKey = navigator.userAgent.includes(" Mac ") ? "⌘" : "ctrl ";
 

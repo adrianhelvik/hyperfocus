@@ -44,20 +44,20 @@ function AddBoardModal() {
 
   return (
     <form onSubmit={onSubmit}>
-      <Modal hide={() => setIsAddingBoard(false)} title="Name your board">
+      <Modal hide={() => setIsAddingBoard(false)} title="Create new board" blurBg>
         <Input
-          placeholder="Enter a name"
+          placeholder="Title of the board"
           onChange={setTitleFromEvent}
-          color={theme.modalInputLabelColor}
+          labelAboveColor="white"
           value={title}
-          size={50}
+          size={30}
           autoFocus
         />
         <ModalFooter>
           <Button $cancel type="button" onClick={() => setIsAddingBoard(false)}>
             Cancel
           </Button>
-          <Button>Create</Button>
+          <Button $white>Create</Button>
         </ModalFooter>
       </Modal>
     </form>

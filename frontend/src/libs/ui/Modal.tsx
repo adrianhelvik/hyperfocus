@@ -4,6 +4,8 @@ import styled, { css } from "styled-components";
 import * as theme from "../theme";
 import Backdrop from "./Backdrop";
 import { Coord } from "../types";
+import { opacity } from "../colorFns";
+import { cssFilter } from "src/util/css";
 
 type Props = {
   placement?: Coord | null;
@@ -12,6 +14,7 @@ type Props = {
   children: React.ReactNode;
   backdrop?: boolean;
   title?: ReactNode;
+  blurBg?: boolean;
 };
 
 function Modal(props: Props) {
@@ -54,7 +57,7 @@ function Modal(props: Props) {
   });
 
   return (
-    <Backdrop transparent={Boolean(props.placement)} hide={props.hide}>
+    <Backdrop hide={props.hide} blur={props.blurBg} transparent={!props.backdrop}>
       <Container $placement={props.placement} $width={props.width} ref={setContainer} $offsetX={offsetX}>
         {props.title && <Title>{props.title}</Title>}
         {props.children}
@@ -71,18 +74,21 @@ const Container = styled.div<{
   $offsetX: number;
 }>`
   color: black;
+  border: 1px solid ${opacity("white", 0.4)};
   background-color: ${theme.modalBg};
   max-width: calc(100vw - 40px);
   padding: 20px;
   border-radius: 4px;
   max-height: 100vh;
   overflow: auto;
-  box-shadow: ${theme.shadows[1]};
+
+  ${cssFilter("blur(10px) grayscale(0.7)")};
+  box-shadow: ${theme.shadows[4]};
 
   ${(p) =>
     !p.$placement &&
     css`
-      width: ${p.$width || 400}px;
+      ${p.$width && css`width: ${p.$width}px;`}
       margin-bottom: 100px;
     `}
 
@@ -96,10 +102,10 @@ const Container = styled.div<{
 `;
 
 const Title = styled.h2`
-  color: black;
+  color: white;
   margin-top: 0;
-  margin-bottom: 30px;
-  font-size: 20px;
+  margin-bottom: 28px;
+  font-size: 1.2rem;
   font-weight: 400;
   letter-spacing: 1px;
 `;

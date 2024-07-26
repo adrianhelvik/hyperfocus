@@ -4,17 +4,22 @@ import React, { useEffect, useState } from "react";
 import onSelect from "src/libs/util/onSelect";
 import * as zIndexes from "src/libs/zIndexes";
 import { useAutoEffect } from "hooks.macro";
+import { mixBlackWhite } from "./colorFns";
 import * as theme from "src/libs/theme";
-import { Portal } from "react-portal";
+import { createPortal } from "react-dom";
+import useStableCallback from "src/util/useStableCallback";
 
-const PortalAny = Portal as any;
 const MENU_WIDTH = 150;
 
+type MenuOptions = Record<string, ((e: { target: HTMLElement }) => void) | undefined | false | null>;
+
+export type ShowMenuFn = (
+  event: React.MouseEvent | MouseEvent,
+  options: MenuOptions
+) => void;
+
 export type WithMenuProps = {
-  showMenu: (
-    event: React.MouseEvent,
-    options: Record<string, (e: { target: HTMLElement }) => void>
-  ) => void;
+  showMenu: ShowMenuFn;
 };
 
 export default function withMenu<Props>(
@@ -25,7 +30,7 @@ export default function withMenu<Props>(
       typeof setTimeout
     > | null>(null);
     const [menu, setMenu] = useState<HTMLElement | null>(null);
-    const [options, setOptions] = useState<any>(null);
+    const [options, setOptions] = useState<null | MenuOptions>(null);
     const [dir, setDir] = useState<"right" | "left">("right");
     const [x, setX] = useState<number | null>(null);
     const [y, setY] = useState<number | null>(null);
@@ -40,7 +45,9 @@ export default function withMenu<Props>(
     const selectItem = (e: { target: HTMLElement }) => {
       const key = e.target.getAttribute("data-key");
       if (!key) return;
-      options[key](e);
+      if (options?.[key]) {
+        options[key](e);
+      }
       closeMenu();
     };
 
@@ -96,9 +103,9 @@ export default function withMenu<Props>(
       };
     });
 
-    const showMenu = (
+    const showMenu = useStableCallback((
       event: { clientX: number; clientY: number, target?: unknown, pointerId?: number },
-      options: Record<string, (e: { target: HTMLElement }) => void>
+      options: MenuOptions,
     ) => {
       if (event.pointerId === -1 && (event.target instanceof HTMLElement)) {
         const rect = event.target.getBoundingClientRect();
@@ -119,7 +126,7 @@ export default function withMenu<Props>(
           setOptions(options);
         }, 100)
       );
-    };
+    });
 
     useAutoEffect(() => {
       if (menu && options) {
@@ -166,27 +173,31 @@ export default function withMenu<Props>(
     });
 
     return (
-      <React.Fragment>
+      <>
         <WrappedComponent {...props} showMenu={showMenu} />
-        {options && (
-          <PortalAny>
-            <MenuWrapper $x={x} $y={y} $dir={dir} ref={(e) => setMenu(e)}>
-              {Object.keys(options).map((key, index) => (
-                <MenuItem
-                  ref={(e) => index === 0 && e && e.focus()}
-                  {...onSelect(selectItem)}
-                  data-prevent-grid-keyboard-navigation
-                  data-disable-drag
-                  data-key={key}
-                  key={key}
-                >
-                  {key}
-                </MenuItem>
-              ))}
-            </MenuWrapper>
-          </PortalAny>
+        {createPortal(
+          <div>
+            {options && (
+              <MenuWrapper $x={x} $y={y} $dir={dir} ref={(e) => setMenu(e)}>
+                {Object.keys(options).map((key, index) => (
+                  options[key] &&
+                  <MenuItem
+                    ref={(e) => index === 0 && e && e.focus()}
+                    {...onSelect(selectItem)}
+                    data-prevent-grid-keyboard-navigation
+                    data-disable-drag
+                    data-key={key}
+                    key={key}
+                  >
+                    {key}
+                  </MenuItem>
+                ))}
+              </MenuWrapper>
+            )}
+          </div>,
+          document.body
         )}
-      </React.Fragment>
+      </>
     );
   }
 
@@ -230,8 +241,7 @@ const MenuWrapper = styled.div<{
   min-height: 4px;
   width: ${MENU_WIDTH}px;
   box-shadow: ${theme.shadows[1]};
-  font-size: 0.8rem;
-  color: #707070;
+  color: ${mixBlackWhite(theme.baseColor, 0.8, 0.1)};
   border-radius: 4px;
   z-index: ${zIndexes.overlaidMenu};
   overflow: hidden;
@@ -251,13 +261,12 @@ const MenuItem = styled.div`
   cursor: pointer;
 
   &:hover {
-    background: ${theme.gray2};
+    background-color: ${mixBlackWhite(theme.baseColor, 0.2, 0.7)};
   }
 
   &:focus {
     outline: none;
-    background-color: ${theme.gray1};
-    color: white;
+    background-color: ${mixBlackWhite(theme.baseColor, 0.4, 0.7)};
   }
 
   &:first-child {

@@ -1,4 +1,7 @@
+import withConfirm, { WithConfirmProps } from "src/libs/withConfirm";
 import { BoardViewContext, BoardViewContextType } from "./context";
+import withModal, { WithModalProps } from "src/libs/withModal";
+import withMenu, { WithMenuProps } from "src/libs/withMenu";
 import { useAutoCallback, useAutoMemo } from "hooks.macro";
 import { useNavigate, useParams } from "react-router-dom";
 import { useState, useEffect, useRef } from "react";
@@ -11,10 +14,14 @@ import { BoardView } from "./BoardView";
 import styled from "styled-components";
 import AddCircle from "./AddCircle";
 import api from "src/libs/api";
+import useAssertStable from "src/util/useAssertStable";
 
-export default function BoardV2() {
+type Props = WithMenuProps & WithConfirmProps & WithModalProps;
+
+export default withModal(withConfirm(withMenu(function BoardV2(props: Props) {
   const { boardId } = useParams<{ boardId: string, deckId?: string }>();
   if (!boardId) throw Error("Expected boardId to be provided");
+
   const [boardView, setBoardView] = useState<BoardView | null>(null);
   const [div, setDiv] = useState<HTMLDivElement | null>(null);
   const [board, setBoard] = useState<Board | null>(null);
@@ -49,15 +56,35 @@ export default function BoardV2() {
   const boardRef = useRef<Board | null>(board);
   boardRef.current = board;
 
+  useAssertStable(navigate, "navigate");
+  useAssertStable(props.showMenu, "props.showMenu");
+  useAssertStable(props.confirmInPlace, "props.confirmInPlace");
+  useAssertStable(props.showModalInPlace, "props.showModalInPlace");
+
   useEffect(() => {
     if (!hasBoard) return;
     if (!div) return;
-    const boardView = new BoardView(div, boardRef.current!);
+    const boardView = new BoardView(
+      div,
+      boardRef.current!,
+      props.showMenu,
+      props.confirmInPlace,
+      props.showModalInPlace,
+    );
     setBoardView(boardView);
     return () => {
       return boardView.unmount();
     };
-  }, [div, hasBoard, navigate, boardId]);
+  }, [
+    div,
+    hasBoard,
+    boardId,
+    // Stable values
+    navigate,
+    props.showMenu,
+    props.confirmInPlace,
+    props.showModalInPlace,
+  ]);
 
   useOnKeyDown((e) => {
     if ((e.metaKey || e.ctrlKey) && /[1-9]/.test(e.key)) {
@@ -106,7 +133,7 @@ export default function BoardV2() {
       </div>
     </BoardViewContext.Provider>
   );
-}
+})));
 
 const NotOnSmallScreens = styled.div`
   display: contents;

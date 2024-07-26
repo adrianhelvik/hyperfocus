@@ -1,15 +1,22 @@
 import { replaceWithInputAndFocusAtCaretPosition } from "./replaceWithInputAndFocusAtCaretPosition";
+import { ConfirmButtonRow, ConfirmHeader, ConfirmTargetText } from "src/libs/ui/confirm-dialog";
 import { makeTextAreaAutoGrow } from "./makeTextAreaAutoGrow";
 import { smoothScrollToCenter } from "./smoothScrollToCenter";
+import { CirclePicker as ColorPicker } from "react-color";
+import { ConfirmInPlaceFn } from "src/libs/withConfirm";
 import { setLinkableText } from "./setLinkableText";
 import addDragHandlers from "./addDragHandlers";
+import { ShowMenuFn } from "src/libs/withMenu";
 import { CleanupHooks } from "./CleanupHooks";
 import { Deck, Portal } from "src/libs/types";
 import classes from "./styles.module.css";
+import Button from "src/libs/ui/Button";
 import onlyOnceFn from "./onlyOnceFn";
 import animate from "./animate";
 import api from "src/libs/api";
 import { el } from "./el";
+import { ShowModalInPlace } from "src/libs/withModal";
+import { getDeckColorCSSVariables } from "./getDeckColorCSSVariables";
 
 const DECK_ANIMATION_TIME = 300;
 
@@ -19,13 +26,21 @@ export default function createDeckTitleElement({
   deckElements,
   deckElement,
   child,
+  showMenu,
+  confirmInPlace,
+  showModalInPlace,
 }: {
   root: HTMLElement;
   deckElements: HTMLElement[];
   cleanupHooks: CleanupHooks;
   deckElement: HTMLElement;
   child: Deck | Portal;
+  showMenu: ShowMenuFn;
+  confirmInPlace: ConfirmInPlaceFn;
+  showModalInPlace: ShowModalInPlace;
 }) {
+  console.log("CREATING DECK TITLE ELEMENT");
+
   let initialIndex = -1;
 
   let deckTitleNode: HTMLHeadingElement;
@@ -33,7 +48,9 @@ export default function createDeckTitleElement({
   let portalDeckNameNode: HTMLDivElement;
 
   // @prettier-ignore
-  const containerNode = el("div", { className: classes.deckTitleContainer },
+  const containerNode = el("div", {
+    className: classes.deckTitleContainer,
+  },
     el("div", { className: classes.deckTitleContentContainer },
       deckTitleNode = el("h2", {
         tabIndex: 0,
@@ -53,8 +70,60 @@ export default function createDeckTitleElement({
       menuNode = el("button", {
         type: "button",
         className: classes.deckTitleMenu,
-        onclick: () => {
-          // TODO: Show menu.
+        onclick: (e) => {
+          console.log("Clicked on menu");
+          showMenu(e, {
+            "Set deck color": child.type === "deck" && (async () => {
+              showModalInPlace(e, () => (
+                <ColorPicker
+                  onChange={(color: { hex: string }) => {
+                    api.setDeckColor({
+                      deckId: child.deckId,
+                      color: color.hex,
+                    });
+                    child.color = color.hex;
+
+                    const properties = getDeckColorCSSVariables(child);
+                    for (const [key, val] of Object.entries(properties)) {
+                      deckElement.style.setProperty(key, val);
+                    }
+                  }}
+                />
+              ));
+            }),
+            "Delete deck": child.type === "deck" && (async () => {
+              if (await confirmInPlace(e, p => (
+                <>
+                  <ConfirmHeader>
+                    Permanently delete deck?
+                  </ConfirmHeader>
+                  <ConfirmButtonRow>
+                    <Button $cancel onClick={p.no}>Cancel</Button>
+                    <Button onClick={p.yes}>Delete</Button>
+                  </ConfirmButtonRow>
+                </>
+              ))) {
+                api.deleteDeck({ deckId: child.deckId });
+                deckElement.remove();
+              }
+            }),
+            "Delete portal": child.type === "portal" && (async () => {
+              if (await confirmInPlace(e, p => (
+                <>
+                  <ConfirmHeader>
+                    Delete portal?
+                  </ConfirmHeader>
+                  <ConfirmButtonRow>
+                    <Button $cancel onClick={p.no}>Cancel</Button>
+                    <Button onClick={p.yes}>Delete</Button>
+                  </ConfirmButtonRow>
+                </>
+              ))) {
+                api.deletePortal({ portalId: child.portalId });
+                deckElement.remove();
+              }
+            }),
+          })
         },
       },
         el("i", {

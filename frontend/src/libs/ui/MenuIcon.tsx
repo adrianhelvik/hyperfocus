@@ -26,6 +26,10 @@ const Container = styled.button`
   ${resetButton};
 `;
 
+const shadeBy = (amount: number) => (p: { $dark?: boolean }) => {
+  return Color(p.$dark ? "white" : "black").alpha(amount).string();
+}
+
 const Icon = styled.i<{ $dark?: boolean }>`
   transition: background-color 0.3s;
   font-size: 15px;
@@ -37,14 +41,14 @@ const Icon = styled.i<{ $dark?: boolean }>`
   box-shadow: ${theme.shadows[0]};
 
   &:active:hover {
-    background-color: ${Color("white").alpha(0.6).string()};
+    background-color: ${shadeBy(0.6)};
   }
 
-  background-color: ${Color("white").alpha(0.3).string()};
+  background-color: ${shadeBy(0.3)};
   color: white;
 
   &:hover {
-    background-color: ${Color("white").alpha(0.4).string()};
+    background-color: ${shadeBy(0.4)};
   }
 `;
 

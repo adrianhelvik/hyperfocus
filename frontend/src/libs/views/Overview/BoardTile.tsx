@@ -1,16 +1,20 @@
+import { ConfirmButtonRow, ConfirmHeader } from "src/libs/ui/confirm-dialog";
 import withConfirm, { WithConfirmProps } from "src/libs/withConfirm";
 import withStatus, { WithStatusProps } from "src/libs/withStatus";
 import withModal, { WithModalProps } from "src/libs/withModal";
 import { OverviewStoreContext } from "./OverviewStoreContext";
 import withMenu, { WithMenuProps } from "src/libs/withMenu";
 import { CirclePicker as ColorPicker } from "react-color";
+import { flattenColor } from "src/libs/colorFns";
 import { MouseEvent, useContext } from "react";
 import { useNavigate } from "react-router-dom";
 import onSelect from "src/libs/util/onSelect";
 import MenuIcon from "src/libs/ui/MenuIcon";
 import * as theme from "src/libs/theme";
+import Button from "src/libs/ui/Button";
 import styled from "styled-components";
 import { Board } from "src/libs/types";
+import Input from "src/libs/ui/Input";
 import api from "src/libs/api";
 import Color from "color";
 
@@ -24,7 +28,7 @@ type Props = WithConfirmProps &
   };
 
 function BoardTile(props: Props) {
-  const { onBoardRemoved, onBoardColorChanged } = useContext(OverviewStoreContext);
+  const { onBoardRemoved, onBoardColorChanged, onBoardTitleChanged } = useContext(OverviewStoreContext);
   const navigate = useNavigate();
 
   const openBoard = () => {
@@ -44,6 +48,7 @@ function BoardTile(props: Props) {
       boardId: props.board.boardId!,
       title,
     });
+    onBoardTitleChanged(props.board.boardId, title);
   };
 
   const openMenu = (event: MouseEvent) => {
@@ -66,37 +71,42 @@ function BoardTile(props: Props) {
               resolve();
             }}
           >
-            <div>Enter new name</div>
-            <input
+            <ConfirmHeader>Enter new name</ConfirmHeader>
+            <Input
               name="newBoardTitle"
               defaultValue={props.board.title}
               autoFocus
             />
-            <button>Save</button>
+            <ConfirmButtonRow>
+              <Button>Save</Button>
+            </ConfirmButtonRow>
           </form>
         ));
       },
       "Change color": () => {
-        props.showModalInPlace(nativeEvent, ({ resolve }) => (
-          <ColorPicker
-            onChange={(color: { hex: string }) => {
-              setColor(color.hex);
-              resolve();
-            }}
-          />
+        props.showModalInPlace(nativeEvent, () => (
+          <>
+            <ColorPicker
+              onChange={(color: { hex: string }) => {
+                setColor(color.hex);
+              }}
+            />
+          </>
         ));
       },
-      "Clear color": () => {
+      "Clear color": props.board.color ? (() => {
         setColor(null);
-      },
+      }) : undefined,
       Delete: async () => {
         if (
           !(await props.confirmInPlace(nativeEvent, (p) => (
-            <div>
-              <div>Delete board permanently</div>
-              <button onClick={p.yes}>Yes</button>
-              <button onClick={p.no}>No</button>
-            </div>
+            <>
+              <ConfirmHeader>Delete board permanently?</ConfirmHeader>
+              <ConfirmButtonRow>
+                <Button $cancel onClick={p.no}>Cancel</Button>
+                <Button onClick={p.yes}>Delete</Button>
+              </ConfirmButtonRow>
+            </>
           )))
         )
           return;
@@ -128,6 +138,22 @@ function BoardTile(props: Props) {
 
 export default withModal(withConfirm(withStatus(withMenu(BoardTile))));
 
+const textColor = (p: { $color: string }) => {
+  const flatColor = flattenColor(p.$color, "black");
+  if (Color(flatColor).isDark()) {
+    return "white";
+  }
+  return Color(p.$color).mix(Color("black"), 0.7).string();
+}
+
+const borderColor = (p: { $color: string }) => {
+  const flatColor = flattenColor(p.$color, "black");
+  if (Color(flatColor).isDark()) {
+    return Color("white").alpha(0.2).string();
+  }
+  return Color(p.$color).mix(Color("black"), 0.2).string();
+}
+
 const Container = styled.div <{ $color: string }>`
   all: unset;
   outline: revert;
@@ -138,7 +164,7 @@ const Container = styled.div <{ $color: string }>`
   padding: 10px;
   display: flex;
   background: ${(p) => p.$color};
-  color: ${p => Color(p.$color).darken(0.7).isDark() ? "white" : "black"};
+  color: ${textColor};
   border-radius: 4px;
   margin-right: 10px;
   margin-bottom: 10px;
@@ -182,9 +208,9 @@ const TopRight = styled.div`
 `;
 
 const ShortcutIcon = styled.div<{ $color: string }>`
-  color: ${p => Color(p.$color).darken(0.7).isDark() ? "white" : "black"};
+  color: ${textColor};
   padding: 4px 5px;
-  border: 1px solid #ddd;
+  border: 1px solid ${borderColor};
   border-radius: 5px;
 
   @media (hover: none) {

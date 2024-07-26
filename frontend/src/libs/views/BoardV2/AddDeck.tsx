@@ -41,8 +41,8 @@ function AddDeck(props: Props) {
     <Container onSubmit={onSubmit}>
       <Input
         autoFocus
-        placeholder="Title"
-        color={theme.modalInputLabelColor}
+        placeholder="Deck title"
+        labelAboveColor="white"
         onChange={setTitleFromEvent}
         value={title}
       />
@@ -50,7 +50,7 @@ function AddDeck(props: Props) {
         <Button $cancel type="button" onClick={() => props.resolve()}>
           Cancel
         </Button>
-        <Button>Create</Button>
+        <Button $white>Create</Button>
       </ModalFooter>
     </Container>
   );

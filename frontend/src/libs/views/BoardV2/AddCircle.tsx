@@ -12,6 +12,7 @@ import { useState } from "react";
 import ReactDOM from "react-dom";
 import AddDeck from "./AddDeck";
 import Color from "color";
+import { cssFilter } from "src/util/css";
 
 export default function AddCircle() {
   const [container, setContainer] = useState<HTMLElement | null>(null);
@@ -134,9 +135,7 @@ const height = 240;
 const width = 300;
 
 const Background = styled.div<{ $open: boolean }>`
-  background-color: ${Color("black").alpha(0.3).string()};
-  -webkit-backdrop-filter: blur(2px) grayscale(0.8);
-  backdrop-filter: blur(2px) grayscale(0.8);
+  ${cssFilter("blur(2px) grayscale(0.4) brightness(60%)")};
 
   opacity: ${p => p.$open ? "1" : "0"};
   transition: backdrop-filter 300ms, opacity 300ms;
@@ -269,13 +268,14 @@ const AddItem = styled.div`
   color: ${Color(theme.baseColor).isDark() ? "white" : "black"};
   cursor: pointer;
   transition: 0.3s;
-  padding: 10px;
+  padding: 8px;
+  padding-left: 15px;
   height: 55px;
   display: flex;
   align-items: center;
   justify-content: space-between;
   border-radius: 5px;
-  font-size: 22px;
+  font-size: 1.2rem;
 
   &:hover {
     background-color: ${overlayColor.mix(Color("black"), 0.2).string()};

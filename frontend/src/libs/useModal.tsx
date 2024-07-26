@@ -59,6 +59,7 @@ export default function useModal(): ModalType {
               <Modal
                 title={openModal.title}
                 width={openModal.width}
+                blurBg
                 hide={hide}
               >
                 <Template

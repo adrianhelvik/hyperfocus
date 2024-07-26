@@ -2,9 +2,9 @@ import Color from "color";
 import { Deck, Portal } from "src/libs/types";
 
 export function getDeckColorCSSVariables(child: Deck | Portal) {
+  // TODO: Allow different colors for portals
   const deck = child.type === "portal" ? child.target : child;
 
-  // TODO: Allow different colors for portals
   const deckColor = deck.color || "#757575";
 
   const isDark = Color(deckColor).darken(0.2).isDark();

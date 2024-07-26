@@ -83,7 +83,7 @@ export default function AddPortal(props: Props) {
       <InputWrapper>
         <Input
           placeholder="Name in this board"
-          color={theme.modalInputLabelColor}
+          labelAboveColor="white"
           autoFocus
           value={title}
           onChange={(e) => setTitle(e.target.value)}
@@ -123,10 +123,10 @@ export default function AddPortal(props: Props) {
       </Sections>
       <hr />
       <ModalFooter>
-        <Button $cancel onClick={() => props.resolve()}>
+        <Button $cancel onClick={() => props.resolve()} type="button">
           Cancel
         </Button>
-        <Button disabled={!selectedDeck || !title}>Create portal</Button>
+        <Button disabled={!selectedDeck || !title} type="submit" $white>Create portal</Button>
       </ModalFooter>
     </form>
   );
@@ -185,7 +185,7 @@ const Section = styled.section`
 
 const Title = styled.div`
   font-size: 0.8rem;
-  color: #707070;
+  color: white;
   border-bottom: 1px solid #707070;
   margin-bottom: 10px;
 `;
