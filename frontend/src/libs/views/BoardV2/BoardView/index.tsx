@@ -63,7 +63,7 @@ export class BoardView {
     }
   };
 
-  private unmount() {
+  public unmount() {
     clearTimeout(this.focusDeckTimeout);
     this.onDestroyCallbacks.forEach((fn) => fn());
     this.onDestroyCallbacks = [];
@@ -146,20 +146,6 @@ export class BoardView {
 
   private showSearchUI() {
     // TODO: Implement this
-  }
-
-  addEventListener<
-    Handler extends Function,
-    EventName extends string,
-    Target extends {
-      addEventListener(n: EventName, e: Handler): void;
-      removeEventListener(n: EventName, e: Handler): void;
-    }
-  >(target: Target, event: EventName, handler: Handler) {
-    target.addEventListener(event, handler);
-    return () => {
-      target.removeEventListener(event, handler);
-    };
   }
 
   private buildInterface() {
@@ -288,6 +274,8 @@ export class BoardView {
       const card = {
         title,
         cardId,
+        boardId: deck.boardId,
+        deckId: deck.deckId,
         images: [],
       };
       const newCardElement = createCardElement({

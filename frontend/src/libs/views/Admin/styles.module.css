@@ -1,0 +1,56 @@
+.box {
+  box-shadow: var(--shadows-0);
+  border-radius: 4px;
+  width: fit-content;
+}
+
+.h1 {
+  font-size: 1rem;
+}
+
+.container {
+  padding: 20px;
+}
+
+.table {
+  border-radius: 4px;
+
+  & th,
+  td {
+    padding: 8px 20px;
+  }
+
+  & th {
+    font-weight: 500;
+    text-align: left;
+    background-color: color-mix(in srgb, #333, var(--base-color) 40%);
+    color: white;
+
+    &:first-child {
+      border-top-left-radius: 4px;
+    }
+
+    &:last-child {
+      border-top-right-radius: 4px;
+    }
+  }
+
+  & td {
+    background-color: white;
+    color: #333;
+  }
+
+  & tr:nth-child(even) td {
+    background-color: color-mix(in srgb, white, var(--base-color) 20%);
+  }
+
+  & tr:last-child {
+    & td:first-child {
+      border-bottom-left-radius: 4px;
+    }
+
+    & td:last-child {
+      border-bottom-right-radius: 4px;
+    }
+  }
+}

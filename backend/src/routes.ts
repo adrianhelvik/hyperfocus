@@ -430,12 +430,33 @@ export const setCardTitleRoute = route({
   },
 });
 
-export const getUsersRoute = route({
+export const getUserStatsRoute = route({
   method: "POST",
-  path: "/getUsers",
+  path: "/getUserStats",
   async handler(request: ReqWithAuth) {
     await assertIsAdmin(request);
 
-    return { users: await knex("users").select("email") };
+    const usersQuery = knex("users")
+      .select("userId", "email")
+
+    const result: any[] = [];
+
+    for await (const user of usersQuery.stream()) {
+      result.push(user);
+      user.boardCount = await knex("boards")
+        .where({ createdBy: user.userId })
+        .count("*")
+        .then(res => Number(res[0].count));
+      user.cardCount = await knex("cards")
+        .leftJoin("decks", "decks.deckId", "cards.deckId")
+        .leftJoin("boards", "boards.boardId", "decks.boardId")
+        .where("boards.createdBy", user.userId)
+        .count("*")
+        .then(res => Number(res[0].count));
+    }
+
+    console.log(result);
+
+    return result;
   }
 })

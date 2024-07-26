@@ -52,4 +52,9 @@ export type Board = {
   boardId: string;
 };
 
-export type User = any;
+export type UserStat = {
+  userId: string;
+  email: string;
+  boardCount: number;
+  cardCount: number;
+};
