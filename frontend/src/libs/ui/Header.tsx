@@ -20,16 +20,16 @@ export default function Header(props: Props) {
   const auth = useAuth();
 
   useAutoEffect(() => {
-    auth.authenticate().then(console.log.bind(console, "Auth result"));
+    auth.authenticate();
   });
-
-  console.log("Auth status:", auth.status);
 
   return (
     <Container $color={pageColor}>
-      <UndecoratedLink to={isInApp ? "/app" : "/"}>
-        <Logo pageColor={pageColor} />
-      </UndecoratedLink>
+      <div>
+        <UndecoratedLink to={isInApp ? "/app" : "/"}>
+          <Logo pageColor={pageColor} />
+        </UndecoratedLink>
+      </div>
       {auth.role === "admin" && location.pathname !== "/admin" && <AdminLink to="/admin">Admin</AdminLink>}
       {location.pathname === "/admin" && <AdminLink to="/app">Dashboard</AdminLink>}
       <Content>{props.children}</Content>
@@ -80,6 +80,7 @@ Logo.Container = styled.div`
   text-transform: uppercase;
   letter-spacing: 4px;
   font-weight: bold;
+  width: fit-content;
 `;
 
 Logo.Text1 = styled.span<{ $pageColor: string }>`

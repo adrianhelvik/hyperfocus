@@ -47,13 +47,11 @@ export function ProvideAuth(props: { children: ReactNode }) {
     if (status === "success") return true;
     try {
       const user = await api.authenticate();
-      console.log("User:", user);
       SOCKET_IO.emit("authenticate", local.get("persistentHeaders"));
       setStatus("success");
       setRole(user.role)
       return true;
     } catch (e) {
-      console.log("%cauthentication failed", "background:red;padding:4px");
       setStatus("failure");
       return false;
     }
