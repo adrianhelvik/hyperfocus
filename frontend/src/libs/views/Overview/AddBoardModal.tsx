@@ -3,7 +3,6 @@ import { OverviewStoreContext } from "./OverviewStoreContext";
 import ModalFooter from "src/libs/ui/ModalFooter";
 import { useAutoEffect } from "hooks.macro";
 import Button from "src/libs/ui/Button";
-import * as theme from "src/libs/theme";
 import Input from "src/libs/ui/Input";
 import Modal from "src/libs/ui/Modal";
 import api from "src/libs/api";

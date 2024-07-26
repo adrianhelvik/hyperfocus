@@ -85,6 +85,13 @@ export default new Proxy({} as any, {
   },
 }) as Api;
 
+export class ApiError {
+  constructor(
+    public message: string,
+    public statusCode: number,
+  ) { }
+}
+
 async function callProcedure(name: string, body = {}) {
   body = { ...body };
 
@@ -114,7 +121,9 @@ async function callProcedure(name: string, body = {}) {
 
   const data = await response.json();
 
-  if (String(response.status)[0] !== "2") throw Error(data.message);
+  if (String(response.status)[0] !== "2") {
+    throw new ApiError(data.message, response.status);
+  }
 
   return data;
 }
@@ -126,4 +135,8 @@ export function setPersistentHeader(key: string, value: string) {
   });
 
   persistentHeaders = local.get("persistentHeaders");
+}
+
+export function getPersistentHeaders() {
+  return persistentHeaders || {};
 }

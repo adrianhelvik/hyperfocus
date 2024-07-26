@@ -1,9 +1,14 @@
 import "dotenv/config";
 
+import assertCanEditBoard from "./domain/assertCanEditBoard";
+import emitUserEvent, { Severity } from "./emitUserEvent";
 import runCodeHeuristics from "./runCodeHeuristics";
+import errorToBoolean from "./utils/errorToBoolean";
+import formatDuration from "./utils/formatDuration";
 import authenticate from "./domain/authenticate";
 import healthcheck from "./healthcheck";
 import * as SocketIO from "socket.io";
+import { Boom } from "@hapi/boom";
 import { knex } from "./knex";
 import Hapi from "@hapi/hapi";
 import chalk from "chalk";
@@ -62,46 +67,39 @@ async function main() {
 
   if (process.env.NODE_ENV === "development") {
     server.events.on("response", function(request) {
-      console.log(
-        (request.info.remoteAddress ?? "NO REMOTE ADDRESS") +
-        ": " +
+      console.log(chalk.gray(
         request.method.toUpperCase() +
         " " +
         request.path +
         " --> " +
         ("statusCode" in request.response ? request.response.statusCode : ""),
-      );
+      ));
     });
   }
 
   (global as any).io = new SocketIO.Server(server.listener);
 
   io.on("connection", (socket) => {
-    let headers: Record<string, string> | null = null;
+    console.log(chalk.gray("A socket.io connection was created"));
 
-    socket.on("authenticate", (newHeaders) => {
-      headers = lowercaseHeaders(newHeaders);
+    socket.on("joinBoard", async (headers: any, boardId) => {
+      headers = lowercaseHeaders(headers);
+      console.log(chalk.gray.bold("Attempting to join board..."));
+      if (!await errorToBoolean(assertCanEditBoard({ headers }, boardId))) return console.error(chalk.red("assertion for joining board failed"));
+      socket.join(`board:${boardId}`);
+      console.log(chalk.cyan("socket.io joinBoard successful"))
     });
 
-    let joinIndex = 0;
-
-    socket.on("joinBoard", async (boardId) => {
-      joinIndex += 1;
-      const currentJoinIndex = joinIndex;
-      if (headers) {
-        await authenticate({ headers })
-        if (joinIndex !== currentJoinIndex) return;
-        socket.join(`board:${boardId}`);
-      } else {
-        socket.once("authenticate", async (newHeaders) => {
-          headers = lowercaseHeaders(newHeaders);
-          if (headers && await authenticate.isAuthenticated({ headers })) {
-            if (joinIndex !== currentJoinIndex) return;
-            socket.join(`board:${boardId}`);
-          }
-        });
-      }
-    });
+    socket.on("joinAdmin", async (headers: any) => {
+      headers = lowercaseHeaders(headers);
+      console.log(chalk.gray.bold("Attempting to join admin..."));
+      const authInfo = await authenticate({ headers })
+        .catch(() => null);
+      if (!authInfo) return console.error(chalk.red("No auth info to join admin"));
+      if (authInfo.role !== "admin") return console.error(chalk.red("Not admin role. Not joining admin"));
+      socket.join("admin");
+      console.log(chalk.cyan("socket.io joinAdmin successful"))
+    })
 
     socket.on("leaveBoard", (boardId) => {
       socket.leave(`board:${boardId}`);
@@ -121,6 +119,29 @@ async function main() {
   const routes = await import("./routes");
 
   for (const route of Object.values(routes)) {
+    const handler = route.handler.bind(route);
+    route.handler = (async (...args: any[]) => {
+      const start = process.hrtime.bigint()
+      let error: any = null;
+      try {
+        return await handler(...args);
+      } catch (e) {
+        error = e;
+        throw e;
+      } finally {
+        let severity: Severity = "INFO";
+        if (error && error instanceof Boom) severity = "WARNING";
+        else if (error) severity = "ERROR";
+        const end = process.hrtime.bigint();
+        const duration = end - start;
+        emitUserEvent(
+          "route",
+          severity,
+          `${route.method} ${route.path}`,
+          Number((duration / 1000n) | 0n),
+        );
+      }
+    }) as any;
     server.route(route);
   }
 

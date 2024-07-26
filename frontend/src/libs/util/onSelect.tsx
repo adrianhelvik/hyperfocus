@@ -3,7 +3,7 @@ export default function onSelect(fn: (event: any) => void) {
     tabIndex: 0,
     onClick: fn,
     onKeyDown: (event: React.KeyboardEvent | KeyboardEvent) => {
-      if (event.key.toLowerCase() === "enter") {
+      if (event.key.toLowerCase() === "enter" || event.key === " ") {
         if (event.target instanceof HTMLButtonElement) {
           event.target.click();
         } else {

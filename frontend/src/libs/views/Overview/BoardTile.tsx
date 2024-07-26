@@ -12,11 +12,12 @@ import onSelect from "src/libs/util/onSelect";
 import MenuIcon from "src/libs/ui/MenuIcon";
 import * as theme from "src/libs/theme";
 import Button from "src/libs/ui/Button";
-import styled from "styled-components";
+import styled, { css, keyframes } from "styled-components";
 import { Board } from "src/libs/types";
 import Input from "src/libs/ui/Input";
 import api from "src/libs/api";
 import Color from "color";
+import repeat from "src/util/repeat";
 
 type Props = WithConfirmProps &
   WithStatusProps &
@@ -25,6 +26,7 @@ type Props = WithConfirmProps &
   WithConfirmProps & {
     board: Board;
     shortcut: string | null;
+    disableAnimation: boolean;
   };
 
 function BoardTile(props: Props) {
@@ -121,6 +123,7 @@ function BoardTile(props: Props) {
   return (
     <Container
       {...onSelect(openBoard)}
+      $disableAnimation={props.disableAnimation}
       $color={color}
       onContextMenu={openMenu}
       tabIndex={0}
@@ -154,7 +157,7 @@ const borderColor = (p: { $color: string }) => {
   return Color(p.$color).mix(Color("black"), 0.2).string();
 }
 
-const Container = styled.div <{ $color: string }>`
+const Container = styled.div <{ $disableAnimation: boolean, $color: string }>`
   all: unset;
   outline: revert;
   width: 100%;
@@ -173,6 +176,27 @@ const Container = styled.div <{ $color: string }>`
   transition: box-shadow 0.3s;
   height: 80px;
   transform: translate3d(0, 0, 0);
+
+  ${p => !p.$disableAnimation && css`
+    @media not (prefers-reduced-motion) {
+      opacity: 0;
+
+      animation: forwards 500ms ${keyframes`
+        from {
+          opacity: 0;
+        }
+        to {
+          opacity: 1;
+        }
+      `};
+    }
+
+    ${repeat(20, (i) => css`
+      &:nth-child(${i + 1}) {
+        animation-delay: ${i * 50}ms;
+      }
+    `)}
+  `}
 
   &:hover {
     box-shadow: ${theme.shadows[1]};

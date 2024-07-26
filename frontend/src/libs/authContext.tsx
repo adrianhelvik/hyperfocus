@@ -1,9 +1,9 @@
-import React, { ReactNode, useContext, useState } from "react";
+import React, { ReactNode, useContext, useEffect, useState } from "react";
 import { useAutoCallback, useAutoMemo } from "hooks.macro";
-import api, { setPersistentHeader } from "src/libs/api";
-import local from "./local";
+import api, { ApiError, setPersistentHeader } from "src/libs/api";
+import { useNavigate } from "react-router-dom";
 
-type Status = "pending" | "success" | "failure";
+type Status = "pending" | "success" | "invalid" | "error";
 type Role = "none" | "user" | "admin";
 
 export type Auth = {
@@ -39,6 +39,21 @@ export function useAuth(): Auth {
   return useContext(AuthContext)!;
 }
 
+export function useAuthenticateOrRedirect() {
+  const navigate = useNavigate();
+  const auth = useAuth();
+
+  useEffect(() => {
+    if (auth.status === "invalid") {
+      navigate("/login", { replace: true });
+    }
+  }, [auth.status, navigate]);
+
+  useEffect(() => {
+    auth.authenticate();
+  }, [auth]);
+}
+
 export function ProvideAuth(props: { children: ReactNode }) {
   const [status, setStatus] = useState<Status>("pending");
   const [role, setRole] = useState<Role>("none");
@@ -47,13 +62,18 @@ export function ProvideAuth(props: { children: ReactNode }) {
     if (status === "success") return true;
     try {
       const user = await api.authenticate();
-      SOCKET_IO.emit("authenticate", local.get("persistentHeaders"));
       setStatus("success");
       setRole(user.role)
       return true;
-    } catch (e) {
-      setStatus("failure");
-      return false;
+    } catch (e: unknown) {
+      if (e instanceof ApiError && ((e.statusCode / 100) | 0) === 4) {
+        setStatus("invalid");
+        return false
+      } else {
+        console.error(e);
+        setStatus("error");
+        return false;
+      }
     }
   });
 

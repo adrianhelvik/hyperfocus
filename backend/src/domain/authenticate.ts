@@ -10,10 +10,16 @@ import Boom from "@hapi/boom";
  */
 export const cache = new WeakMap();
 
+export type AuthInfo = {
+  sessionId: UUID;
+  userId: UUID;
+  role: "user" | "admin";
+};
+
 /**
  * Authenticates a request and returns the session.
  */
-export default async function authenticate(request: ReqWithAuth): Promise<{ sessionId: UUID, userId: UUID, role: "user" | "admin" }> {
+export default async function authenticate(request: ReqWithAuth): Promise<AuthInfo> {
   if (cache.has(request)) return cache.get(request);
 
   const { authorization } = request.headers;

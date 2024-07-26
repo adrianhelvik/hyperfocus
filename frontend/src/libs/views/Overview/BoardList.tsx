@@ -1,20 +1,24 @@
 import addGridKeyboardNavigation from "src/util/addGridKeyboardNavigation";
-import { useContext, useEffect, useLayoutEffect, useState } from "react";
+import { useContext, useLayoutEffect, useRef, useState } from "react";
 import { OverviewStoreContext } from "./OverviewStoreContext";
 import styled, { keyframes } from "styled-components";
-import { AuthContext } from "src/libs/authContext";
+import { AuthContext, useAuthenticateOrRedirect } from "src/libs/authContext";
 import { useAutoLayoutEffect } from "hooks.macro";
 import { useNavigate } from "react-router-dom";
 import * as theme from "src/libs/theme";
 import BoardTile from "./BoardTile";
+import isMac from "src/util/isMac";
 import Color from "color";
 
 export default function BoardList() {
   const [gridElement, setGridElement] = useState<HTMLDivElement | null>(null);
-  const { setIsAddingBoard, isAddingBoard, boards } =
-    useContext(OverviewStoreContext);
+  const { setIsAddingBoard, isAddingBoard, boards } = useContext(OverviewStoreContext);
   const auth = useContext(AuthContext)!;
   const navigate = useNavigate();
+
+  const boardsWereNullRef = useRef(boards == null);
+
+  useAuthenticateOrRedirect();
 
   useLayoutEffect(() => {
     if (isAddingBoard) return;
@@ -34,6 +38,16 @@ export default function BoardList() {
         e.preventDefault();
         setIsAddingBoard(true);
       }
+
+      if (auth.role === "admin") {
+        if (isMac) {
+          if (e.ctrlKey && e.key.toLowerCase() === "a") {
+            navigate("/admin");
+          }
+        } else if (e.ctrlKey && e.key === "A") {
+          navigate("/admin");
+        }
+      }
     };
 
     document.addEventListener("keydown", onKeyDown);
@@ -41,19 +55,13 @@ export default function BoardList() {
     return () => {
       document.removeEventListener("keydown", onKeyDown);
     };
-  });
+  }, [auth.role, boards, isAddingBoard, navigate, setIsAddingBoard]);
 
   useAutoLayoutEffect(() => {
     if (gridElement) {
       return addGridKeyboardNavigation(gridElement);
     }
   });
-
-  useEffect(() => {
-    if (auth.status === "failure") {
-      return navigate("/login");
-    }
-  }, [auth.status, navigate]);
 
   const modifierKey = navigator.userAgent.includes(" Mac ") ? "⌘" : "ctrl ";
 
@@ -70,6 +78,7 @@ export default function BoardList() {
         {boards !== null && boards.map((board, i) => (
           <BoardTile
             key={board.boardId}
+            disableAnimation={!boardsWereNullRef.current}
             board={board}
             shortcut={
               !("ontouchstart" in document) && i <= 8
@@ -202,9 +211,9 @@ const NoBoardsYet = styled.div`
 `;
 
 const Loading = styled.div`
-  --border-radius: 10px;
+  --border-radius: 20px;
   --width: 80px;
-  --height: 60px;
+  --height: 80px;
   --gap: 10px;
 
   --full-width: calc(var(--width) * 2 + var(--gap));
@@ -219,6 +228,19 @@ const Loading = styled.div`
 
   width: var(--full-width);
   height: var(--full-height);
+
+  animation: 1000ms forwards ${keyframes`
+    from {
+      opacity: 0;
+    }
+    to {
+      opacity: 1;
+    }
+  `};
+
+  @media (prefers-reduced-motion) {
+    display: none;
+  }
 `;
 
 const transform = (x: number, y: number) => {

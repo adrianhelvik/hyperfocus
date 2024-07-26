@@ -13,7 +13,7 @@ import Header from "src/libs/ui/Header";
 import { BoardView } from "./BoardView";
 import styled from "styled-components";
 import AddCircle from "./AddCircle";
-import api from "src/libs/api";
+import api, { getPersistentHeaders } from "src/libs/api";
 import useAssertStable from "src/util/useAssertStable";
 
 type Props = WithMenuProps & WithConfirmProps & WithModalProps;
@@ -30,7 +30,7 @@ export default withModal(withConfirm(withMenu(function BoardV2(props: Props) {
   useEffect(() => {
     if (!boardId) return;
 
-    SOCKET_IO.emit("joinBoard", boardId);
+    SOCKET_IO.emit("joinBoard", getPersistentHeaders(), boardId);
 
     return () => {
       SOCKET_IO.emit("leaveBoard", boardId)

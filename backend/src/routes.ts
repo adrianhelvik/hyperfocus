@@ -436,7 +436,6 @@ export const getUserStatsRoute = route({
   path: "/getUserStats",
   async handler(request: ReqWithAuth) {
     await assertIsAdmin(request);
-
     return await getUserStats();
   }
 })

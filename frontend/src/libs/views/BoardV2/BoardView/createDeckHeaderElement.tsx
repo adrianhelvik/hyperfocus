@@ -1,9 +1,11 @@
 import { replaceWithInputAndFocusAtCaretPosition } from "./replaceWithInputAndFocusAtCaretPosition";
-import { ConfirmButtonRow, ConfirmHeader, ConfirmTargetText } from "src/libs/ui/confirm-dialog";
+import { ConfirmButtonRow, ConfirmHeader } from "src/libs/ui/confirm-dialog";
+import { getDeckColorCSSVariables } from "./getDeckColorCSSVariables";
 import { makeTextAreaAutoGrow } from "./makeTextAreaAutoGrow";
 import { smoothScrollToCenter } from "./smoothScrollToCenter";
 import { CirclePicker as ColorPicker } from "react-color";
 import { ConfirmInPlaceFn } from "src/libs/withConfirm";
+import { ShowModalInPlace } from "src/libs/withModal";
 import { setLinkableText } from "./setLinkableText";
 import addDragHandlers from "./addDragHandlers";
 import { ShowMenuFn } from "src/libs/withMenu";
@@ -15,8 +17,6 @@ import onlyOnceFn from "./onlyOnceFn";
 import animate from "./animate";
 import api from "src/libs/api";
 import { el } from "./el";
-import { ShowModalInPlace } from "src/libs/withModal";
-import { getDeckColorCSSVariables } from "./getDeckColorCSSVariables";
 
 const DECK_ANIMATION_TIME = 300;
 

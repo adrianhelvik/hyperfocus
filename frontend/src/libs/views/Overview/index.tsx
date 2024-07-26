@@ -1,15 +1,14 @@
+import { AuthContext, useAuthenticateOrRedirect } from "src/libs/authContext";
+import { useBoardState, useLoadBoards } from "src/libs/BoardsController";
 import { MouseEvent, useContext, useEffect, useState } from "react";
 import { OverviewStoreContext } from "./OverviewStoreContext";
 import withMenu, { WithMenuProps } from "src/libs/withMenu";
 import { useAutoCallback, useAutoMemo } from "hooks.macro";
-import { AuthContext } from "src/libs/authContext";
-import { useNavigate } from "react-router-dom";
 import AddBoardModal from "./AddBoardModal";
 import { GlobalStyle } from "./components";
 import Header from "src/libs/ui/Header";
 import { Board } from "src/libs/types";
 import BoardList from "./BoardList";
-import api from "src/libs/api";
 
 type Props = WithMenuProps & {
   children?: React.ReactNode;
@@ -17,15 +16,11 @@ type Props = WithMenuProps & {
 
 export default withMenu(function Overview(props: Props) {
   const [isAddingBoard, setIsAddingBoard] = useState(false);
-  const [boards, setBoards] = useState<Board[] | null>(null);
+  const [boards, setBoards] = useBoardState();
   const auth = useContext(AuthContext)!;
-  const navigate = useNavigate();
+  useAuthenticateOrRedirect();
 
-  useEffect(() => {
-    api.ownBoards().then(({ boards }) => {
-      setBoards(boards);
-    });
-  }, []);
+  useLoadBoards();
 
   const onContextMenu = (event: MouseEvent) => {
     event.preventDefault();
@@ -40,12 +35,6 @@ export default withMenu(function Overview(props: Props) {
   useEffect(() => {
     auth.authenticate();
   }, [auth]);
-
-  useEffect(() => {
-    if (auth.status === "failure") {
-      navigate("/");
-    }
-  }, [auth.status, navigate]);
 
   const onBoardAdded = useAutoCallback((board: Board) => {
     setBoards((boards) => boards === null ? null : [board, ...boards]);

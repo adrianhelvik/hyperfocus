@@ -1,6 +1,6 @@
 import { useAutoEffect, useAutoLayoutEffect } from "hooks.macro";
 import React, { ReactNode, useState } from "react";
-import styled, { css } from "styled-components";
+import styled, { css, keyframes } from "styled-components";
 import * as theme from "../theme";
 import Backdrop from "./Backdrop";
 import { Coord } from "../types";
@@ -99,6 +99,18 @@ const Container = styled.div<{
       left: ${p.$placement.x + p.$offsetX}px;
       top: ${p.$placement.y}px;
     `}
+
+  @media not (prefers-reduced-motion) {
+    animation: forwards 500ms ${keyframes`
+      from {
+        opacity: 0;
+        transform: scale(0.9);
+      }
+      to {
+        opacity: 1;
+      }
+    `}
+  }
 `;
 
 const Title = styled.h2`
