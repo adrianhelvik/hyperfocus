@@ -3,7 +3,7 @@ FROM oven/bun:1.1.20 AS install
 WORKDIR /backend
 
 COPY ./backend/package.json ./
-COPY ./backend/yarn.lock ./
+COPY ./backend/bun.lockb ./
 COPY ./backend/migrations ./migrations
 COPY ./backend/knexfile.js ./
 COPY ./backend/src ./src
@@ -18,7 +18,7 @@ RUN apt-get -y update && apt-get -y install postgresql
 
 COPY --from=install /backend/node_modules /backend/node_modules
 COPY ./backend/package.json ./
-COPY ./backend/yarn.lock ./
+COPY ./backend/bun.lockb ./
 COPY ./backend/migrations ./migrations
 COPY ./backend/knexfile.js ./
 COPY ./backend/src ./src
@@ -32,7 +32,7 @@ WORKDIR /backend
 
 COPY --from=install /backend/node_modules /backend/node_modules
 COPY ./backend/package.json ./
-COPY ./backend/yarn.lock ./
+COPY ./backend/bun.lockb ./
 COPY ./backend/migrations ./migrations
 COPY ./backend/knexfile.js ./
 COPY ./backend/src ./src
