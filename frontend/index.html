@@ -22,11 +22,15 @@
   <title>Hyperfocus</title>
   <script src="/socket.io/socket.io.js"></script>
   <script>
+    window.SOCKET_IO = {
+      on() { },
+      emit() { }
+    };
+
     if (typeof io !== "undefined") {
-      window.SOCKET_IO = io();
-    } else {
-      console.error("Failed to load socket.io");
-      window.SOCKET_IO = {on() { }, emit() { } };
+      window.SOCKET_IO = io({
+        transports: ["socket"],
+      });
     }
   </script>
 </head>

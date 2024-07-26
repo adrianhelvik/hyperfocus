@@ -39,8 +39,6 @@ export default function createDeckTitleElement({
   confirmInPlace: ConfirmInPlaceFn;
   showModalInPlace: ShowModalInPlace;
 }) {
-  console.log("CREATING DECK TITLE ELEMENT");
-
   let initialIndex = -1;
 
   let deckTitleNode: HTMLHeadingElement;
