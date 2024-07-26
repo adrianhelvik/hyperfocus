@@ -30,7 +30,7 @@ export default function Header(props: Props) {
       <UndecoratedLink to={isInApp ? "/app" : "/"}>
         <Logo pageColor={pageColor} />
       </UndecoratedLink>
-      <AdminLink to="/admin">Admin</AdminLink>
+      {auth.role === "admin" && <AdminLink to="/admin">Admin</AdminLink>}
       <Content>{props.children}</Content>
       {auth.status === "success" && location.pathname === "/" && (
         <Login to="/login">Go to dashboard</Login>

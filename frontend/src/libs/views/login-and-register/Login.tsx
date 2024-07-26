@@ -40,9 +40,9 @@ export default observer(function Login() {
 
   useEffect(() => {
     if (auth.status === "success") {
-      navigate("/app");
+      navigate("/app", { replace: true });
     }
-  }, [auth.status]);
+  }, [auth.status, navigate]);
 
   return (
     <>

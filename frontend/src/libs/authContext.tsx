@@ -10,6 +10,7 @@ export type Auth = {
   authenticate: () => Promise<boolean>;
   logout: () => Promise<void>;
   login: (payload: { username: string; password: string }) => Promise<void>;
+  role: Role;
   status: Status;
 };
 
