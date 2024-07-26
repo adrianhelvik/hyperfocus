@@ -439,7 +439,7 @@ export const getUserStatsRoute = route({
     const usersQuery = knex("users")
       .select("userId", "email")
 
-    const result: any[] = [];
+    const result: { userId: string, email: string, boardCount: number, cardCount: number }[] = [];
 
     for await (const user of usersQuery.stream()) {
       result.push(user);
@@ -454,8 +454,6 @@ export const getUserStatsRoute = route({
         .count("*")
         .then(res => Number(res[0].count));
     }
-
-    console.log(result);
 
     return result;
   }
