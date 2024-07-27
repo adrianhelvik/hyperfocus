@@ -1,10 +1,9 @@
+import useStableCallback from "src/util/useStableCallback";
 import React, { ComponentType, useState } from "react";
-import hoist from "hoist-non-react-statics";
 import Backdrop from "src/libs/ui/Backdrop";
 import { Portal } from "react-portal";
 import Modal from "src/libs/ui/Modal";
 import { Coord } from "./types";
-import useStableCallback from "src/util/useStableCallback";
 
 // Broken types in the library
 const AnyPortal = Portal as any;

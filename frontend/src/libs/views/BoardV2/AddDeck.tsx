@@ -1,6 +1,5 @@
-import ModalFooter from "src/libs/ui/ModalFooter";
 import { useEmitBoardChildAdded } from "./context";
-import * as theme from "src/libs/theme";
+import ModalFooter from "src/libs/ui/ModalFooter";
 import Button from "src/libs/ui/Button";
 import { Board } from "src/libs/types";
 import styled from "styled-components";

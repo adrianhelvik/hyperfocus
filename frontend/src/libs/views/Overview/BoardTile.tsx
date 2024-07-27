@@ -1,9 +1,9 @@
 import { ConfirmButtonRow, ConfirmHeader } from "src/libs/ui/confirm-dialog";
 import withConfirm, { WithConfirmProps } from "src/libs/withConfirm";
-import withStatus, { WithStatusProps } from "src/libs/withStatus";
 import withModal, { WithModalProps } from "src/libs/withModal";
 import { OverviewStoreContext } from "./OverviewStoreContext";
 import withMenu, { WithMenuProps } from "src/libs/withMenu";
+import styled, { css, keyframes } from "styled-components";
 import { CirclePicker as ColorPicker } from "react-color";
 import { flattenColor } from "src/libs/colorFns";
 import { MouseEvent, useContext } from "react";
@@ -12,15 +12,13 @@ import onSelect from "src/libs/util/onSelect";
 import MenuIcon from "src/libs/ui/MenuIcon";
 import * as theme from "src/libs/theme";
 import Button from "src/libs/ui/Button";
-import styled, { css, keyframes } from "styled-components";
 import { Board } from "src/libs/types";
 import Input from "src/libs/ui/Input";
+import repeat from "src/util/repeat";
 import api from "src/libs/api";
 import Color from "color";
-import repeat from "src/util/repeat";
 
 type Props = WithConfirmProps &
-  WithStatusProps &
   WithMenuProps &
   WithModalProps &
   WithConfirmProps & {

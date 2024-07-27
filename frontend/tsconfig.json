@@ -1,19 +1,18 @@
 {
   "compilerOptions": {
     "baseUrl": ".",
-    "target": "es2022",
+    "target": "es2023",
     "module": "esnext",
     "experimentalDecorators": true,
     "jsx": "react-jsx",
     "lib": [
-      "es2022",
+      "esnext",
       "dom"
     ],
     "types": [
       "vite/client"
     ],
     "moduleResolution": "node",
-    "declarations": true,
     "allowJs": true,
     "strict": true,
     "noUnusedLocals": true,

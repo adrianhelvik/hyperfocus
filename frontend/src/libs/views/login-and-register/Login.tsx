@@ -4,11 +4,10 @@ import { useNavigate } from "react-router-dom";
 import { useAuth } from "../../authContext";
 import { Logo } from "src/libs/ui/Header";
 import * as theme from "src/libs/theme";
-import { observer } from "mobx-react";
 import Input from "src/libs/ui/Input";
 import sleep from "src/libs/sleep";
 
-export default observer(function Login() {
+export default function Login() {
   const [username, setUsername] = useState("");
   const [password, setPassword] = useState("");
   const [message, setMessage] = useState("");
@@ -84,4 +83,4 @@ export default observer(function Login() {
       </Container>
     </>
   );
-});
+}
