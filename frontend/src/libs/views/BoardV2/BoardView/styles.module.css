@@ -390,3 +390,41 @@
   border-radius: 4px;
   opacity: 0.3;
 }
+
+.isSelectingOnRoot {
+  -webkit-touch-callout: none;
+  -webkit-tap-highlight-color: transparent;
+  -moz-user-select: -moz-none;
+  -webkit-user-select: none;
+  -ms-user-select: none;
+  user-select: none;
+
+  &,
+  & * {
+    cursor: crosshair;
+    pointer-events: none;
+  }
+}
+
+.rootSelection {
+  position: fixed;
+  z-index: 1000;
+  pointer-events: none;
+  border: 2px solid var(--base-color);
+  border-radius: 4px;
+  background-color: color-mix(in srgb, var(--base-color) 20%, transparent);
+  left: 0;
+  top: 0;
+
+  --left: min(var(--x0), var(--x1));
+  --right: max(var(--x0), var(--x1));
+  --top: min(var(--y0), var(--y1));
+  --bottom: max(var(--y0), var(--y1));
+
+  --width: calc(var(--right) - var(--left));
+  --height: calc(var(--bottom) - var(--top));
+
+  transform: translateX(var(--left)) translateY(var(--top));
+  width: var(--width);
+  height: var(--height);
+}

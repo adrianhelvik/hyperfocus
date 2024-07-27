@@ -36,7 +36,104 @@ export class BoardView {
     this.buildInterface();
     this.possiblyFocusDeck();
     this.addRealtimeListeners();
+    this.root.addEventListener("mousedown", this.onRootMouseDown);
     document.addEventListener("keydown", this.onKeydown);
+  }
+
+  public unmount() {
+    clearTimeout(this.focusDeckTimeout);
+    this.onDestroyCallbacks.forEach((fn) => fn());
+    this.onDestroyCallbacks = [];
+    this.root.innerHTML = "";
+    this.root.classList.remove(classes.board);
+    document.body.classList.remove(classes.body);
+    document.removeEventListener("keydown", this.onKeydown);
+    this.root.addEventListener("mousedown", this.onRootMouseDown);
+    if (this.scrollSnapTimeout) clearTimeout(this.scrollSnapTimeout);
+    if (this.cancelSnapToDeck) this.cancelSnapToDeck();
+    this.removeRealtimeListeners();
+  }
+
+  private rootSelectRectEl = el("div", { className: classes.rootSelection });
+  private rootSelectStart: { x: number, y: number } | null = null;
+  private rootSelectMove: { x: number, y: number } | null = null;
+
+  getSelectRect() {
+    if (!this.rootSelectStart) throw Error("rootSelectStart not set");
+    if (!this.rootSelectMove) throw Error("rootSelectMove not set");
+    const top = Math.min(this.rootSelectStart.y, this.rootSelectMove.y);
+    const bottom = Math.max(this.rootSelectStart.y, this.rootSelectStart.y);
+    const left = Math.min(this.rootSelectStart.x, this.rootSelectMove.x);
+    const right = Math.max(this.rootSelectStart.x, this.rootSelectMove.x);
+    const width = right - left;
+    const height = bottom - top;
+    return { top, left, bottom, right, width, height };
+  }
+
+  private onRootMouseDown = (event: MouseEvent) => {
+    if (event.target !== this.root) return;
+
+    this.rootSelectStart = this.rootSelectMove = { x: event.clientX, y: event.clientY };
+    document.addEventListener("mousemove", this.onRootMouseMove);
+    document.addEventListener("mouseup", this.onRootMouseUp);
+    this.styleRootSelect();
+    document.body.append(this.rootSelectRectEl);
+    document.body.classList.add(classes.isSelectingOnRoot);
+  }
+
+  private onRootMouseMove = (event: MouseEvent) => {
+    this.rootSelectMove = { x: event.clientX, y: event.clientY };
+    this.styleDeckElementsUnderCursor();
+    this.styleRootSelect();
+  }
+
+  private onRootMouseUp = () => {
+    document.removeEventListener("mousemove", this.onRootMouseMove);
+    document.removeEventListener("mouseup", this.onRootMouseUp);
+    this.rootSelectStart = this.rootSelectMove = null;
+    this.rootSelectRectEl.remove();
+    document.body.classList.remove(classes.isSelectingOnRoot);
+    this.clearDecksUnderCursor();
+    if (this.previouslyUnderCursor) {
+      this.previouslyUnderCursor.forEach(e => e.classList.remove(classes.deckUnderRootCursor));
+      this.previouslyUnderCursor = null;
+    }
+  }
+
+  styleRootSelect() {
+    if (!this.rootSelectStart) throw Error("rootSelectStart not set");
+    if (!this.rootSelectMove) throw Error("rootSelectMove not set");
+    this.rootSelectRectEl.style.setProperty("--x0", `${this.rootSelectStart.x}px`);
+    this.rootSelectRectEl.style.setProperty("--y0", `${this.rootSelectStart.y}px`);
+    this.rootSelectRectEl.style.setProperty("--x1", `${this.rootSelectMove.x}px`);
+    this.rootSelectRectEl.style.setProperty("--y1", `${this.rootSelectMove.y}px`);
+  }
+
+  private previouslyUnderCursor: Set<HTMLElement> | null = null;
+
+  styleDeckElementsUnderCursor() {
+    const selectRect = this.getSelectRect();
+    const underCursor = new Set<HTMLElement>();
+    for (let i = 0; i < this.deckElements.length; i++) {
+      const deckElement = this.deckElements[i];
+      const rect = deckElement.getBoundingClientRect();
+      if (rect.right < selectRect.left) continue;
+      if (rect.left > selectRect.right) continue;
+      if (rect.top > selectRect.bottom) continue;
+      if (rect.bottom < selectRect.top) continue;
+      underCursor.add(deckElement);
+      deckElement.classList.add(classes.deckUnderRootCursor);
+    }
+    if (this.previouslyUnderCursor) {
+      this.previouslyUnderCursor
+        .difference(underCursor)
+        .forEach(el => el.classList.remove(classes.deckUnderRootCursor));
+    }
+    this.previouslyUnderCursor = underCursor;
+  }
+
+  clearDecksUnderCursor() {
+
   }
 
   private addRealtimeListeners() {
@@ -71,19 +168,6 @@ export class BoardView {
       this.mount();
     }
   };
-
-  public unmount() {
-    clearTimeout(this.focusDeckTimeout);
-    this.onDestroyCallbacks.forEach((fn) => fn());
-    this.onDestroyCallbacks = [];
-    this.root.innerHTML = "";
-    this.root.classList.remove(classes.board);
-    document.body.classList.remove(classes.body);
-    document.removeEventListener("keydown", this.onKeydown);
-    if (this.scrollSnapTimeout) clearTimeout(this.scrollSnapTimeout);
-    if (this.cancelSnapToDeck) this.cancelSnapToDeck();
-    this.removeRealtimeListeners();
-  }
 
   private onKeydown = (e: KeyboardEvent) => {
     if (!isKeypressElement(e.target)) {
