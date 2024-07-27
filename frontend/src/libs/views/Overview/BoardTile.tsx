@@ -137,7 +137,7 @@ function BoardTile(props: Props) {
   );
 }
 
-export default withModal(withConfirm(withStatus(withMenu(BoardTile))));
+export default withModal(withConfirm(withMenu(BoardTile)));
 
 const textColor = (p: { $color: string }) => {
   const flatColor = flattenColor(p.$color, "black");
