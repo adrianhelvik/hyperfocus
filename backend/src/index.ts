@@ -1,10 +1,11 @@
 import "dotenv/config";
 
+import { createAdapter as createSocketIoRedisAdapter } from "@socket.io/redis-adapter";
 import assertCanEditBoard from "./domain/assertCanEditBoard";
+import { createClient as createRedisClient } from "redis";
 import emitUserEvent, { Severity } from "./emitUserEvent";
 import runCodeHeuristics from "./runCodeHeuristics";
 import errorToBoolean from "./utils/errorToBoolean";
-import formatDuration from "./utils/formatDuration";
 import authenticate from "./domain/authenticate";
 import healthcheck from "./healthcheck";
 import * as SocketIO from "socket.io";
@@ -77,7 +78,46 @@ async function main() {
     });
   }
 
-  (global as any).io = new SocketIO.Server(server.listener);
+  if (process.env.SOCKET_IO_KEYDB) {
+    console.log(chalk.cyan("Using redis adapter for socket.io through: ", process.env.SOCKET_IO_KEYDB));
+
+    let pubClient = createRedisClient({
+      url: process.env.SOCKET_UI_KEYDB,
+    });
+    let subClient = pubClient.duplicate();
+
+    let tries = 0;
+    const connect = async () => {
+      console.log(chalk.cyan("Keydb connection attempt " + (tries + 1) + ". Keydb url: " + process.env.SOCKET_IO_KEYDB));
+      try {
+        await Promise.all([pubClient.connect(), subClient.connect()]);
+      } catch (e) {
+        tries += 1;
+        console.error(e);
+        console.error(chalk.red.bold(`Failed to connect to keydb on attempt ${tries}. Error message: ` + (e instanceof Error ? e.message : e)))
+        if (tries > 40) {
+          process.exit(1);
+        }
+        return new Promise(resolve => {
+          setTimeout(() => {
+            pubClient = createRedisClient({
+              url: process.env.SOCKET_UI_KEYDB,
+            });
+            subClient = pubClient.duplicate();
+            resolve(connect())
+          }, 1000);
+        });
+      }
+    };
+
+    await connect();
+
+    (global as any).io = new SocketIO.Server(server.listener, {
+      adapter: createSocketIoRedisAdapter(pubClient, subClient),
+    });
+  } else {
+    (global as any).io = new SocketIO.Server(server.listener);
+  }
 
   io.on("connection", (socket) => {
     console.log(chalk.gray("A socket.io connection was created"));
