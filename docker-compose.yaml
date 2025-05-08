@@ -56,3 +56,13 @@ services:
 
   keydb:
     image: eqalpha/keydb:alpine
+
+  caddy:
+    image: caddy:alpine
+    ports:
+      - "443:443"
+    volumes:
+      - ./Caddyfile:/etc/caddy/Caddyfile
+      - ./certs:/certs
+    depends_on:
+      - frontend

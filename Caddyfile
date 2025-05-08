@@ -1,0 +1,4 @@
+https://hyperfocus.local {
+  tls /certs/hyperfocus.local.pem /certs/hyperfocus.local-key.pem
+  reverse_proxy frontend:9341
+}
